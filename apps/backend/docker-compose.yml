@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: .
+    container_name: pc_builder_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - pc_builder_network
+  db:
+    image: postgres:16
+    container_name: pc_builder_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pc_builder
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pc_builder_network
+
+volumes:
+  postgres_data:
+
+networks:
+  pc_builder_network:
+    driver: bridge
