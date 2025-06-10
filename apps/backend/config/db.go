@@ -18,6 +18,7 @@ func ConnectDB(pgConfig PostgresConfig) *gorm.DB {
 		pgConfig.DbName,
 		pgConfig.SslMode,
 	)
+
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}))
@@ -25,5 +26,6 @@ func ConnectDB(pgConfig PostgresConfig) *gorm.DB {
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
+
 	return db
 }
