@@ -2,22 +2,36 @@ package main
 
 import (
 	"log"
-	"pc-builder/backend/api"
+	"net/http"
 	"pc-builder/backend/config"
+	"pc-builder/backend/db"
+	"pc-builder/backend/routes"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
+var appConfig *config.Config
+
+func init() {
+	var err error
+	appConfig, err = config.LoadEnv()
+	if err != nil {
+		panic("Error loading configuration: " + err.Error())
+	}
+
+	db.InitPostgres(appConfig)
+}
+
 func main() {
-	engine := gin.Default()
-	engine.SetTrustedProxies(nil) // Disable trusted proxies for local development
+	router := gin.Default()
+	router.SetTrustedProxies(nil) // Disable trusted proxies for local development
 
-appConfig, err := config.LoadEnv()
- 	if err != nil {
- 		log.Fatalf("Error loading configuration: %v", err)
- 	}
+	router.GET("", func(context *gin.Context) {
+		context.JSON(http.StatusOK, gin.H{"message": "Welcome to PC Builder API"})
+	})
 
-	config.ConnectDB(appConfig.DB)
+	routes.RegisterRoutes(router)
 
 	port := appConfig.Port
 
@@ -25,8 +39,18 @@ appConfig, err := config.LoadEnv()
 		port = "8080"
 	}
 
-	api.RegisterRoutes(engine)
-
 	log.Printf("Starting server on port %s", port)
- 	engine.Run(":" + port)
+
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+		ReadTimeout: 10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1 MB
+	}
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
+
 }
