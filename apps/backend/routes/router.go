@@ -14,6 +14,9 @@ func RegisterRoutes(router *gin.Engine) {
 
 	api := router.Group("/api")
 
-	api.GET("/components", controller.GetAllComponents)
 	api.POST("/components", controller.CreateComponent)
+	api.GET("/components", controller.GetAllComponents)
+	api.GET("/components/:id", controller.GetComponentByID)
+	api.PUT("/components/:id", controller.UpdateComponent)
+	api.DELETE("/components/:id", controller.DeleteComponent)
 }
