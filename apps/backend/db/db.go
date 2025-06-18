@@ -30,7 +30,7 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	}
 
 	// Auto migrate your models
-	if err := DB.AutoMigrate(&models.Component{}); err != nil {
+	if err := DB.AutoMigrate(&models.Component{}, &models.User{}); err != nil {
 		log.Fatalf("❌ AutoMigrate failed: %v", err)
 	}
 

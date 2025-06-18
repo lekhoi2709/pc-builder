@@ -46,7 +46,7 @@ type ImageURL []string
 
 type Component struct {
 	ID        string    `json:"id" gorm:"primaryKey;size:255"`
-	Name      string    `json:"name" gorm:"primaryKey;size:255"`
+	Name      string    `json:"name" gorm:"size:255"`
 	Category  string    `json:"category"`
 	Brand     string    `json:"brand"`
 	Models    string    `json:"models"`
