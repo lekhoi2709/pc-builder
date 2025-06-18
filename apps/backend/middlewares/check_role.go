@@ -4,13 +4,21 @@ import (
 	"net/http"
 	"pc-builder/backend/db"
 	"pc-builder/backend/models"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RequireRole(roles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.GetUint("user_id")
+		userID, err := c.Get("user_id")
+		if !err {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"status":  http.StatusUnauthorized,
+				"message": "Unauthorized",
+			})
+			return
+		}
 
 		var user models.User
 
@@ -22,13 +30,7 @@ func RequireRole(roles ...string) gin.HandlerFunc {
 			})
 		}
 
-		hasRole := false
-		for _, role := range roles {
-			if user.Role == role {
-				hasRole = true
-				break
-			}
-		}
+		hasRole := slices.Contains(roles, user.Role)
 
 		if !hasRole {
 			c.JSON(http.StatusForbidden, gin.H{
