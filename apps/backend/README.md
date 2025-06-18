@@ -21,26 +21,9 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
 - ✅ Structured logging
 - ✅ Database auto-migration
 
-### Planned Features
-
-- 🔄 User authentication & authorization
-- 🔄 PC build configurations
-- 🔄 Component compatibility checking
-- 🔄 Price tracking & alerts
-- 🔄 Component reviews & ratings
-- 🔄 Advanced search & filtering
-- 🔄 Frontend web application
-- 🔄 Mobile application support
-
-## 📋 Prerequisites
-
-- Docker & Docker Compose
-- Go 1.24+ (for local development)
-- PostgreSQL (handled by Docker)
-
 ## 🛠️ Installation & Setup
 
-### Using Docker (Recommended)
+### Using Docker
 
 1. **Clone the repository**
 
@@ -68,6 +51,7 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
 
    # Application Configuration
    PORT=8080
+   JWT_SECRET=your_jwt_secret
    GIN_MODE=release
    ```
 
@@ -82,163 +66,6 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
    curl http://localhost:8080/health
    # Expected: {"status":"ok"}
    ```
-
-### Local Development Setup
-
-1. **Install dependencies**
-
-   ```bash
-   go mod download
-   ```
-
-2. **Setup local PostgreSQL**
-
-   ```bash
-   # Using Docker for database only
-   docker run --name pc-builder-db \
-     -e POSTGRES_PASSWORD=your_password \
-     -e POSTGRES_DB=pc_builder \
-     -p 5432:5432 \
-     -d postgres:16
-   ```
-
-3. **Update .env for local development**
-
-   ```env
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=your_password
-   DB_NAME=pc_builder
-   DB_SSLMODE=disable
-   PORT=8080
-   ```
-
-4. **Run the application**
-   ```bash
-   go run main.go
-   ```
-
-## 📚 API Documentation
-
-### Base URL
-
-```
-http://localhost:8080
-```
-
-### Endpoints
-
-#### Health Check
-
-```http
-GET /health
-```
-
-**Response:**
-
-```json
-{
-  "status": "ok"
-}
-```
-
-#### Get All Components
-
-```http
-GET /api/components
-```
-
-**Response:**
-
-```json
-{
-  "status": 200,
-  "components": [
-    {
-      "id": 1,
-      "name": "RTX 4090",
-      "category": "GPU",
-      "brand": "NVIDIA",
-      "models": "GeForce RTX 4090",
-      "specs": "24GB GDDR6X",
-      "price": 1599.99,
-      "image_url": "https://example.com/rtx4090.jpg",
-      "created_at": "2025-06-11T10:30:00Z",
-      "updated_at": "2025-06-11T10:30:00Z"
-    }
-  ]
-}
-```
-
-#### Create Component
-
-```http
-POST /api/components
-Content-Type: application/json
-
-{
-  "name": "RTX 4090",
-  "category": "GPU",
-  "brand": "NVIDIA",
-  "model": "GeForce RTX 4090",
-  "specs": "24GB GDDR6X",
-  "price": 1599.99,
-  "image_url": "https://example.com/rtx4090.jpg"
-}
-```
-
-**Response:**
-
-```json
-{
-  "status": 201,
-  "message": "Component created successfully",
-  "component": {
-    "id": 1,
-    "name": "RTX 4090",
-    "category": "GPU",
-    "brand": "NVIDIA",
-    "models": "GeForce RTX 4090",
-    "specs": "24GB GDDR6X",
-    "price": 1599.99,
-    "image_url": "https://example.com/rtx4090.jpg",
-    "created_at": "2025-06-11T10:30:00Z",
-    "updated_at": "2025-06-11T10:30:00Z"
-  }
-}
-```
-
-## 🗄️ Database Schema
-
-### Components Table
-
-```sql
-CREATE TABLE components (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    brand VARCHAR(100) NOT NULL,
-    models VARCHAR(255) NOT NULL,
-    specs TEXT,
-    price DECIMAL(10,2),
-    image_url VARCHAR(500),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL
-);
-```
-
-### Component Categories
-
-- **CPU** (Processors)
-- **GPU** (Graphics Cards)
-- **RAM** (Memory)
-- **Storage** (SSD/HDD)
-- **Motherboard**
-- **PSU** (Power Supply)
-- **Case** (PC Cases)
-- **Cooling** (CPU Coolers, Case Fans)
 
 ## 🐳 Docker Configuration
 
@@ -264,10 +91,12 @@ pc-builder/
 ├── backend/
 │   ├── config/         # Configuration management
 │   ├── controller/     # API controllers
-│   ├── db/            # Database initialization
-│   ├── models/        # Data models
-│   ├── routes/        # Route definitions
-│   ├── main.go        # Application entry point
+│   ├── db/             # Database initialization
+│   ├── helpers/        # Helper functions
+│   ├── middlewares/    # API middlewares
+│   ├── models/         # Data models
+│   ├── routes/         # Route definitions
+│   ├── main.go         # Application entry point
 │   ├── docker-compose.yml
 │   ├── Dockerfile
 │   ├── go.mod
@@ -276,14 +105,6 @@ pc-builder/
 │   └── README.md
 └── frontend/
 ```
-
-### Adding New Features
-
-1. **Add new model**: Create struct in `models/`
-2. **Add migration**: Update `db.go` AutoMigrate section
-3. **Create controller**: Add handlers in `controller/`
-4. **Register routes**: Update `routes/router.go`
-5. **Test endpoints**: Use curl or Postman
 
 ### Environment Variables
 
@@ -296,25 +117,8 @@ pc-builder/
 | `DB_NAME`     | Database name     | `pc_builder` |
 | `DB_SSLMODE`  | SSL mode          | `disable`    |
 | `PORT`        | Application port  | `8080`       |
+| `JWT_SECRET`  | JWT secret key    | _required_   |
 | `GIN_MODE`    | Gin mode          | `debug`      |
-
-## 🚀 Deployment
-
-### Production Considerations
-
-- Set `GIN_MODE=release`
-- Use strong database passwords
-- Implement proper logging
-- Add rate limiting
-- Setup SSL/TLS certificates
-- Configure reverse proxy (nginx)
-- Setup monitoring and health checks
-
-### Future Deployment Options
-
-- **Cloud**: AWS ECS, Google Cloud Run, Azure Container Instances
-- **Kubernetes**: For scalable deployments
-- **Traditional VPS**: With Docker Compose
 
 ## 📋 Roadmap
 
@@ -331,7 +135,7 @@ pc-builder/
 - [ ] Component relationships
 - [ ] Advanced search & filtering
 - [ ] Data validation & error handling
-- [ ] API documentation (Swagger)
+- [ ] API documentation
 
 ### Phase 3: Frontend Development
 
