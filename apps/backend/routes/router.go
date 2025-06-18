@@ -31,6 +31,12 @@ func RegisterRoutes(router *gin.Engine) {
 	components.GET("/:id", controller.GetComponentByID)
 
 	// Protected routes
+	admin := api.Group("/admin")
+	admin.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin))
+	{
+		admin.GET("/users", controller.GetAllUsers)
+	}
+
 	components.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
 	{
 		components.POST("/", controller.CreateComponent)
