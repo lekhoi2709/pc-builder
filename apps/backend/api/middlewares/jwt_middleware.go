@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 	"os"
-	"pc-builder/backend/helpers"
+	"pc-builder/backend/utils"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,7 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 
-		claims := &helpers.Claims{}
+		claims := &utils.Claims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})

@@ -3,8 +3,8 @@ package db
 import (
 	"fmt"
 	"log"
+	"pc-builder/backend/api/models"
 	"pc-builder/backend/config"
-	"pc-builder/backend/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"pc-builder/backend/controller"
-	"pc-builder/backend/middlewares"
+	"pc-builder/backend/api/controller"
+	"pc-builder/backend/api/middlewares"
 
 	"github.com/gin-gonic/gin"
 )

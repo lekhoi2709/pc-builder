@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"net/http"
+	"pc-builder/backend/api/models"
 	"pc-builder/backend/db"
-	"pc-builder/backend/models"
 	"slices"
 
 	"github.com/gin-gonic/gin"

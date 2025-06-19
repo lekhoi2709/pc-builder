@@ -2,9 +2,9 @@ package controller
 
 import (
 	"net/http"
+	"pc-builder/backend/api/models"
 	"pc-builder/backend/db"
-	"pc-builder/backend/helpers"
-	"pc-builder/backend/models"
+	"pc-builder/backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +35,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := helpers.HashPassword(request.Password)
+	hashedPassword, err := utils.HashPassword(request.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
@@ -85,7 +85,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if !helpers.CheckPasswordHash(request.Password, user.Password) {
+	if !utils.CheckPasswordHash(request.Password, user.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status":  http.StatusUnauthorized,
 			"message": "Invalid email or password",
@@ -93,7 +93,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	tokenString, err := helpers.GenerateJWT(user.ID, user.Email, user.Role)
+	tokenString, err := utils.GenerateJWT(user.ID, user.Email, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,

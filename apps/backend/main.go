@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"pc-builder/backend/api/routes"
 	"pc-builder/backend/config"
 	"pc-builder/backend/db"
-	"pc-builder/backend/routes"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,10 +42,10 @@ func main() {
 	log.Printf("Starting server on port %s", port)
 
 	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
-		ReadTimeout: 10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:           ":" + port,
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20, // 1 MB
 	}
 
