@@ -27,8 +27,14 @@ func RegisterRoutes(router *gin.Engine) {
 	auth.POST("/login", controller.Login)
 
 	components := api.Group("/components")
-	components.GET("/", controller.GetAllComponents)
-	components.GET("/:id", controller.GetComponentByID)
+	{
+		// Get all components without filters
+		components.GET("/all", controller.GetAllComponents)
+		components.GET("/:id", controller.GetComponentByID)
+
+		// Get components with filters and pagination
+		components.GET("/", controller.GetComponentsWithPagination)
+	}
 
 	// Protected routes
 	admin := api.Group("/admin")
@@ -37,10 +43,11 @@ func RegisterRoutes(router *gin.Engine) {
 		admin.GET("/users", controller.GetAllUsers)
 	}
 
-	components.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
+	protectedComponents := api.Group("/components")
+	protectedComponents.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
 	{
-		components.POST("/", controller.CreateComponent)
-		components.PUT("/:id", controller.UpdateComponent)
-		components.DELETE("/:id", controller.DeleteComponent)
+		protectedComponents.POST("/", controller.CreateComponent)
+		protectedComponents.PUT("/:id", controller.UpdateComponent)
+		protectedComponents.DELETE("/:id", controller.DeleteComponent)
 	}
 }
