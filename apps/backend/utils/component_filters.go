@@ -69,10 +69,10 @@ func ApplyComponentFilters(query *gorm.DB, filters ComponentFilter) *gorm.DB {
 
 	// Price filtering - need to extract price from JSON array
 	if filters.MinPrice > 0 {
-		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "USD" && @.amount >= %v)'`, filters.MinPrice))
+		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "VND" && @.amount >= %v)'`, filters.MinPrice))
 	}
 	if filters.MaxPrice > 0 {
-		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "USD" && @.amount <= %v)'`, filters.MaxPrice))
+		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "VND" && @.amount <= %v)'`, filters.MaxPrice))
 	}
 
 	// Search in name, brand, category, and models
@@ -216,7 +216,7 @@ func GetComponentSummary(filters ComponentFilter) ComponentSummary {
 		PriceRange: ComponentPriceRange{
 			MinPrice: priceRange.MinPrice,
 			MaxPrice: priceRange.MaxPrice,
-			Currency: "USD",
+			Currency: "VND",
 		},
 	}
 }

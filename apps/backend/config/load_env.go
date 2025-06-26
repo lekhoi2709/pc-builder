@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	DB   PostgresConfig
-	Port string
+	Environment string
+	DB          PostgresConfig
+	Port        string
 }
 
 type PostgresConfig struct {
@@ -23,7 +24,8 @@ type PostgresConfig struct {
 func LoadEnv() (*Config, error) {
 	godotenv.Load()
 	cfg := &Config{
-		Port: os.Getenv("PORT"),
+		Environment: os.Getenv("ENVIRONMENT"),
+		Port:        os.Getenv("PORT"),
 		DB: PostgresConfig{
 			Host:     os.Getenv("DB_HOST"),
 			Port:     os.Getenv("DB_PORT"),

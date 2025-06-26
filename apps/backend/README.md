@@ -52,7 +52,7 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
    # Application Configuration
    PORT=8080
    JWT_SECRET=your_jwt_secret
-   GIN_MODE=release
+   ENVIRONMENT=production
    ```
 
 3. **Start the application**
@@ -108,17 +108,17 @@ pc-builder/
 
 ### Environment Variables
 
-| Variable      | Description       | Default      |
-| ------------- | ----------------- | ------------ |
-| `DB_HOST`     | Database host     | `db`         |
-| `DB_PORT`     | Database port     | `5432`       |
-| `DB_USER`     | Database user     | `postgres`   |
-| `DB_PASSWORD` | Database password | _required_   |
-| `DB_NAME`     | Database name     | `pc_builder` |
-| `DB_SSLMODE`  | SSL mode          | `disable`    |
-| `PORT`        | Application port  | `8080`       |
-| `JWT_SECRET`  | JWT secret key    | _required_   |
-| `GIN_MODE`    | Gin mode          | `debug`      |
+| Variable      | Description       | Default       |
+| ------------- | ----------------- | ------------- |
+| `DB_HOST`     | Database host     | `db`          |
+| `DB_PORT`     | Database port     | `5432`        |
+| `DB_USER`     | Database user     | `postgres`    |
+| `DB_PASSWORD` | Database password | _required_    |
+| `DB_NAME`     | Database name     | `pc_builder`  |
+| `DB_SSLMODE`  | SSL mode          | `disable`     |
+| `PORT`        | Application port  | `8080`        |
+| `JWT_SECRET`  | JWT secret key    | _required_    |
+| `ENVIRONMENT` | Environment       | `development` |
 
 ## 📋 Roadmap
 

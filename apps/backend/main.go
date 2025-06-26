@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"pc-builder/backend/api/middlewares"
 	"pc-builder/backend/api/routes"
 	"pc-builder/backend/config"
 	"pc-builder/backend/db"
@@ -24,8 +25,16 @@ func init() {
 }
 
 func main() {
-	router := gin.Default()
-	router.SetTrustedProxies(nil) // Disable trusted proxies for local development
+	if appConfig.Environment == "development" {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.New()
+
+	middlewares.SetupTrustedProxies(router)
+	middlewares.SetupSecurityMiddleware(router)
 
 	router.GET("", func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{"message": "Welcome to PC Builder API"})
@@ -44,8 +53,8 @@ func main() {
 	server := &http.Server{
 		Addr:           ":" + port,
 		Handler:        router,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20, // 1 MB
 	}
 
