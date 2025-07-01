@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -14,11 +15,13 @@ func SetupSecurityMiddleware(router *gin.Engine) {
 			"http://localhost:5173",
 		},
 		AllowMethods: []string{
-			"GET", "POST", "PUT", "DELETE",
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodDelete,
 		},
 		AllowHeaders: []string{
-			"Origin", "Content-Type", "Content-Length",
-			"Accept-Encoding", "X-CSRF-Token", "Authorization",
+			"Origin", "Content-Type", "X-CSRF-Token", "Authorization",
 			"Accept", "Cache-Control", "X-Requested-With",
 		},
 		ExposeHeaders:    []string{"Content-Length"},

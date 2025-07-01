@@ -33,7 +33,7 @@ func RegisterRoutes(router *gin.Engine) {
 		components.GET("/:id", controller.GetComponentByID)
 
 		// Get components with filters and pagination
-		components.GET("/", controller.GetComponentsWithPagination)
+		components.GET("", controller.GetComponentsWithPagination)
 	}
 
 	// Protected routes
@@ -46,7 +46,7 @@ func RegisterRoutes(router *gin.Engine) {
 	protectedComponents := api.Group("/components")
 	protectedComponents.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
 	{
-		protectedComponents.POST("/", controller.CreateComponent)
+		protectedComponents.POST("", controller.CreateComponent)
 		protectedComponents.PUT("/:id", controller.UpdateComponent)
 		protectedComponents.DELETE("/:id", controller.DeleteComponent)
 	}

@@ -33,8 +33,8 @@ func main() {
 
 	router := gin.New()
 
-	middlewares.SetupTrustedProxies(router)
 	middlewares.SetupSecurityMiddleware(router)
+	middlewares.SetupTrustedProxies(router)
 
 	router.GET("", func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{"message": "Welcome to PC Builder API"})
