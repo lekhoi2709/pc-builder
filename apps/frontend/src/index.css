@@ -1,26 +1,18 @@
 @import 'tailwindcss';
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #1b1f4b;
+  background-color: #fff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -31,39 +23,26 @@ body {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --color-primary-50: oklch(0.958 0.0202 279.94);
+  --color-primary-100: oklch(0.9221 0.0381 280.77);
+  --color-primary-200: oklch(0.858 0.0696 280.35);
+  --color-primary-300: oklch(0.7715 0.1131 278.95);
+  --color-primary-400: oklch(0.6801 0.1583 276.93);
+  --color-primary-500: oklch(0.6032 0.1916 274.77);
+  --color-primary-600: oklch(0.5288 0.2157 272.04);
+  --color-primary-700: oklch(0.4701 0.2033 271.53);
+  --color-primary-800: oklch(0.4125 0.1661 272.14);
+  --color-primary-900: oklch(0.372 0.1253 274.01);
+  --color-primary-950: oklch(0.2635 0.0805 275.5);
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+  --color-accent: #4ade80;
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-glass: rgba(255, 255, 255, 0.08);
+  --color-text: #f8fafc;
+  --color-text-dark: #121212;
+  --color-light-dark: #18181b;
 }

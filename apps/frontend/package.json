@@ -17,9 +17,11 @@
     "@tanstack/react-query-devtools": "^5.81.2",
     "axios": "^1.10.0",
     "framer-motion": "^12.20.5",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.6.2",
+    "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

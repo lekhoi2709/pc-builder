@@ -4,10 +4,10 @@ export interface Component {
   category: CategoryType;
   brand: string;
   models: string;
-  specs: Specs; // Discriminated union based on `category`
+  specs: Specs;
   price: PriceItem[];
   image_url: string[];
-  created_at: string; // ISO 8601 date string
+  created_at: string;
   updated_at: string;
 }
 
