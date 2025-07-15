@@ -150,7 +150,9 @@ func CreateComponent(c *gin.Context) {
 
 func GetAllComponents(c *gin.Context) {
 	var components []models.Component
-	err := db.DB.Find(&components).Error
+	query := db.DB.Model(&models.Component{})
+	query = query.Select("id, name, category, brand, models, price, image_url, created_at, updated_at")
+	err := query.Find(&components).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
@@ -244,6 +246,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 
 	query = utils.ApplyComponentSorting(query, filters)
 	query = query.Offset(int(offset)).Limit(pagination.PageSize)
+	query = query.Select("id, name, category, brand, models, price, image_url, created_at, updated_at")
 
 	var components []models.Component
 	if err := query.Find(&components).Error; err != nil {

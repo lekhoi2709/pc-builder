@@ -27,7 +27,12 @@ func (c *Component) GetTypedSpecs() (Specs, error) {
 		specs = &CPUSpecs{}
 	case "GPU":
 		specs = &GPUSpecs{}
-	// ... other cases
+	case "MAINBOARD":
+		specs = &MainboardSpecs{}
+	case "RAM":
+		specs = &RAMSpecs{}
+	case "PSU":
+		specs = &PSUSpecs{}
 	default:
 		return nil, fmt.Errorf("unknown category: %s", c.Category)
 	}
