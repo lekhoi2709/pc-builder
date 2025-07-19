@@ -22,7 +22,7 @@ export type CategoryType =
 export interface PriceItem {
   currency: string;
   amount: number;
-  symbol?: string;
+  symbol: string;
 }
 
 export type Specs =
