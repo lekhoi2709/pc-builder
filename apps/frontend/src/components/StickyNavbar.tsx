@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import useScrollPosition from '../hooks/useScrollPosition';
-import { NavLink, useLocation } from 'react-router';
+import { NavLink, useLocation, useParams } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { useTheme, type Theme } from '../hooks/useTheme';
@@ -24,10 +24,12 @@ export default function StickyNavbar() {
     },
   ];
 
+  const { lang } = useParams();
+
   const activeIndex = routes.findIndex(
-    val => val.path == location.pathname.replace(/\/$/, '')
+    val => val.path == location.pathname.replace(`/${lang}`, '')
   );
-  console.log(location.pathname, activeIndex);
+
   const {
     navRef,
     itemRefs,
