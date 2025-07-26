@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/db"
@@ -30,18 +31,25 @@ type ComponentRequest struct {
 	ImageURL models.ImageURL        `json:"image_url"`
 }
 
-func CreateComponent(c *gin.Context) {
-	var request ComponentRequest
+type BulkComponentRequest struct {
+	Components []ComponentRequest `json:"components" binding:"required,min=1,max=100"`
+}
 
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid request body",
-			"error":   err.Error(), // Remove this in production
-		})
-		return
-	}
+type ComponentResult struct {
+	ID      string `json:"id"`
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
+}
 
+type BulkCreateResponse struct {
+	TotalRequested int               `json:"total_requested"`
+	TotalCreated   int               `json:"total_created"`
+	TotalFailed    int               `json:"total_failed"`
+	Results        []ComponentResult `json:"results"`
+}
+
+func validateComponentRequest(request ComponentRequest) error {
 	category := strings.ToUpper(strings.TrimSpace(request.Category))
 
 	validCategories := map[string]bool{
@@ -54,98 +62,235 @@ func CreateComponent(c *gin.Context) {
 	}
 
 	if !validCategories[category] {
+		return fmt.Errorf("invalid category. Must be one of: CPU, GPU, Mainboard, RAM, Storage, PSU")
+	}
+
+	if err := utils.ValidatePrice(request.Price); err != nil {
+		return fmt.Errorf("invalid price information: %v", err)
+	}
+
+	return nil
+}
+
+func createComponentFromRequest(request ComponentRequest) (*models.Component, error) {
+	category := strings.ToUpper(strings.TrimSpace(request.Category))
+
+	var specsRaw json.RawMessage
+	if request.Specs != nil {
+		typedSpecs, err := utils.ValidateSpecsByCategory(category, request.Specs)
+		if err != nil {
+			return nil, fmt.Errorf("invalid specifications for category %s: %v", category, err)
+		}
+
+		if err := typedSpecs.Validate(); err != nil {
+			return nil, fmt.Errorf("specification validation failed: %v", err)
+		}
+
+		specsRaw, err = json.Marshal(request.Specs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process specifications: %v", err)
+		}
+	}
+
+	component := &models.Component{
+		ID:        strings.TrimSpace(request.ID),
+		Name:      strings.TrimSpace(request.Name),
+		Category:  category,
+		Brand:     strings.TrimSpace(request.Brand),
+		Models:    strings.TrimSpace(request.Models),
+		Specs:     specsRaw,
+		Price:     request.Price,
+		ImageURL:  request.ImageURL,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	return component, nil
+}
+
+func CreateComponent(c *gin.Context) {
+	var request ComponentRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  http.StatusBadRequest,
-			"message": "Invalid category. Must be one of: CPU, GPU, Mainboard, RAM, Storage, PSU",
+			"message": "Invalid request body",
+			"error":   err.Error(), // Remove this in production
 		})
 		return
 	}
 
-	var specsRaw json.RawMessage
+	if err := validateComponentRequest(request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Validation failed",
+			"error":   err.Error(),
+		})
+		return
+	}
 
-	if request.Specs != nil {
-		// First, validate the specs by parsing them into the appropriate type
-		typedSpecs, err := utils.ValidateSpecsByCategory(category, request.Specs)
+	component, err := createComponentFromRequest(request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Failed to create component",
+			"error":   err.Error(), // Remove this in production
+		})
+		return
+	}
+
+	result := db.DB.Create(&component)
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "duplicate key") {
+			c.JSON(http.StatusConflict, gin.H{
+				"status":  http.StatusConflict,
+				"message": "Component with this ID already exists",
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to create component",
+			"error":   result.Error.Error(), // Remove this in production
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status":    http.StatusCreated,
+		"message":   "Component created successfully",
+		"component": component,
+	})
+}
+
+func BulkCreateComponents(c *gin.Context) {
+	var request BulkComponentRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Invalid request body",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Limit components amount
+	if len(request.Components) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "At least one component is required",
+		})
+		return
+	}
+
+	if len(request.Components) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Maximum 100 components can be created at once",
+		})
+		return
+	}
+
+	var results []ComponentResult
+	var componentsToCreate []*models.Component
+	totalRequested := len(request.Components)
+	totalCreated := 0
+	totalFailed := 0
+
+	for _, componentReq := range request.Components {
+		result := ComponentResult{
+			ID:      componentReq.ID,
+			Success: false,
+		}
+
+		if err := validateComponentRequest(componentReq); err != nil {
+			result.Error = err.Error()
+			result.Message = "Validation failed"
+			results = append(results, result)
+			totalFailed++
+			continue
+		}
+
+		component, err := createComponentFromRequest(componentReq)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  http.StatusBadRequest,
-				"message": "Invalid specifications for category " + category,
-				"error":   err.Error(),
-			})
-			return
+			result.Error = err.Error()
+			result.Message = "Failed to process component"
+			results = append(results, result)
+			totalFailed++
+			continue
 		}
 
-		// Validate the parsed specs
-		if err := typedSpecs.Validate(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  http.StatusBadRequest,
-				"message": "Specification validation failed",
-				"error":   err.Error(),
-			})
-			return
-		}
+		componentsToCreate = append(componentsToCreate, component)
+		results = append(results, result)
+	}
 
-		// Convert the original request specs to json.RawMessage
-		specsRaw, err = json.Marshal(request.Specs)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  http.StatusBadRequest,
-				"message": "Failed to process specifications",
-				"error":   err.Error(),
-			})
-			return
-		}
+	if len(componentsToCreate) > 0 {
+		tx := db.DB.Begin()
 
-		// Create the component
-		component := models.Component{
-			ID:        strings.TrimSpace(request.ID),
-			Name:      strings.TrimSpace(request.Name),
-			Category:  category,
-			Brand:     strings.TrimSpace(request.Brand),
-			Models:    strings.TrimSpace(request.Models),
-			Specs:     specsRaw,
-			Price:     request.Price,
-			ImageURL:  request.ImageURL,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		// Validate price if provided
-		if err := utils.ValidatePrice(component.Price); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  http.StatusBadRequest,
-				"message": "Invalid price information",
-				"error":   err.Error(),
-			})
-			return
-		}
-
-		// Save to database
-		result := db.DB.Create(&component)
-		if result.Error != nil {
-			// Check for duplicate key error
-			if strings.Contains(result.Error.Error(), "duplicate key") {
-				c.JSON(http.StatusConflict, gin.H{
-					"status":  http.StatusConflict,
-					"message": "Component with this ID already exists",
-				})
-				return
+		for _, component := range componentsToCreate {
+			resultIndex := -1
+			for j, result := range results {
+				if result.ID == component.ID && !result.Success && result.Error == "" {
+					resultIndex = j
+					break
+				}
 			}
 
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"status":  http.StatusInternalServerError,
-				"message": "Failed to create component",
-				"error":   result.Error.Error(), // Remove this in production
-			})
-			return
+			if resultIndex == -1 {
+				continue
+			}
+
+			if err := tx.Create(component).Error; err != nil {
+				if strings.Contains(err.Error(), "duplicate key") {
+					results[resultIndex].Error = "Component with this ID already exists"
+					results[resultIndex].Message = "Duplicate ID"
+				} else {
+					results[resultIndex].Error = err.Error()
+					results[resultIndex].Message = "Database error"
+				}
+				totalFailed++
+			} else {
+				results[resultIndex].Success = true
+				results[resultIndex].Message = "Created successfully"
+				totalCreated++
+			}
 		}
 
-		c.JSON(http.StatusCreated, gin.H{
-			"status":    http.StatusCreated,
-			"message":   "Component created successfully",
-			"component": component,
-		})
+		if err := tx.Commit().Error; err != nil {
+			tx.Rollback()
+			for i := range results {
+				if results[i].Success {
+					results[i].Success = false
+					results[i].Message = "Transaction failed"
+					results[i].Error = "Failed to commit transaction"
+					totalCreated--
+					totalFailed++
+				}
+			}
+		}
 	}
+
+	response := BulkCreateResponse{
+		TotalRequested: totalRequested,
+		TotalCreated:   totalCreated,
+		TotalFailed:    totalFailed,
+		Results:        results,
+	}
+
+	status := http.StatusCreated
+	if totalCreated == 0 {
+		status = http.StatusBadRequest
+	} else if totalFailed > 0 {
+		status = http.StatusMultiStatus // 207 - some succeeded, some failed
+	}
+
+	c.JSON(status, gin.H{
+		"status":   status,
+		"message":  fmt.Sprintf("Bulk creation completed: %d created, %d failed", totalCreated, totalFailed),
+		"response": response,
+	})
 }
 
 func GetAllComponents(c *gin.Context) {

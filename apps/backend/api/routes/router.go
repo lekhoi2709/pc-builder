@@ -47,6 +47,7 @@ func RegisterRoutes(router *gin.Engine) {
 	protectedComponents.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
 	{
 		protectedComponents.POST("", controller.CreateComponent)
+		protectedComponents.POST("/bulk", controller.BulkCreateComponents)
 		protectedComponents.PUT("/:id", controller.UpdateComponent)
 		protectedComponents.DELETE("/:id", controller.DeleteComponent)
 	}
