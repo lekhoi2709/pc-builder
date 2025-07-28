@@ -1,12 +1,20 @@
-import axios from 'axios';
 import type { Component } from '../types/components';
 
 export async function GetAllComponents() {
-  const response = await axios.get(
-    import.meta.env.VITE_API_URL + '/components/all'
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + '/components/all',
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   );
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const json = await response.json();
 
-  const data = response.data.components as Component[];
-
+  const data = json.components as Component[];
   return data;
 }

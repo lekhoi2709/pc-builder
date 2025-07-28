@@ -14,9 +14,9 @@ export default function ComponentCard({ component }: { component: Component }) {
   };
 
   const { price } = formatPrice(
-    component.price[0].currency,
-    component.price[0].amount,
-    component.price[0].symbol
+    component.price[1].currency,
+    component.price[1].amount,
+    component.price[1].symbol
   );
 
   return (

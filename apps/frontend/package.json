@@ -15,7 +15,6 @@
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.83.0",
-    "axios": "^1.11.0",
     "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
