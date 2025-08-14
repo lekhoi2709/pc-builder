@@ -30,18 +30,11 @@ export interface ComponentFilter {
   process_size?: string;
 }
 
-export interface PaginationParams {
-  page?: number;
-  page_size?: number;
-}
-
 export interface PaginationMeta {
   current_page: number;
-  page_size: number;
-  total_pages: number;
-  total_records: number;
-  has_next_page: boolean;
-  has_previous_page: boolean;
+  page_size?: number;
+  total_pages?: number;
+  total_records?: number;
 }
 
 export interface ComponentSummary {
@@ -68,11 +61,12 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-function buildQueryParams(filters: ComponentFilter & PaginationParams): string {
+function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
   const params = new URLSearchParams();
 
   // Add pagination params
-  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.current_page)
+    params.append('page', filters.current_page.toString());
   if (filters.page_size)
     params.append('page_size', filters.page_size.toString());
 
@@ -121,7 +115,7 @@ export async function GetAllComponents(): Promise<Component[]> {
 
 export async function GetComponents(
   filters: ComponentFilter = {},
-  pagination: PaginationParams = { page: 1, page_size: 10 }
+  pagination: PaginationMeta = { current_page: 1, page_size: 12 }
 ): Promise<ComponentResponse> {
   const queryParams = buildQueryParams({ ...filters, ...pagination });
   const url = `${import.meta.env.VITE_API_URL}/components${queryParams ? `?${queryParams}` : ''}`;

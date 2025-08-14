@@ -3,21 +3,16 @@ import {
   GetAvailableFilters,
   GetComponents,
   type ComponentFilter,
-  type PaginationParams,
+  type ComponentResponse,
+  type PaginationMeta,
 } from '../services/api';
 import ComponentCard from '../components/ComponentCard';
-import { useState } from 'react';
-import { CircleXIcon } from 'lucide-react';
+import { CircleXIcon, ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
+import { useComponentStore } from '../stores/componentStore';
 
 export default function Components() {
-  const [filters, setFilters] = useState<ComponentFilter>({
-    sort_by: 'name',
-    sort_order: 'asc',
-  });
-  const [pagination, setPagination] = useState<PaginationParams>({
-    page: 1,
-    page_size: 12,
-  });
+  const { filters, setFilters, pagination, setPagination, clearFilter } =
+    useComponentStore();
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination],
@@ -38,8 +33,8 @@ export default function Components() {
     key: keyof ComponentFilter,
     value: string | number | undefined
   ) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1
+    setFilters({ ...filters, [key]: value });
+    setPagination({ ...pagination, current_page: 1 });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -48,16 +43,6 @@ export default function Components() {
   //   setPagination(prev => ({ ...prev, page }));
   //   window.scrollTo({ top: 0, behavior: 'smooth' });
   // };
-
-  // Clear filters
-  const clearFilters = () => {
-    setFilters({
-      sort_by: 'name',
-      sort_order: 'asc',
-    });
-    // setSearchTerm('');
-    setPagination({ page: 1, page_size: 12 });
-  };
 
   if (
     (componentQuery.isLoading && !componentQuery.data) ||
@@ -160,7 +145,7 @@ export default function Components() {
             </div>
           </span>
           <button
-            onClick={clearFilters}
+            onClick={clearFilter}
             className="cursor-pointer rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
           >
             Clear Filters
@@ -170,8 +155,104 @@ export default function Components() {
           {data.components.map(component => (
             <ComponentCard key={component.id} component={component} />
           ))}
+          {data.pagination && (
+            <div className="w-full">
+              <p className="text-sm text-gray-500">
+                Page {data.pagination.current_page} of{' '}
+                {data.pagination.total_pages}
+              </p>
+              <div className="mt-2 flex justify-between">
+                <button
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      current_page: Math.max(1, pagination.current_page - 1),
+                    })
+                  }
+                  disabled={pagination.current_page <= 1}
+                  className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
+                >
+                  <ArrowBigLeftIcon className="inline stroke-[1.5]" />
+                </button>
+                <div className="flex gap-1">
+                  {renderPageNumbers(data, pagination, setPagination)}
+                </div>
+                <button
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      current_page: Math.min(
+                        data.pagination.total_pages!,
+                        pagination.current_page + 1
+                      ),
+                    })
+                  }
+                  disabled={
+                    pagination.current_page >= data.pagination.total_pages!
+                  }
+                  className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
+                >
+                  <ArrowBigRightIcon className="inline stroke-[1.5]" />
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </main>
     </section>
   );
 }
+
+const renderPageNumbers = (
+  data: ComponentResponse,
+  pagination: PaginationMeta,
+  setPagination: (pagination: Partial<PaginationMeta>) => void
+) => {
+  const totalPages = data.pagination.total_pages || 0;
+  const currentPage = pagination.current_page;
+  const pages: (number | string)[] = [];
+
+  const delta = 1; // how many pages to show around current
+  const range = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - delta && i <= currentPage + delta)
+    ) {
+      range.push(i);
+    }
+  }
+
+  let prev: number | null = null;
+  for (const page of range) {
+    if (prev && page - prev > 1) {
+      pages.push('...');
+    }
+    pages.push(page);
+    prev = page;
+  }
+
+  return pages.map((page, idx) =>
+    page === '...' ? (
+      <span key={`ellipsis-${idx}`} className="px-2 text-gray-500">
+        ...
+      </span>
+    ) : (
+      <button
+        key={page}
+        onClick={() =>
+          setPagination({ ...pagination, current_page: page as number })
+        }
+        className={`cursor-pointer rounded px-4 py-2 ${
+          pagination.current_page === page
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-200 hover:bg-gray-300'
+        }`}
+      >
+        {page}
+      </button>
+    )
+  );
+};
