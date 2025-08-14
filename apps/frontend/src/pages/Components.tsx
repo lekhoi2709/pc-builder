@@ -3,16 +3,18 @@ import {
   GetAvailableFilters,
   GetComponents,
   type ComponentFilter,
-  type ComponentResponse,
   type PaginationMeta,
 } from '../services/api';
 import ComponentCard from '../components/ComponentCard';
 import { CircleXIcon, ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
 export default function Components() {
   const { filters, setFilters, pagination, setPagination, clearFilter } =
     useComponentStore();
+  const delta = useResponsivePagination(setPagination);
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination],
@@ -37,12 +39,6 @@ export default function Components() {
     setPagination({ ...pagination, current_page: 1 });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // // Handle pagination
-  // const handlePageChange = (page: number) => {
-  //   setPagination(prev => ({ ...prev, page }));
-  //   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // };
 
   if (
     (componentQuery.isLoading && !componentQuery.data) ||
@@ -80,9 +76,8 @@ export default function Components() {
 
   return (
     <section className="z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
-      <h1 className="mb-4 text-2xl font-bold">Components</h1>
-      <main className="flex w-full">
-        <section className="flex w-1/4 flex-col gap-4 p-4">
+      <main className="flex min-h-screen w-full">
+        <aside className="flex w-1/4 flex-col gap-4 p-4">
           <h2 className="text-lg font-semibold">Summary</h2>
           <p>Total Components: {data.summary.total_components}</p>
           <span>
@@ -150,90 +145,133 @@ export default function Components() {
           >
             Clear Filters
           </button>
-        </section>
-        <section className="flex w-3/4 flex-wrap justify-start gap-8 p-4">
-          {data.components.map(component => (
-            <ComponentCard key={component.id} component={component} />
-          ))}
-          {data.pagination && (
-            <div className="w-full">
-              <p className="text-sm text-gray-500">
-                Page {data.pagination.current_page} of{' '}
-                {data.pagination.total_pages}
-              </p>
-              <div className="mt-2 flex justify-between">
-                <button
-                  onClick={() =>
-                    setPagination({
-                      ...pagination,
-                      current_page: Math.max(1, pagination.current_page - 1),
-                    })
-                  }
-                  disabled={pagination.current_page <= 1}
-                  className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
-                >
-                  <ArrowBigLeftIcon className="inline stroke-[1.5]" />
-                </button>
-                <div className="flex gap-1">
-                  {renderPageNumbers(data, pagination, setPagination)}
+        </aside>
+        <div className="flex h-full min-h-screen w-3/4 flex-col gap-4 p-4">
+          <h1 className="mb-4 text-2xl font-bold">Components</h1>
+          <section className="flex h-full flex-wrap justify-start gap-8">
+            {data.components.map(component => (
+              <ComponentCard key={component.id} component={component} />
+            ))}
+          </section>
+          <section className="mt-auto w-full">
+            {data.pagination && (
+              <div className="w-full">
+                <p className="text-sm text-gray-500">
+                  Page {data.pagination.current_page} of{' '}
+                  {data.pagination.total_pages}
+                </p>
+                <div className="mt-2 flex justify-between">
+                  <button
+                    onClick={() =>
+                      setPagination({
+                        ...pagination,
+                        current_page: Math.max(1, pagination.current_page - 1),
+                      })
+                    }
+                    disabled={pagination.current_page <= 1}
+                    className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
+                  >
+                    <ArrowBigLeftIcon className="inline stroke-[1.5]" />
+                  </button>
+                  <Pagination
+                    totalPages={data.pagination.total_pages!}
+                    currentPage={data.pagination.current_page}
+                    delta={delta}
+                    setPagination={setPagination}
+                  />
+                  <button
+                    onClick={() =>
+                      setPagination({
+                        ...pagination,
+                        current_page: Math.min(
+                          data.pagination.total_pages!,
+                          pagination.current_page + 1
+                        ),
+                      })
+                    }
+                    disabled={
+                      pagination.current_page >= data.pagination.total_pages!
+                    }
+                    className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
+                  >
+                    <ArrowBigRightIcon className="inline stroke-[1.5]" />
+                  </button>
                 </div>
-                <button
-                  onClick={() =>
-                    setPagination({
-                      ...pagination,
-                      current_page: Math.min(
-                        data.pagination.total_pages!,
-                        pagination.current_page + 1
-                      ),
-                    })
-                  }
-                  disabled={
-                    pagination.current_page >= data.pagination.total_pages!
-                  }
-                  className="cursor-pointer rounded bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:opacity-50"
-                >
-                  <ArrowBigRightIcon className="inline stroke-[1.5]" />
-                </button>
               </div>
-            </div>
-          )}
-        </section>
+            )}
+          </section>
+        </div>
       </main>
     </section>
   );
 }
 
-const renderPageNumbers = (
-  data: ComponentResponse,
-  pagination: PaginationMeta,
-  setPagination: (pagination: Partial<PaginationMeta>) => void
+const useResponsivePagination = (
+  setPagination: (p: Partial<PaginationMeta>) => void
 ) => {
-  const totalPages = data.pagination.total_pages || 0;
+  const [delta, setDelta] = useState(1);
+
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth < 640) {
+        setDelta(1);
+        setPagination({ page_size: 4, current_page: 1 });
+      } else if (window.innerWidth < 1024) {
+        setDelta(2);
+        setPagination({ page_size: 6, current_page: 1 });
+      } else {
+        setDelta(3);
+        setPagination({ page_size: 12, current_page: 1 });
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [setPagination]);
+
+  return delta;
+};
+
+type PaginationProps = {
+  totalPages: number;
+  currentPage: number;
+  delta: number;
+  setPagination: (pagination: Partial<PaginationMeta>) => void;
+};
+
+const Pagination = React.memo(
+  ({ totalPages, currentPage, delta, setPagination }: PaginationProps) => {
+    return (
+      <div className="flex gap-1">
+        {renderPageNumbers(
+          totalPages,
+          { current_page: currentPage },
+          setPagination,
+          delta
+        )}
+      </div>
+    );
+  }
+);
+
+const renderPageNumbers = (
+  totalPages: number,
+  pagination: PaginationMeta,
+  setPagination: (pagination: Partial<PaginationMeta>) => void,
+  delta: number = 2
+) => {
   const currentPage = pagination.current_page;
-  const pages: (number | string)[] = [];
 
-  const delta = 1; // how many pages to show around current
-  const range = [];
+  const startPage = Math.max(2, currentPage - delta);
+  const endPage = Math.min(totalPages - 1, currentPage + delta);
 
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= currentPage - delta && i <= currentPage + delta)
-    ) {
-      range.push(i);
-    }
-  }
+  const pages: (number | string)[] = [1];
 
-  let prev: number | null = null;
-  for (const page of range) {
-    if (prev && page - prev > 1) {
-      pages.push('...');
-    }
-    pages.push(page);
-    prev = page;
-  }
+  if (startPage > 2) pages.push('...');
+  for (let i = startPage; i <= endPage; i++) pages.push(i);
+  if (endPage < totalPages - 1) pages.push('...');
 
+  if (totalPages > 1) pages.push(totalPages);
   return pages.map((page, idx) =>
     page === '...' ? (
       <span key={`ellipsis-${idx}`} className="px-2 text-gray-500">
