@@ -404,12 +404,10 @@ func GetComponentsWithPagination(c *gin.Context) {
 	}
 
 	paginationMeta := utils.PaginationMeta{
-		CurrentPage:     pagination.Page,
-		PageSize:        pagination.PageSize,
-		TotalRecords:    totalRecords,
-		TotalPages:      totalPages,
-		HasNextPage:     pagination.Page < totalPages,
-		HasPreviousPage: pagination.Page > 1,
+		CurrentPage:  pagination.Page,
+		PageSize:     pagination.PageSize,
+		TotalRecords: totalRecords,
+		TotalPages:   totalPages,
 	}
 
 	summary := utils.GetComponentSummary(filters)

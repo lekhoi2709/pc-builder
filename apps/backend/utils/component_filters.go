@@ -35,12 +35,10 @@ type PaginationParams struct {
 }
 
 type PaginationMeta struct {
-	CurrentPage     int   `json:"current_page"`
-	PageSize        int   `json:"page_size"`
-	TotalPages      int   `json:"total_pages"`
-	TotalRecords    int64 `json:"total_records"`
-	HasNextPage     bool  `json:"has_next_page"`
-	HasPreviousPage bool  `json:"has_previous_page"`
+	CurrentPage  int   `json:"current_page"`
+	PageSize     int   `json:"page_size"`
+	TotalPages   int   `json:"total_pages"`
+	TotalRecords int64 `json:"total_records"`
 }
 
 type ComponentPriceRange struct {
