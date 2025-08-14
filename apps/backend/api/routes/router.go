@@ -34,6 +34,8 @@ func RegisterRoutes(router *gin.Engine) {
 
 		// Get components with filters and pagination
 		components.GET("", controller.GetComponentsWithPagination)
+		// Get available filters
+		components.GET("/filters", controller.GetAvailableFilters)
 	}
 
 	// Protected routes

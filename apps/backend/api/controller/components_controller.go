@@ -427,6 +427,24 @@ func GetComponentsWithPagination(c *gin.Context) {
 	})
 }
 
+func GetAvailableFilters(c *gin.Context) {
+	filters := utils.GetAvailableFilterOptions()
+	if filters == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to fetch available filters",
+			"error":   "No filters available", // Remove this in production
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
+		"message":  "Available filters fetched successfully",
+		"response": filters,
+	})
+}
+
 func UpdateComponent(c *gin.Context) {
 	id := c.Param("id")
 

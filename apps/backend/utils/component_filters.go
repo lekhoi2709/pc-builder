@@ -224,16 +224,24 @@ func GetComponentSummary(filters ComponentFilter) ComponentSummary {
 // GetAvailableFilterOptions returns available filter options for the frontend
 func GetAvailableFilterOptions() map[string][]string {
 	filterOptions := make(map[string][]string)
-
-	// Get unique categories
 	var categories []string
-	db.DB.Model(&models.Component{}).Distinct("category").Pluck("category", &categories)
-	filterOptions["categories"] = categories
-
-	// Get unique brands
 	var brands []string
+
+	// Get distinct categories
+	db.DB.Model(&models.Component{}).Distinct("category").Pluck("category", &categories)
+	// Get distinct brands
 	db.DB.Model(&models.Component{}).Distinct("brand").Pluck("brand", &brands)
+
+	// Populate filter options map
+	filterOptions["categories"] = categories
 	filterOptions["brands"] = brands
+
+	// Remove empty slices
+	for key, options := range filterOptions {
+		if len(options) == 0 {
+			delete(filterOptions, key)
+		}
+	}
 
 	return filterOptions
 }
