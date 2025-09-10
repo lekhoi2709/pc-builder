@@ -39,7 +39,7 @@ export default function StickyNavbar() {
   } = useHoverIndicator({ activeIndex });
 
   return (
-    <header className="fixed z-50 flex w-full items-center justify-between rounded-full bg-transparent pt-4">
+    <header className="fixed z-50 hidden w-full items-center justify-between rounded-full bg-transparent pt-4 md:flex">
       <motion.nav
         ref={navRef}
         className="bg-primary-400/20 dark:bg-primary-300/20 relative left-1/2 top-1/2 flex h-fit -translate-x-1/2 transform gap-20 rounded-[4rem] p-1 backdrop-blur-sm"
