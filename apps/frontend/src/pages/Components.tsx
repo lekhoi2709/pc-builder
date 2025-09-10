@@ -1,19 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  GetAvailableFilters,
-  GetComponents,
-  type ComponentFilter,
-  type PaginationMeta,
-} from '../services/api';
+import { GetComponents, type PaginationMeta } from '../services/api';
 import ComponentCard from '../components/ComponentCard';
-import { CircleXIcon, ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
+import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { useEffect, useState } from 'react';
 import React from 'react';
+import ComponentFilter from '../components/ComponentFilter';
+import { ActiveFilters } from '../components/ActiveFilters';
 
 export default function Components() {
-  const { filters, setFilters, pagination, setPagination, clearFilter } =
-    useComponentStore();
+  const { filters, pagination, setPagination } = useComponentStore();
   const delta = useResponsivePagination(setPagination);
 
   const componentQuery = useQuery({
@@ -24,26 +20,7 @@ export default function Components() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const filterQuery = useQuery({
-    queryKey: ['available-filters'],
-    queryFn: () => GetAvailableFilters(),
-    refetchOnWindowFocus: false,
-  });
-
-  // Handle filter changes
-  const handleFilterChange = (
-    key: keyof ComponentFilter,
-    value: string | number | undefined
-  ) => {
-    setFilters({ ...filters, [key]: value });
-    setPagination({ ...pagination, current_page: 1 });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  if (
-    (componentQuery.isLoading && !componentQuery.data) ||
-    (filterQuery.isLoading && !filterQuery.data)
-  ) {
+  if (componentQuery.isLoading && !componentQuery.data) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -54,7 +31,7 @@ export default function Components() {
     );
   }
 
-  if (componentQuery.isError || filterQuery.isError) {
+  if (componentQuery.isError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center text-red-500">
@@ -76,91 +53,24 @@ export default function Components() {
 
   return (
     <section className="z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
-      <main className="flex min-h-screen w-full">
-        <aside className="flex w-1/4 flex-col gap-4 p-4">
-          <h2 className="text-lg font-semibold">Summary</h2>
-          <p>Total Components: {data.summary.total_components}</p>
-          <span>
-            Categories:{' '}
-            <div className="flex flex-wrap gap-2">
-              {filterQuery.data &&
-                filterQuery.data.categories.map(category => (
-                  <span
-                    key={category}
-                    className="line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
-                    onClick={() => handleFilterChange('category', category)}
-                  >
-                    <p>
-                      {category} ({data.summary.by_category[category] || 0})
-                    </p>
-                    {filters.category === category && (
-                      <CircleXIcon
-                        className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                        onClick={event => {
-                          event.stopPropagation();
-                          handleFilterChange('category', undefined);
-                        }}
-                      />
-                    )}
-                  </span>
-                ))}
-            </div>
-          </span>
-          <span>
-            Brands:{' '}
-            <div className="flex flex-wrap gap-2">
-              {filterQuery.data &&
-                filterQuery.data.brands.map(brand => {
-                  const isBrandAvailable = data.summary.by_brand[brand] != null;
-                  if (isBrandAvailable) {
-                    return (
-                      <span
-                        key={brand}
-                        className="line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
-                        onClick={() => handleFilterChange('brand', brand)}
-                      >
-                        <p>
-                          {brand}
-                          {isBrandAvailable &&
-                            ` (${data.summary.by_brand[brand]})`}
-                        </p>
-                        {filters.brand === brand && (
-                          <CircleXIcon
-                            className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                            onClick={event => {
-                              event.stopPropagation();
-                              handleFilterChange('brand', undefined);
-                            }}
-                          />
-                        )}
-                      </span>
-                    );
-                  }
-                })}
-            </div>
-          </span>
-          <button
-            onClick={clearFilter}
-            className="cursor-pointer rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
-          >
-            Clear Filters
-          </button>
-        </aside>
-        <div className="flex h-full min-h-screen w-3/4 flex-col gap-4 p-4">
+      <main className="flex min-h-screen w-full flex-col md:flex-row">
+        <ComponentFilter data={data} />
+        <div className="flex h-full min-h-screen w-screen flex-col gap-4 p-6 px-8 md:ml-[20vw] md:w-[100vw]">
           <h1 className="mb-4 text-2xl font-bold">Components</h1>
-          <section className="flex h-full flex-wrap justify-start gap-8">
+          <ActiveFilters />
+          <section className="flex flex-wrap justify-center gap-8 md:justify-start">
             {data.components.map(component => (
               <ComponentCard key={component.id} component={component} />
             ))}
           </section>
-          <section className="mt-auto w-full">
+          <section className="mt-auto w-full self-center">
             {data.pagination && (
               <div className="w-full">
                 <p className="text-sm text-gray-500">
                   Page {data.pagination.current_page} of{' '}
                   {data.pagination.total_pages}
                 </p>
-                <div className="mt-2 flex justify-between">
+                <div className="mt-2 flex items-center justify-between gap-2">
                   <button
                     onClick={() =>
                       setPagination({
@@ -213,11 +123,11 @@ const useResponsivePagination = (
 
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth < 640) {
-        setDelta(1);
+      if (window.innerWidth < 768) {
+        setDelta(0);
         setPagination({ page_size: 4, current_page: 1 });
       } else if (window.innerWidth < 1024) {
-        setDelta(2);
+        setDelta(1);
         setPagination({ page_size: 6, current_page: 1 });
       } else {
         setDelta(3);
