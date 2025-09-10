@@ -10,7 +10,6 @@ function redirectToLocale() {
   return redirect(`/${locale}/`);
 }
 
-// Redirect function for non-localized paths
 function redirectToLocalizedPath(path: string) {
   return () => {
     const locale = getUserLocale();

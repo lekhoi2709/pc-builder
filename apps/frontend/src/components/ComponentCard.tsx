@@ -1,23 +1,10 @@
+import { useParams } from 'react-router';
 import type { Component } from '../types/components';
+import getLocalizedPrice from '../utils/getLocalizedPrice';
 
 export default function ComponentCard({ component }: { component: Component }) {
-  const formatPrice = (currency: string, price: number, symbol: string) => {
-    return {
-      price: new Intl.NumberFormat('vn-VN', {
-        style: 'currency',
-        currency: currency,
-        currencyDisplay: 'code',
-      })
-        .format(price)
-        .replace(currency, symbol || currency),
-    };
-  };
-
-  const { price } = formatPrice(
-    component.price[1].currency,
-    component.price[1].amount,
-    component.price[1].symbol
-  );
+  const { lang } = useParams();
+  const { price } = getLocalizedPrice(component, lang || 'vn');
 
   return (
     <div className="text-primary-950 bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:bg-primary-300/30 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-evenly rounded-3xl border p-4 shadow-md backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-[101%] hover:cursor-pointer hover:shadow-lg">
