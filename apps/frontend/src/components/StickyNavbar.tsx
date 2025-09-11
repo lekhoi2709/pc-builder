@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-import useScrollPosition from '../hooks/useScrollPosition';
 import { NavLink, useLocation, useParams } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
@@ -7,7 +5,6 @@ import { useTheme, type Theme } from '../hooks/useTheme';
 import { MoonIcon, SunIcon } from 'lucide-react';
 
 export default function StickyNavbar() {
-  const scrolled = useScrollPosition(100);
   const location = useLocation();
   const routes = [
     {
@@ -39,24 +36,16 @@ export default function StickyNavbar() {
   } = useHoverIndicator({ activeIndex });
 
   return (
-    <header className="fixed z-50 hidden w-full items-center justify-between rounded-full bg-transparent pt-4 md:flex">
-      <motion.nav
+    <header className="border-primary-600/50 dark:border-primary-400/50 fixed z-50 hidden w-full items-center justify-between border-b-[0.5px] bg-transparent px-4 backdrop-blur-sm md:flex">
+      <span className="text-primary-950 dark:text-primary-100 pl-5 font-bold">
+        Logo
+      </span>
+      <nav
         ref={navRef}
-        className="bg-primary-400/20 dark:bg-primary-300/20 relative left-1/2 top-1/2 flex h-fit -translate-x-1/2 transform gap-20 rounded-[4rem] p-1 backdrop-blur-sm"
-        initial={{ y: -100, opacity: 0 }}
-        animate={
-          scrolled
-            ? {
-                y: 0,
-                opacity: 1,
-                transition: { type: 'spring', stiffness: 300, damping: 20 },
-              }
-            : { y: -100, opacity: 0, transition: { duration: 0.5 } }
-        }
-        transition={{ duration: 0.5 }}
+        className="relative flex h-fit transform gap-20 bg-transparent p-1"
       >
         <div
-          className="bg-primary-600/20 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-[5rem] transition-all duration-500 ease-in-out"
+          className="bg-primary-600/20 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-2xl transition-all duration-500 ease-in-out"
           style={{
             ...indicatorStyle,
           }}
@@ -79,14 +68,13 @@ export default function StickyNavbar() {
             </p>
           </NavLink>
         ))}
-      </motion.nav>
+      </nav>
       <ThemeToggle />
     </header>
   );
 }
 
 function ThemeToggle() {
-  const scrolled = useScrollPosition(100);
   const { toggleTheme } = useTheme();
 
   const themeIcons = [
@@ -117,20 +105,9 @@ function ThemeToggle() {
   });
 
   return (
-    <motion.nav
+    <nav
       ref={navRef}
-      className="bg-primary-400/20 rounded-4xl relative flex -translate-x-1/2 p-1 backdrop-blur-sm"
-      initial={{ y: -100, opacity: 0 }}
-      animate={
-        scrolled
-          ? {
-              y: 0,
-              opacity: 1,
-              transition: { type: 'spring', stiffness: 300, damping: 20 },
-            }
-          : { y: -100, opacity: 0, transition: { duration: 0.5 } }
-      }
-      transition={{ duration: 0.5 }}
+      className="bg-primary-400/20 rounded-4xl relative flex p-1 backdrop-blur-sm"
     >
       <div
         className="bg-primary-600/20 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-[5rem] transition-all duration-500 ease-in-out"
@@ -163,6 +140,6 @@ function ThemeToggle() {
           </i>
         </span>
       ))}
-    </motion.nav>
+    </nav>
   );
 }

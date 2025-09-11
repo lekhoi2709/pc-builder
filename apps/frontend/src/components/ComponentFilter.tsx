@@ -27,17 +27,15 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
 
   if (filterQuery.isLoading && !filterQuery.data) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="border-primary-500 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
-          <p className="mt-4 text-lg">Loading components...</p>
-        </div>
-      </div>
+      <aside className="border-primary-600/50 dark:border-primary-400/50 fixed z-0 hidden h-full min-h-screen w-[20vw] flex-col items-center justify-center gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
+        <div className="border-primary-600/50 dark:border-primary-400/50 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
+        <p className="mt-4 text-lg">Loading components...</p>
+      </aside>
     );
   }
 
   return (
-    <aside className="border-primary-400 fixed z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters
@@ -50,7 +48,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
             filterQuery.data.categories.map(category => (
               <button
                 key={category}
-                className="group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded bg-gray-200 px-2 py-1 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => handleFilterChange('category', category)}
                 disabled={!data.summary.by_category[category]}
               >
@@ -74,7 +72,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
                 return (
                   <span
                     key={brand}
-                    className="line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
+                    className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
                     onClick={() => handleFilterChange('brand', brand)}
                   >
                     <span className="flex items-center gap-1">

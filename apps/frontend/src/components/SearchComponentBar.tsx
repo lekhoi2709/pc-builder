@@ -31,11 +31,11 @@ export default function SearchComponentBar() {
         value={term}
         onChange={e => setTerm(e.target.value)}
         placeholder="Search..."
-        className="w-full rounded border border-gray-300 bg-white px-4 py-2 pl-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="border-primary-600/50 dark:border-primary-400/50 dark:focus:border-primary-500 dark:focus:ring-primary-500 focus:border-primary-600 focus:ring-primary-600 dark:bg-light-dark placeholder:text-primary-900/50 dark:placeholder:text-primary-50/50 w-full rounded border-[0.5px] bg-white px-4 py-2 pl-10 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1"
       />
       {term && (
         <CircleXIcon
-          className="absolute right-3 top-1/2 z-10 ml-2 h-4 w-4 translate-y-[-50%] cursor-pointer text-gray-600 hover:text-red-700"
+          className="absolute right-3 top-1/2 z-10 ml-2 h-5 w-5 translate-y-[-50%] cursor-pointer fill-gray-400 text-white hover:fill-gray-500"
           onClick={clearSearch}
         />
       )}

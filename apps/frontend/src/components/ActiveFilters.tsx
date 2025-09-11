@@ -11,7 +11,7 @@ export const ActiveFilters = () => {
       {activeFilters.map(({ key, value }) => (
         <span
           key={key}
-          className="line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
+          className="bg-primary-100/50 border-primary-300 dark:border-primary-300/30 dark:text-primary-50 dark:bg-primary-300/30 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1"
         >
           {key}: {String(value)}
           <CircleXIcon
@@ -22,7 +22,7 @@ export const ActiveFilters = () => {
       ))}
       <button
         onClick={clearFilter}
-        className="ml-2 cursor-pointer text-xs text-blue-600 hover:underline"
+        className="text-primary-700 ml-2 cursor-pointer text-xs hover:underline"
       >
         Clear All
       </button>
