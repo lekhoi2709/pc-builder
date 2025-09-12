@@ -36,7 +36,7 @@ export default function StickyNavbar() {
   } = useHoverIndicator({ activeIndex });
 
   return (
-    <header className="border-primary-600/50 dark:border-primary-400/50 fixed z-50 hidden w-full items-center justify-between border-b-[0.5px] bg-transparent px-4 backdrop-blur-sm md:flex">
+    <header className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed z-50 hidden w-full items-center justify-between border-b-[0.5px] bg-transparent px-4 backdrop-blur-sm md:flex">
       <span className="text-primary-950 dark:text-primary-100 pl-5 font-bold">
         Logo
       </span>
@@ -45,7 +45,7 @@ export default function StickyNavbar() {
         className="relative flex h-fit transform gap-20 bg-transparent p-1"
       >
         <div
-          className="bg-primary-600/20 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-2xl transition-all duration-500 ease-in-out"
+          className="bg-primary-600/20 dark:bg-primary-800/50 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-2xl transition-all duration-500 ease-in-out"
           style={{
             ...indicatorStyle,
           }}
@@ -63,7 +63,7 @@ export default function StickyNavbar() {
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
           >
-            <p className="transition-all duration-500 ease-in-out group-hover/navlink:scale-110">
+            <p className="font-semibold uppercase transition-all duration-500 ease-in-out group-hover/navlink:scale-110">
               {route.name}
             </p>
           </NavLink>

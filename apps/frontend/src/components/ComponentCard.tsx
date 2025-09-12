@@ -7,7 +7,7 @@ export default function ComponentCard({ component }: { component: Component }) {
   const { price } = getLocalizedPrice(component, lang || 'vn');
 
   return (
-    <div className="text-primary-950 bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:bg-primary-300/30 dark:border-primary-300/30 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-evenly rounded-xl border p-4 shadow-md backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-[101%] hover:cursor-pointer hover:shadow-lg">
+    <div className="text-primary-950 bg-primary-50 dark:text-primary-50 dark:bg-primary-800/50 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-evenly rounded-xl border border-transparent p-4 shadow-md backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-[101%] hover:cursor-pointer hover:shadow-lg">
       <img
         src={component.image_url[0]}
         alt={component.name}

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 :root {
@@ -37,12 +38,12 @@ body {
   --color-primary-900: oklch(0.372 0.1253 274.01);
   --color-primary-950: oklch(0.2635 0.0805 275.5);
 
-  --color-accent: #4ade80;
-
-  --color-background: #0f172a;
+  --color-accent-400: #7a85c1 --color-background: #0f172a;
   --color-surface: #1e293b;
   --color-glass: rgba(255, 255, 255, 0.08);
   --color-text: #f8fafc;
   --color-text-dark: #121212;
   --color-light-dark: #18181b;
+
+  --font-saira: 'Saira', sans-serif;
 }

@@ -52,11 +52,11 @@ export default function Components() {
   }
 
   return (
-    <section className="z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
+    <section className="font-saira z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
       <main className="flex min-h-screen w-full flex-col md:flex-row">
         <ComponentFilter data={data} />
         <div className="mt-16 flex h-full min-h-screen w-screen flex-col gap-4 p-6 px-8 md:ml-[20vw] md:w-[100vw]">
-          <h1 className="mb-4 text-2xl font-bold">Components</h1>
+          <h1 className="text-2xl font-semibold">Components</h1>
           <ActiveFilters />
           <section className="flex flex-wrap justify-center gap-8 md:justify-start">
             {data.components.map(component => (
@@ -79,7 +79,7 @@ export default function Components() {
                       })
                     }
                     disabled={pagination.current_page <= 1}
-                    className="bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                    className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
                   >
                     <ArrowBigLeftIcon className="inline stroke-[1.5]" />
                   </button>
@@ -102,7 +102,7 @@ export default function Components() {
                     disabled={
                       pagination.current_page >= data.pagination.total_pages!
                     }
-                    className="bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                    className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
                   >
                     <ArrowBigRightIcon className="inline stroke-[1.5]" />
                   </button>
@@ -184,7 +184,10 @@ const renderPageNumbers = (
   if (totalPages > 1) pages.push(totalPages);
   return pages.map((page, idx) =>
     page === '...' ? (
-      <span key={`ellipsis-${idx}`} className="text-primary-900 px-2">
+      <span
+        key={`ellipsis-${idx}`}
+        className="text-primary-900 dark:text-primary-50 px-2"
+      >
         ...
       </span>
     ) : (
@@ -193,10 +196,10 @@ const renderPageNumbers = (
         onClick={() =>
           setPagination({ ...pagination, current_page: page as number })
         }
-        className={`text-primary-900 cursor-pointer rounded px-4 py-2 ${
+        className={`text-primary-900 dark:text-primary-50 cursor-pointer rounded px-4 py-2 ${
           pagination.current_page === page
-            ? 'bg-primary-500 !text-primary-50'
-            : 'bg-primary-100 hover:bg-primary-200'
+            ? 'bg-primary-500 !text-primary-50 dark:bg-primary-300 dark:!text-primary-950'
+            : 'bg-primary-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-600/50'
         }`}
       >
         {page}
