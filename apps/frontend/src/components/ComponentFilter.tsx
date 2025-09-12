@@ -35,7 +35,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   }
 
   return (
-    <aside className="border-primary-600/50 dark:border-primary-400/50 fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters
@@ -48,7 +48,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
             filterQuery.data.categories.map(category => (
               <button
                 key={category}
-                className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => handleFilterChange('category', category)}
                 disabled={!data.summary.by_category[category]}
               >
@@ -72,7 +72,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
                 return (
                   <span
                     key={brand}
-                    className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+                    className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
                     onClick={() => handleFilterChange('brand', brand)}
                   >
                     <span className="flex items-center gap-1">
