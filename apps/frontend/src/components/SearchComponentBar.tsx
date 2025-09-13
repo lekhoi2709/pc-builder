@@ -31,7 +31,7 @@ export default function SearchComponentBar() {
         value={term}
         onChange={e => setTerm(e.target.value)}
         placeholder="Search..."
-        className="border-primary-600/50 dark:border-primary-400/50 dark:focus:border-primary-500 dark:focus:ring-primary-500 focus:border-primary-600 focus:ring-primary-600 dark:bg-light-dark placeholder:text-primary-900/50 dark:placeholder:text-primary-50/50 w-full rounded border-[0.5px] bg-white px-4 py-2 pl-10 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1"
+        className="border-primary-600/50 dark:border-primary-400/50 dark:focus:border-primary-500 dark:focus:ring-primary-500 focus:border-primary-600 focus:ring-primary-600 placeholder:text-primary-900/50 dark:placeholder:text-primary-50/50 w-full rounded border-[0.5px] bg-transparent px-4 py-2 pl-10 focus:outline-none focus:ring-1"
       />
       {term && (
         <CircleXIcon

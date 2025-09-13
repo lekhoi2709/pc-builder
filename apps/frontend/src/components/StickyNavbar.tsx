@@ -42,7 +42,7 @@ export default function StickyNavbar() {
       </span>
       <nav
         ref={navRef}
-        className="relative flex h-fit transform gap-20 bg-transparent p-1"
+        className="relative flex h-fit transform gap-20 bg-transparent py-2"
       >
         <div
           className="bg-primary-600/20 dark:bg-primary-800/50 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform rounded-2xl transition-all duration-500 ease-in-out"

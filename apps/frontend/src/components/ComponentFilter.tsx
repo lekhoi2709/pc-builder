@@ -35,7 +35,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   }
 
   return (
-    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 pt-6 md:flex">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters

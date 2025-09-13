@@ -55,7 +55,7 @@ export default function Components() {
     <section className="font-saira z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
       <main className="flex min-h-screen w-full flex-col md:flex-row">
         <ComponentFilter data={data} />
-        <div className="mt-16 flex h-full min-h-screen w-screen flex-col gap-4 p-6 px-8 md:ml-[20vw] md:w-[100vw]">
+        <div className="mt-20 flex h-full min-h-screen w-screen flex-col gap-4 p-6 px-8 md:ml-[20vw] md:w-[100vw]">
           <h1 className="text-2xl font-semibold">Components</h1>
           <ActiveFilters />
           <section className="flex flex-wrap justify-center gap-8 md:justify-start">
