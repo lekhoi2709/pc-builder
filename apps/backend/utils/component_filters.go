@@ -17,6 +17,7 @@ type ComponentFilter struct {
 	Search    string  `form:"search"`
 	SortBy    string  `form:"sort_by"`
 	SortOrder string  `form:"sort_order"`
+	Currency  string  `form:"currency"`
 
 	// Specs
 	Socket      string `form:"socket"`       // For CPU, Mainboard
@@ -55,25 +56,26 @@ type ComponentSummary struct {
 }
 
 func ApplyComponentFilters(query *gorm.DB, filters ComponentFilter) *gorm.DB {
-	// Filter by category
 	if filters.Category != "" {
 		query = query.Where("LOWER(category) = LOWER(?)", filters.Category)
 	}
 
-	// Filter by brand
 	if filters.Brand != "" {
 		query = query.Where("LOWER(brand) = LOWER(?)", filters.Brand)
 	}
 
-	// Price filtering - need to extract price from JSON array
-	if filters.MinPrice > 0 {
-		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "VND" && @.amount >= %v)'`, filters.MinPrice))
-	}
-	if filters.MaxPrice > 0 {
-		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "VND" && @.amount <= %v)'`, filters.MaxPrice))
+	currency := "VND"
+	if filters.Currency != "" {
+		currency = filters.Currency
 	}
 
-	// Search in name, brand, category, and models
+	if filters.MinPrice > 0 {
+		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "%s" && @.amount >= %v)'`, currency, filters.MinPrice))
+	}
+	if filters.MaxPrice > 0 {
+		query = query.Where(fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "%s" && @.amount <= %v)'`, currency, filters.MaxPrice))
+	}
+
 	if filters.Search != "" {
 		searchTerm := "%" + strings.ToLower(filters.Search) + "%"
 		query = query.Where(
@@ -110,7 +112,6 @@ func ApplyComponentFilters(query *gorm.DB, filters ComponentFilter) *gorm.DB {
 	return query
 }
 
-// applySpecFilter applies a generic spec filter by searching in the JSON specs
 func applySpecFilter(query *gorm.DB, specValue string) *gorm.DB {
 	if specValue == "" {
 		return query
@@ -118,7 +119,6 @@ func applySpecFilter(query *gorm.DB, specValue string) *gorm.DB {
 
 	searchPattern := fmt.Sprintf("%%%s%%", strings.ToLower(specValue))
 
-	// Use PostgreSQL's jsonb search capabilities
 	query = query.Where(
 		"LOWER(specs::text) LIKE ?",
 		searchPattern,
@@ -196,13 +196,20 @@ func GetComponentSummary(filters ComponentFilter) ComponentSummary {
 		byBrand[result.Brand] = int(result.Count)
 	}
 
+	currency := "VND" // Default currency
+	if filters.Currency != "" {
+		currency = filters.Currency
+	}
+
 	var priceRange struct {
 		MinPrice float64
 		MaxPrice float64
 	}
 
 	priceQuery := db.DB.Model(&models.Component{}).
-		Select(`MIN((price->0->>'amount')::numeric) as min_price, MAX((price->0->>'amount')::numeric) as max_price`)
+		Select(`MIN((price_item->>'amount')::numeric) as min_price, MAX((price_item->>'amount')::numeric) as max_price`).
+		Joins(`CROSS JOIN LATERAL jsonb_array_elements(price) as price_item`).
+		Where(`price_item->>'currency' = ?`, currency)
 
 	priceQuery = ApplyComponentFilters(priceQuery, filters)
 	priceQuery.Scan(&priceRange)
@@ -214,7 +221,7 @@ func GetComponentSummary(filters ComponentFilter) ComponentSummary {
 		PriceRange: ComponentPriceRange{
 			MinPrice: priceRange.MinPrice,
 			MaxPrice: priceRange.MaxPrice,
-			Currency: "VND",
+			Currency: currency,
 		},
 	}
 }
