@@ -3,6 +3,11 @@ import type { Component } from '../types/components';
 export interface AvailableFilter {
   categories: string[];
   brands: string[];
+  price_range: {
+    min_price: number;
+    max_price: number;
+    currency: string;
+  };
 }
 export interface ComponentFilter {
   category?: string;
@@ -179,13 +184,16 @@ export async function GetComponentById(id: string): Promise<Component> {
   return json.component as Component;
 }
 
-export async function GetAvailableFilters(): Promise<AvailableFilter> {
+export async function GetAvailableFilters(
+  lang: string
+): Promise<AvailableFilter> {
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/components/filters`,
     {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Language': lang,
       },
     }
   );

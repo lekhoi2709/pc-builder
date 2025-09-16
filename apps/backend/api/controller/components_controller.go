@@ -426,7 +426,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 }
 
 func GetAvailableFilters(c *gin.Context) {
-	filters := utils.GetAvailableFilterOptions()
+	filters := utils.GetAvailableFilterOptions(c.GetHeader("Accept-Language"))
 	if filters == nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,

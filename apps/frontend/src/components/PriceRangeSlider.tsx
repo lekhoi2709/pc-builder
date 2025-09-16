@@ -221,15 +221,19 @@ export default function PriceRangeSlider({
       </div>
 
       {/* Input Fields */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex w-full items-center justify-between gap-2">
         <div className="flex-1">
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
               {currencyToSymbol[currency] || currency}
             </span>
             <input
-              type="number"
-              value={minInputValue}
+              type="text"
+              value={priceFormatter(
+                parseInt(minInputValue) || 0,
+                currencyToLocale[currency],
+                'decimal'
+              )}
               onChange={e => handleInputChange('min', e.target.value)}
               className="focus:ring-primary-500 w-full rounded-md border border-gray-300 py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-2"
               min={min}
@@ -248,8 +252,12 @@ export default function PriceRangeSlider({
               {currencyToSymbol[currency] || currency}
             </span>
             <input
-              type="number"
-              value={maxInputValue}
+              type="text"
+              value={priceFormatter(
+                parseInt(maxInputValue) || 0,
+                currencyToLocale[currency],
+                'decimal'
+              )}
               onChange={e => handleInputChange('max', e.target.value)}
               className="focus:ring-primary-500 w-full rounded-md border border-gray-300 py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-2"
               min={min}
@@ -263,7 +271,7 @@ export default function PriceRangeSlider({
         </div>
       </div>
       <button
-        className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 flex w-full cursor-pointer items-center justify-between rounded p-4 py-2"
+        className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 flex w-full cursor-pointer items-center justify-center rounded p-4 py-2"
         onClick={() => {
           setFilters({
             ...(filters as ComponentFilter),
@@ -273,19 +281,7 @@ export default function PriceRangeSlider({
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       >
-        <span>
-          {priceFormatter(
-            parseInt(minInputValue) || 0,
-            currencyToLocale[currency]
-          )}
-        </span>
-        <p className="text-2xl">-</p>
-        <span>
-          {priceFormatter(
-            parseInt(maxInputValue) || 0,
-            currencyToLocale[currency]
-          )}
-        </span>
+        Apply Price
       </button>
     </div>
   );

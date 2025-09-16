@@ -8,9 +8,11 @@ import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
+import { useParams } from 'react-router';
 
 export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   const { filters, setFilters } = useComponentStore();
+  const { lang } = useParams();
 
   const handleFilterChange = (
     key: keyof ComponentFilter,
@@ -21,8 +23,8 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   };
 
   const filterQuery = useQuery({
-    queryKey: ['available-filters'],
-    queryFn: () => GetAvailableFilters(),
+    queryKey: ['available-filters', lang],
+    queryFn: () => GetAvailableFilters(lang || 'vn'),
     refetchOnWindowFocus: false,
   });
 
@@ -97,9 +99,9 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
       <section className="w-full">
         <h3 className="mb-2 text-lg font-semibold">Price</h3>
         <PriceRangeSlider
-          min={data.summary.price_range.min_price}
-          max={data.summary.price_range.max_price}
-          currency={data.summary.price_range.currency}
+          min={filterQuery.data?.price_range.min_price || 0}
+          max={filterQuery.data?.price_range.max_price || 1000}
+          currency={filterQuery.data?.price_range.currency || 'VND'}
         />
       </section>
     </aside>

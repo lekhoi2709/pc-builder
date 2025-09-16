@@ -55,6 +55,12 @@ type ComponentSummary struct {
 	PriceRange      ComponentPriceRange `json:"price_range"`
 }
 
+type AvailableFilterOptions struct {
+	Categories []string            `json:"categories"`
+	Brands     []string            `json:"brands"`
+	PriceRange ComponentPriceRange `json:"price_range"`
+}
+
 func ApplyComponentFilters(query *gorm.DB, filters ComponentFilter) *gorm.DB {
 	if filters.Category != "" {
 		query = query.Where("LOWER(category) = LOWER(?)", filters.Category)
@@ -227,25 +233,40 @@ func GetComponentSummary(filters ComponentFilter) ComponentSummary {
 }
 
 // GetAvailableFilterOptions returns available filter options for the frontend
-func GetAvailableFilterOptions() map[string][]string {
-	filterOptions := make(map[string][]string)
-	var categories []string
-	var brands []string
+func GetAvailableFilterOptions(lang string) *AvailableFilterOptions {
+	langToCurrency := map[string]string{
+		"en": "USD",
+		"vn": "VND",
+	}
 
-	// Get distinct categories
-	db.DB.Model(&models.Component{}).Distinct("category").Pluck("category", &categories)
-	// Get distinct brands
-	db.DB.Model(&models.Component{}).Distinct("brand").Pluck("brand", &brands)
+	filterOptions := &AvailableFilterOptions{
+		Categories: []string{},
+		Brands:     []string{},
+		PriceRange: ComponentPriceRange{
+			MinPrice: 0,
+			MaxPrice: 0,
+			Currency: langToCurrency[lang],
+		},
+	}
 
-	// Populate filter options map
-	filterOptions["categories"] = categories
-	filterOptions["brands"] = brands
+	db.DB.Model(&models.Component{}).Distinct("category").Pluck("category", &filterOptions.Categories)
+	db.DB.Model(&models.Component{}).Distinct("brand").Pluck("brand", &filterOptions.Brands)
 
-	// Remove empty slices
-	for key, options := range filterOptions {
-		if len(options) == 0 {
-			delete(filterOptions, key)
-		}
+	var priceRange struct {
+		MinPrice float64
+		MaxPrice float64
+	}
+
+	priceQuery := db.DB.Model(&models.Component{}).
+		Select(`MIN((price_item->>'amount')::numeric) as min_price, MAX((price_item->>'amount')::numeric) as max_price`).
+		Joins(`CROSS JOIN LATERAL jsonb_array_elements(price) as price_item`).
+		Where(`price_item->>'currency' = ?`, langToCurrency[lang])
+	priceQuery.Scan(&priceRange)
+
+	filterOptions.PriceRange = ComponentPriceRange{
+		MinPrice: priceRange.MinPrice,
+		MaxPrice: priceRange.MaxPrice,
+		Currency: langToCurrency[lang],
 	}
 
 	return filterOptions
