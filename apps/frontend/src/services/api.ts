@@ -18,6 +18,7 @@ export interface ComponentFilter {
     | 'brand'
     | 'category';
   sort_order?: 'asc' | 'desc';
+  currency?: string;
 
   // Spec filters
   socket?: string;
@@ -61,6 +62,16 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+const langToCurrency: Record<string, string> = {
+  en: 'USD',
+  vn: 'VND',
+  es: 'EUR',
+  fr: 'EUR',
+  de: 'EUR',
+  zh: 'CNY',
+  ja: 'JPY',
+};
+
 function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
   const params = new URLSearchParams();
 
@@ -80,6 +91,7 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
   if (filters.search) params.append('search', filters.search);
   if (filters.sort_by) params.append('sort_by', filters.sort_by);
   if (filters.sort_order) params.append('sort_order', filters.sort_order);
+  if (filters.currency) params.append('currency', filters.currency);
 
   // Add spec filters
   if (filters.socket) params.append('socket', filters.socket);
@@ -115,8 +127,13 @@ export async function GetAllComponents(): Promise<Component[]> {
 
 export async function GetComponents(
   filters: ComponentFilter = {},
-  pagination: PaginationMeta = { current_page: 1, page_size: 12 }
+  pagination: PaginationMeta = { current_page: 1, page_size: 12 },
+  lang: string = 'vn'
 ): Promise<ComponentResponse> {
+  if (lang && !filters.currency) {
+    filters.currency = langToCurrency[lang];
+  }
+
   const queryParams = buildQueryParams({ ...filters, ...pagination });
   const url = `${import.meta.env.VITE_API_URL}/components${queryParams ? `?${queryParams}` : ''}`;
 

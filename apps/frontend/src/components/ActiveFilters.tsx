@@ -1,9 +1,34 @@
 import { CircleXIcon, ArrowUpAzIcon, ArrowDownAZIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
+import { useParams } from 'react-router';
+
+const langToCurrency: Record<string, string> = {
+  vn: 'VND',
+  en: 'USD',
+};
+
+const langToLocale: Record<string, string> = {
+  vn: 'vi-VN',
+  en: 'en-US',
+};
 
 export const ActiveFilters = () => {
   const { activeFilters, removeFilter, clearFilter } = useComponentStore();
+  const { lang } = useParams();
+  const currency = langToCurrency[lang || 'vn'] || 'VND';
+
+  const priceFormatter = (
+    value: number,
+    locale: string,
+    style: 'decimal' | 'currency' | 'percent' | 'unit' = 'currency'
+  ) => {
+    const formatter = new Intl.NumberFormat(locale, {
+      style: style,
+      currency,
+    });
+    return formatter.format(value);
+  };
 
   if (activeFilters.length === 0)
     return (
@@ -17,18 +42,36 @@ export const ActiveFilters = () => {
   return (
     <div className="font-saira flex justify-between">
       <div className="flex flex-wrap items-center gap-2">
-        {activeFilters.map(({ key, value }) => (
-          <span
-            key={key}
-            className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
-          >
-            {key}: {String(value)}
-            <CircleXIcon
-              className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-              onClick={() => removeFilter(key)}
-            />
-          </span>
-        ))}
+        {activeFilters.map(({ key, value }) =>
+          key === 'max_price' || key === 'min_price' ? (
+            <span
+              key={key}
+              className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
+            >
+              {key}:{' '}
+              {priceFormatter(
+                parseInt(value as string),
+                langToLocale[lang || 'vn'] || 'vi-VN',
+                'currency'
+              )}
+              <CircleXIcon
+                className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                onClick={() => removeFilter(key)}
+              />
+            </span>
+          ) : (
+            <span
+              key={key}
+              className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
+            >
+              {key}: {String(value)}
+              <CircleXIcon
+                className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                onClick={() => removeFilter(key)}
+              />
+            </span>
+          )
+        )}
         <button
           onClick={clearFilter}
           className="text-primary-700 dark:text-primary-200 ml-2 cursor-pointer text-xs hover:underline"

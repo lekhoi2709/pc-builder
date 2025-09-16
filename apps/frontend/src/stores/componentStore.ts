@@ -36,7 +36,8 @@ export const useComponentStore = create<ComponentStore>(set => ({
             key !== 'sort_by' &&
             key !== 'sort_order' &&
             value !== undefined &&
-            value !== ''
+            value !== '' &&
+            key !== 'currency'
         )
         .map(([k, value]) => ({ key: k as keyof ComponentFilter, value }));
 
@@ -63,11 +64,12 @@ export const useComponentStore = create<ComponentStore>(set => ({
 
       const newActiveFilters: ActiveFilter[] = Object.entries(newFilters)
         .filter(
-          ([k, value]) =>
-            k !== 'sort_by' &&
-            k !== 'sort_order' &&
+          ([key, value]) =>
+            key !== 'sort_by' &&
+            key !== 'sort_order' &&
             value !== undefined &&
-            value !== ''
+            value !== '' &&
+            key !== 'currency'
         )
         .map(([k, value]) => ({ key: k as keyof ComponentFilter, value }));
 

@@ -7,14 +7,16 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import ComponentFilter from '../components/ComponentFilter';
 import { ActiveFilters } from '../components/ActiveFilters';
+import { useParams } from 'react-router';
 
 export default function Components() {
+  const { lang } = useParams();
   const { filters, pagination, setPagination } = useComponentStore();
   const delta = useResponsivePagination(setPagination);
 
   const componentQuery = useQuery({
-    queryKey: ['components', filters, pagination],
-    queryFn: () => GetComponents(filters, pagination),
+    queryKey: ['components', filters, pagination, lang],
+    queryFn: () => GetComponents(filters, pagination, lang),
     refetchOnWindowFocus: false,
     placeholderData: previousData => previousData,
     staleTime: 1000 * 60 * 5, // 5 minutes

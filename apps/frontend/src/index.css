@@ -47,3 +47,16 @@ body {
 
   --font-saira: 'Saira', sans-serif;
 }
+
+@layer base {
+  input[type='number'] {
+    /* hide spin-buttons in Firefox */
+    appearance: textfield;
+
+    /* hide spin-buttons in Chromium-based browsers */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+    }
+  }
+}

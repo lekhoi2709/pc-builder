@@ -1,4 +1,4 @@
-import type { Component } from '../types/components';
+import type { PriceItem } from '../types/components';
 
 const langToPriceIndex: Record<string, number> = {
   en: 0,
@@ -10,30 +10,43 @@ const langToLocale: Record<string, string> = {
   vn: 'vi-VN',
 };
 
-function formatPrice(
-  currency: string,
-  price: number,
-  symbol: string,
-  locale: string
-) {
+export function formatPrice({
+  currency,
+  price,
+  locale,
+  style,
+  symbol,
+}: {
+  currency?: string;
+  price?: number;
+  locale?: string;
+  style: 'decimal' | 'currency' | 'percent' | 'unit';
+  symbol?: string;
+}) {
   const formatter = new Intl.NumberFormat(locale, {
-    style: 'currency',
+    style,
     currency,
   });
 
-  const formatted = formatter.format(price);
+  const formatted = formatter.format(price!);
 
   return {
-    price: symbol ? formatted.replace(currency, symbol) : formatted,
+    price: symbol ? formatted.replace(currency!, symbol) : formatted,
   };
 }
 
-export default function getLocalizedPrice(component: Component, lang: string) {
+export default function getLocalizedPrice(price: PriceItem[], lang: string) {
   const idx = langToPriceIndex[lang] ?? 0;
   const locale = langToLocale[lang] ?? 'en-US';
 
-  const item = component.price[idx];
+  const item = price[idx];
   if (!item) return { price: '' };
 
-  return formatPrice(item.currency, item.amount, item.symbol, locale);
+  return formatPrice({
+    currency: item.currency,
+    price: item.amount,
+    locale,
+    style: 'currency',
+    symbol: item.symbol,
+  });
 }

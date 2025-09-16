@@ -4,7 +4,7 @@ import getLocalizedPrice from '../utils/getLocalizedPrice';
 
 export default function ComponentCard({ component }: { component: Component }) {
   const { lang } = useParams();
-  const { price } = getLocalizedPrice(component, lang || 'vn');
+  const { price } = getLocalizedPrice(component.price, lang || 'vn');
 
   return (
     <div className="text-primary-950 bg-primary-50 dark:text-primary-50 dark:bg-primary-800/40 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-xl border border-transparent p-4 shadow-md backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-[101%] hover:cursor-pointer hover:shadow-lg">

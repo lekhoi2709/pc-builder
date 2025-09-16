@@ -7,6 +7,7 @@ import {
 import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
+import PriceRangeSlider from './PriceRangeSlider';
 
 export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   const { filters, setFilters } = useComponentStore();
@@ -35,13 +36,13 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   }
 
   return (
-    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 border-r-[0.5px] bg-transparent p-4 px-6 pt-6 md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 overflow-y-auto border-r-[0.5px] bg-transparent p-4 px-6 pt-6 md:flex">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters
       </span>
       <SearchComponentBar />
-      <span>
+      <section>
         <h3 className="mb-2 text-lg font-semibold">Categories</h3>
         <div className="flex flex-wrap gap-2">
           {filterQuery.data &&
@@ -52,6 +53,12 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
                 onClick={() => handleFilterChange('category', category)}
                 disabled={!data.summary.by_category[category]}
               >
+                <link
+                  type="image/png"
+                  sizes="16x16"
+                  rel="icon"
+                  href="https://icons8.com/icon/osQ0ttYWdlt-/motherboard"
+                />
                 <span className="flex items-center gap-1">
                   {category}
                   <p className="text-sm opacity-50 group-disabled:hidden">
@@ -61,8 +68,8 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
               </button>
             ))}
         </div>
-      </span>
-      <span>
+      </section>
+      <section>
         <h3 className="mb-2 text-lg font-semibold">Brands</h3>
         <div className="flex flex-wrap gap-2">
           {filterQuery.data &&
@@ -86,7 +93,15 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
               }
             })}
         </div>
-      </span>
+      </section>
+      <section className="w-full">
+        <h3 className="mb-2 text-lg font-semibold">Price</h3>
+        <PriceRangeSlider
+          min={data.summary.price_range.min_price}
+          max={data.summary.price_range.max_price}
+          currency={data.summary.price_range.currency}
+        />
+      </section>
     </aside>
   );
 }
