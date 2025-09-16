@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { GetComponents, type PaginationMeta } from '../services/api';
-import ComponentCard from '../components/ComponentCard';
+import { ComponentCard } from '../components/ComponentCard';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { useEffect, useState } from 'react';
