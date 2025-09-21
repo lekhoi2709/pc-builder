@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"net/http"
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/db"
+	"pc-builder/backend/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,11 +21,7 @@ func GetAllUsers(c *gin.Context) {
 	var users []models.User
 
 	if err := db.DB.Find(&users).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to fetch users",
-			"error":   err.Error(),
-		})
+		utils.InternalServerError(c, "Failed to fetch users", err)
 		return
 	}
 
@@ -40,10 +36,8 @@ func GetAllUsers(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "Users fetched successfully",
-		"total":   len(userResponses),
-		"users":   userResponses,
+	utils.SuccessResponse(c, "Users fetched successfully", map[string]interface{}{
+		"total": len(userResponses),
+		"users": userResponses,
 	})
 }

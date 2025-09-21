@@ -5,6 +5,7 @@ import (
 	"log"
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/config"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -35,5 +36,16 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	}
 
 	log.Println("✅ Connected to PostgreSQL")
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatalf("Failed to get underlying sql.DB: %v", err)
+	}
+
+	// Configure connection pool
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
 	return DB
 }

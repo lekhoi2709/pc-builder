@@ -129,7 +129,7 @@ export async function GetAllComponents(): Promise<Component[]> {
   }
 
   const json = await response.json();
-  return json.components as Component[];
+  return json.response as Component[];
 }
 
 export async function GetComponents(
@@ -183,7 +183,7 @@ export async function GetComponentById(id: string): Promise<Component> {
   }
 
   const json = await response.json();
-  return json.component as Component;
+  return json.response as Component;
 }
 
 export async function GetAvailableFilters(

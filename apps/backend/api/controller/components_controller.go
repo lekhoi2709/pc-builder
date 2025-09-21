@@ -112,84 +112,51 @@ func CreateComponent(c *gin.Context) {
 	var request ComponentRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid request body",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.BadRequestError(c, "Invalid request body", err)
 		return
 	}
 
 	if err := validateComponentRequest(request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Validation failed",
-			"error":   err.Error(),
-		})
+		utils.BadRequestError(c, "Validation failed", err)
 		return
 	}
 
 	component, err := createComponentFromRequest(request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Failed to create component",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.BadRequestError(c, "Failed to create component", err)
 		return
 	}
 
 	result := db.DB.Create(&component)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key") {
-			c.JSON(http.StatusConflict, gin.H{
-				"status":  http.StatusConflict,
-				"message": "Component with this ID already exists",
-			})
+			utils.ConflictError(c, "Component with this ID already exists")
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to create component",
-			"error":   result.Error.Error(), // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to create component", result.Error)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"status":    http.StatusCreated,
-		"message":   "Component created successfully",
-		"component": component,
-	})
+	utils.SuccessResponse(c, "Component created successfully", component)
 }
 
 func BulkCreateComponents(c *gin.Context) {
 	var request BulkComponentRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid request body",
-			"error":   err.Error(),
-		})
+		utils.BadRequestError(c, "Invalid request body", err)
 		return
 	}
 
 	// Limit components amount
 	if len(request.Components) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "At least one component is required",
-		})
+		utils.BadRequestError(c, "At least one component is required", nil)
 		return
 	}
 
 	if len(request.Components) > 100 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Maximum 100 components can be created at once",
-		})
+		utils.BadRequestError(c, "Maximum 100 components can be created at once", nil)
 		return
 	}
 
@@ -299,18 +266,11 @@ func GetAllComponents(c *gin.Context) {
 	query = query.Select("id, name, category, brand, models, price, image_url, created_at, updated_at")
 	err := query.Find(&components).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to fetch components",
-			"error":   err.Error(),
-		})
+		utils.InternalServerError(c, "Failed to fetch components", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":     http.StatusOK,
-		"components": components,
-	})
+	utils.SuccessResponse(c, "Components fetched successfully", components)
 }
 
 func GetComponentByID(c *gin.Context) {
@@ -319,18 +279,11 @@ func GetComponentByID(c *gin.Context) {
 
 	err := db.DB.Where("id = ?", id).First(&component).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "Component not found",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.NotFoundError(c, "Component not found")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":    http.StatusOK,
-		"component": component,
-	})
+	utils.SuccessResponse(c, "Component fetched successfully", component)
 }
 
 func GetComponentsWithPagination(c *gin.Context) {
@@ -340,11 +293,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid pagination parameters",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.BadRequestError(c, "Invalid pagination parameters", err)
 		return
 	}
 
@@ -357,11 +306,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 
 	var filters utils.ComponentFilter
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid filter parameters",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.BadRequestError(c, "Invalid filter parameters", err)
 		return
 	}
 
@@ -378,11 +323,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 
 	var totalRecords int64
 	if err := query.Count(&totalRecords).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to count records",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to count records", err)
 		return
 	}
 
@@ -395,11 +336,7 @@ func GetComponentsWithPagination(c *gin.Context) {
 
 	var components []models.Component
 	if err := query.Find(&components).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to fetch components",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to fetch components", err)
 		return
 	}
 
@@ -419,28 +356,17 @@ func GetComponentsWithPagination(c *gin.Context) {
 		Summary:    summary,
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":   http.StatusOK,
-		"response": response,
-	})
+	utils.SuccessResponse(c, "Components fetched successfully", response)
 }
 
 func GetAvailableFilters(c *gin.Context) {
 	filters := utils.GetAvailableFilterOptions(c.GetHeader("Accept-Language"))
 	if filters == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to fetch available filters",
-			"error":   "No filters available", // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to fetch available filters", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":   http.StatusOK,
-		"message":  "Available filters fetched successfully",
-		"response": filters,
-	})
+	utils.SuccessResponse(c, "Available filters fetched successfully", filters)
 }
 
 func UpdateComponent(c *gin.Context) {
@@ -449,39 +375,23 @@ func UpdateComponent(c *gin.Context) {
 	var component models.Component
 	err := db.DB.Where("id = ?", id).First(&component).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "Component not found",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.NotFoundError(c, "Component not found")
 		return
 	}
 
 	var updatedComponent models.Component
 	if err := c.ShouldBindJSON(&updatedComponent); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Invalid request body",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.BadRequestError(c, "Invalid request body", err)
 		return
 	}
 
 	result := db.DB.Model(&component).Updates(&updatedComponent)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to update component",
-			"error":   result.Error.Error(), // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to update component", result.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":    http.StatusOK,
-		"message":   "Component updated successfully",
-		"component": component,
-	})
+	utils.SuccessResponse(c, "Component updated successfully", component)
 }
 
 func DeleteComponent(c *gin.Context) {
@@ -490,26 +400,15 @@ func DeleteComponent(c *gin.Context) {
 
 	err := db.DB.Where("id = ?", id).First(&component).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "Component not found",
-			"error":   err.Error(), // Remove this in production
-		})
+		utils.NotFoundError(c, "Component not found")
 		return
 	}
 
 	result := db.DB.Delete(&component)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to delete component",
-			"error":   result.Error.Error(), // Remove this in production
-		})
+		utils.InternalServerError(c, "Failed to delete component", result.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "Component deleted successfully",
-	})
+	utils.SuccessResponse(c, "Component deleted successfully", nil)
 }

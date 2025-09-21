@@ -19,7 +19,7 @@ func RegisterRoutes(router *gin.Engine) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
-	api := router.Group("/api")
+	api := router.Group("/api/v1")
 
 	// Public routes
 	auth := api.Group("/auth")
