@@ -3,8 +3,9 @@ import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { useTheme, type Theme } from '../hooks/useTheme';
 import { MoonIcon, SunIcon } from 'lucide-react';
+import { memo } from 'react';
 
-export default function StickyNavbar() {
+const StickyNavbar = memo(() => {
   const location = useLocation();
   const routes = [
     {
@@ -36,7 +37,7 @@ export default function StickyNavbar() {
   } = useHoverIndicator({ activeIndex });
 
   return (
-    <header className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed z-50 hidden w-full items-center justify-between border-b-[0.5px] bg-transparent px-4 backdrop-blur-sm md:flex">
+    <header className="border-primary-600/50 dark:border-primary-400/50 font-saira max-w-screen fixed z-50 hidden w-full items-center justify-between border-b-[0.5px] bg-transparent px-4 backdrop-blur-sm md:flex">
       <span className="text-primary-950 dark:text-primary-100 pl-5 font-bold">
         Logo
       </span>
@@ -72,7 +73,7 @@ export default function StickyNavbar() {
       <ThemeToggle />
     </header>
   );
-}
+});
 
 function ThemeToggle() {
   const { toggleTheme } = useTheme();
@@ -143,3 +144,5 @@ function ThemeToggle() {
     </nav>
   );
 }
+
+export default StickyNavbar;

@@ -111,9 +111,11 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
   return params.toString();
 }
 
+const API_VERSION = 'v1';
+
 export async function GetAllComponents(): Promise<Component[]> {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + '/components/all',
+    import.meta.env.VITE_API_URL + API_VERSION + '/components/all',
     {
       method: 'GET',
       headers: {
@@ -140,7 +142,7 @@ export async function GetComponents(
   }
 
   const queryParams = buildQueryParams({ ...filters, ...pagination });
-  const url = `${import.meta.env.VITE_API_URL}/components${queryParams ? `?${queryParams}` : ''}`;
+  const url = `${import.meta.env.VITE_API_URL}${API_VERSION}/components${queryParams ? `?${queryParams}` : ''}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -164,7 +166,7 @@ export async function GetComponents(
 
 export async function GetComponentById(id: string): Promise<Component> {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/components/${id}`,
+    `${import.meta.env.VITE_API_URL}${API_VERSION}/components/${id}`,
     {
       method: 'GET',
       headers: {
@@ -188,7 +190,7 @@ export async function GetAvailableFilters(
   lang: string
 ): Promise<AvailableFilter> {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/components/filters`,
+    `${import.meta.env.VITE_API_URL}${API_VERSION}/components/filters`,
     {
       method: 'GET',
       headers: {

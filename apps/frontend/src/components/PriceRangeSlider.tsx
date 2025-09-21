@@ -118,10 +118,11 @@ export default function PriceRangeSlider({
     }
 
     // Limit to 10 digits (not including minus sign)
+    const limitedNums = currency !== 'VND' ? 7 : 12;
     const digitsOnly = cleanValue.replace('-', '');
-    if (digitsOnly.length > 10) {
+    if (digitsOnly.length > limitedNums) {
       const isNegative = cleanValue.startsWith('-');
-      const limitedDigits = digitsOnly.substring(0, 10);
+      const limitedDigits = digitsOnly.substring(0, limitedNums);
       cleanValue = isNegative ? '-' + limitedDigits : limitedDigits;
     }
 
@@ -152,7 +153,7 @@ export default function PriceRangeSlider({
     }
 
     // Additional validation to ensure the number doesn't exceed reasonable bounds
-    const maxSafeValue = 9999999999; // 10 digits max
+    const maxSafeValue = currency !== 'VND' ? 9999999 : 999999999999;
     if (Math.abs(numValue) > maxSafeValue) {
       return;
     }
@@ -241,7 +242,7 @@ export default function PriceRangeSlider({
               placeholder={String(min)}
               inputMode="numeric"
               pattern="[0-9]*"
-              maxLength={10}
+              maxLength={12}
             />
           </div>
         </div>
@@ -265,7 +266,7 @@ export default function PriceRangeSlider({
               placeholder={String(max)}
               inputMode="numeric"
               pattern="[0-9]*"
-              maxLength={10}
+              maxLength={12}
             />
           </div>
         </div>

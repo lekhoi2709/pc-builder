@@ -54,10 +54,10 @@ export default function Components() {
   }
 
   return (
-    <section className="font-saira z-0 flex min-h-screen w-full flex-col items-center bg-transparent">
-      <main className="flex min-h-screen w-full flex-col md:flex-row">
+    <section className="font-saira max-w-screen z-0 flex min-h-screen flex-col items-center bg-transparent">
+      <main className="flex w-full flex-col md:block">
         <ComponentFilter data={data} />
-        <div className="mt-20 flex h-full min-h-screen w-screen flex-col gap-4 p-6 px-8 md:ml-[20vw] md:w-[100vw]">
+        <div className="z-0 mt-20 flex h-full min-h-screen flex-col gap-4 p-6 px-8 md:w-full md:pl-[22vw]">
           <h1 className="text-2xl font-semibold">Components</h1>
           <ActiveFilters />
           <section className="flex flex-wrap justify-center gap-8 md:justify-start">

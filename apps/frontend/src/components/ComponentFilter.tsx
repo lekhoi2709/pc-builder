@@ -9,8 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
+import { memo } from 'react';
 
-export default function ComponentFilter({ data }: { data: ComponentResponse }) {
+const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
   const { filters, setFilters } = useComponentStore();
   const { lang } = useParams();
 
@@ -30,7 +31,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
 
   if (filterQuery.isLoading && !filterQuery.data) {
     return (
-      <aside className="border-primary-600/50 dark:border-primary-400/50 fixed z-0 hidden h-full min-h-screen w-[20vw] flex-col items-center justify-center gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
+      <aside className="border-primary-600/50 dark:border-primary-400/50 fixed z-10 hidden h-full min-h-screen w-[20vw] flex-col items-center justify-center gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
         <div className="border-primary-600/50 dark:border-primary-400/50 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
         <p className="mt-4 text-lg">Loading components...</p>
       </aside>
@@ -38,7 +39,7 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
   }
 
   return (
-    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-0 hidden h-full min-h-screen w-[20vw] flex-col gap-4 overflow-y-auto border-r-[0.5px] bg-transparent p-4 px-6 pt-6 md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-10 hidden h-full min-h-screen w-[20vw] flex-col gap-4 overflow-y-auto border-r-[0.5px] bg-transparent p-4 px-6 pt-6 backdrop-blur-sm md:flex">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters
@@ -106,4 +107,6 @@ export default function ComponentFilter({ data }: { data: ComponentResponse }) {
       </section>
     </aside>
   );
-}
+});
+
+export default ComponentFilter;

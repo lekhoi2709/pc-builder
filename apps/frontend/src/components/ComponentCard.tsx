@@ -20,6 +20,7 @@ export const ComponentCard = memo(({ component }: { component: Component }) => {
         className="mb-4 h-60 w-full rounded-xl bg-white object-scale-down dark:mix-blend-multiply"
         loading="lazy"
         onError={onImageError}
+        decoding="async"
       />
       <span className="flex h-full flex-col justify-between">
         <h2 className="text-md mb-2 line-clamp-2 h-12 max-h-12">
