@@ -39,7 +39,7 @@ const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
   }
 
   return (
-    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira fixed inset-y-0 top-16 z-10 hidden h-full min-h-screen w-[20vw] flex-col gap-4 overflow-y-auto border-r-[0.5px] bg-transparent p-4 px-6 pt-6 backdrop-blur-sm md:flex">
+    <aside className="border-primary-600/50 dark:border-primary-400/50 font-saira pt-22 scrollbar-hidden fixed inset-y-0 z-10 hidden h-full min-h-screen w-[20vw] gap-4 overflow-y-auto border-r-[0.5px] bg-transparent p-4 px-6 backdrop-blur-sm xl:flex xl:flex-col">
       <span className="my-4 flex items-center text-xl font-semibold">
         <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
         Filters
