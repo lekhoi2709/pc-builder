@@ -27,8 +27,10 @@ func init() {
 func main() {
 	if appConfig.Environment == "development" {
 		gin.SetMode(gin.DebugMode)
+		log.Println("🔧 Running in development mode")
 	} else {
 		gin.SetMode(gin.ReleaseMode)
+		log.Println("🚀 Running in production mode")
 	}
 
 	router := gin.New()
@@ -61,5 +63,4 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
-
 }

@@ -1,7 +1,6 @@
-package controller
+package controllers
 
 import (
-	"net/http"
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/db"
 	"pc-builder/backend/utils"
@@ -44,11 +43,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"status":  http.StatusCreated,
-		"message": "User registered successfully",
-	})
-	utils.SuccessResponse(c, "User registered successfully", nil)
+	utils.CreatedResponse(c, "User registered successfully", nil)
 }
 
 func Login(c *gin.Context) {

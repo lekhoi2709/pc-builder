@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"pc-builder/backend/api/controller"
+	controller "pc-builder/backend/api/controllers"
 	"pc-builder/backend/api/middlewares"
+	"pc-builder/backend/db"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,8 @@ const (
 )
 
 func RegisterRoutes(router *gin.Engine) {
+	componentController := controller.NewComponentController(db.DB)
+
 	// Health check route
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
@@ -26,31 +29,64 @@ func RegisterRoutes(router *gin.Engine) {
 	auth.POST("/register", controller.Register)
 	auth.POST("/login", controller.Login)
 
+	// Public component routes
 	components := api.Group("/components")
 	{
-		// Get all components without filters
-		components.GET("/all", controller.GetAllComponents)
-		components.GET("/:id", controller.GetComponentByID)
-
-		// Get components with filters and pagination
-		components.GET("", controller.GetComponentsWithPagination)
+		components.GET("/all", componentController.GetAllComponents)
+		components.GET("/:id", componentController.GetComponentByID)
+		components.GET("", componentController.GetComponentsWithPagination)
 		// Get available filters
-		components.GET("/filters", controller.GetAvailableFilters)
+		components.GET("/filters", componentController.GetAvailableFilters)
 	}
 
-	// Protected routes
+	categories := api.Group("/categories")
+	{
+		categories.GET("", componentController.GetAllCategories)
+	}
+
+	brands := api.Group("/brands")
+	{
+		brands.GET("", componentController.GetAllBrands)
+	}
+
+	// Protected admin routes
 	admin := api.Group("/admin")
 	admin.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin))
 	{
 		admin.GET("/users", controller.GetAllUsers)
+
+		// Admin component management
+		adminComponents := admin.Group("/components")
+		{
+			adminComponents.POST("", componentController.CreateComponent)
+			adminComponents.POST("/bulk", componentController.BulkCreateComponents)
+			adminComponents.PUT("/:id", componentController.UpdateComponent)
+			adminComponents.DELETE("/:id", componentController.DeleteComponent)
+		}
+
+		// Admin category management
+		adminCategories := admin.Group("/categories")
+		{
+			adminCategories.POST("", componentController.CreateCategory)
+		}
+
+		// Admin brand management
+		adminBrands := admin.Group("/brands")
+		{
+			adminBrands.POST("", componentController.CreateBrand)
+		}
 	}
 
-	protectedComponents := api.Group("/components")
-	protectedComponents.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleAdmin, RoleVendor))
+	vendor := api.Group("/vendor")
+	vendor.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleVendor))
 	{
-		protectedComponents.POST("", controller.CreateComponent)
-		protectedComponents.POST("/bulk", controller.BulkCreateComponents)
-		protectedComponents.PUT("/:id", controller.UpdateComponent)
-		protectedComponents.DELETE("/:id", controller.DeleteComponent)
+		vendorComponents := vendor.Group("/components")
+		{
+			vendorComponents.POST("", componentController.CreateComponent)
+			vendorComponents.POST("/bulk", componentController.BulkCreateComponents)
+			vendorComponents.PUT("/:id", componentController.UpdateComponent)
+			// Vendors can only soft-delete (set inactive), not hard delete
+			vendorComponents.PUT("/:id/deactivate", componentController.DeleteComponent)
+		}
 	}
 }
