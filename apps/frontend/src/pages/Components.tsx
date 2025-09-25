@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { GetComponents, type PaginationMeta } from '../services/api';
+import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import ComponentFilter from '../components/ComponentFilter';
 import { ActiveFilters } from '../components/ActiveFilters';
 import { useParams } from 'react-router';
+import ComponentFilter from '../components/ComponentFilter';
+import type { PaginationMeta } from '../types/components';
 
 export default function Components() {
   const { lang } = useParams();
@@ -45,13 +46,6 @@ export default function Components() {
   }
 
   const data = componentQuery.data;
-  if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg">No components found</p>
-      </div>
-    );
-  }
 
   return (
     <section className="font-saira max-w-screen z-0 flex min-h-screen flex-col items-center bg-transparent">
@@ -61,12 +55,16 @@ export default function Components() {
           <h1 className="text-2xl font-semibold">Components</h1>
           <ActiveFilters />
           <section className="flex flex-wrap justify-center gap-8 md:justify-start">
-            {data.components.map(component => (
-              <ComponentCard key={component.id} component={component} />
-            ))}
+            {data && data.components ? (
+              data.components.map(component => (
+                <ComponentCard key={component.id} component={component} />
+              ))
+            ) : (
+              <div>No Component Found</div>
+            )}
           </section>
           <section className="mt-auto w-full self-center">
-            {data.pagination && (
+            {data && data.pagination && (
               <div className="w-full">
                 <p className="text-sm text-gray-500">
                   Page {data.pagination.current_page} of{' '}

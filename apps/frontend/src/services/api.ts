@@ -1,71 +1,13 @@
-import type { Component } from '../types/components';
-
-export interface AvailableFilter {
-  categories: string[];
-  brands: string[];
-  price_range: {
-    min_price: number;
-    max_price: number;
-    currency: string;
-  };
-}
-export interface ComponentFilter {
-  category?: string;
-  brand?: string;
-  min_price?: number;
-  max_price?: number;
-  search?: string;
-  sort_by?:
-    | 'name'
-    | 'price'
-    | 'created_at'
-    | 'updated_at'
-    | 'brand'
-    | 'category';
-  sort_order?: 'asc' | 'desc';
-  currency?: string;
-
-  // Spec filters
-  socket?: string;
-  memory?: string;
-  storage?: string;
-  form_factor?: string;
-  interface?: string;
-  wattage?: string;
-  generation?: string;
-  process_size?: string;
-}
-
-export interface PaginationMeta {
-  current_page: number;
-  page_size?: number;
-  total_pages?: number;
-  total_records?: number;
-}
-
-export interface ComponentSummary {
-  total_components: number;
-  by_category: Record<string, number>;
-  by_brand: Record<string, number>;
-  price_range: {
-    min_price: number;
-    max_price: number;
-    currency: string;
-  };
-}
-
-export interface ComponentResponse {
-  components: Component[];
-  pagination: PaginationMeta;
-  filters: ComponentFilter;
-  summary: ComponentSummary;
-}
-
-export interface ApiResponse<T> {
-  status: number;
-  response?: T;
-  message?: string;
-}
+import type {
+  ApiResponse,
+  AvailableFilters,
+  Brand,
+  Category,
+  Component,
+  ComponentFilter,
+  ComponentResponse,
+  PaginationMeta,
+} from '../types/components';
 
 const langToCurrency: Record<string, string> = {
   en: 'USD',
@@ -87,8 +29,8 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
     params.append('page_size', filters.page_size.toString());
 
   // Add filter params
-  if (filters.category) params.append('category', filters.category);
-  if (filters.brand) params.append('brand', filters.brand);
+  if (filters.category_id) params.append('category_id', filters.category_id);
+  if (filters.brand_id) params.append('brand_id', filters.brand_id);
   if (filters.min_price)
     params.append('min_price', filters.min_price.toString());
   if (filters.max_price)
@@ -98,31 +40,68 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
   if (filters.sort_order) params.append('sort_order', filters.sort_order);
   if (filters.currency) params.append('currency', filters.currency);
 
-  // Add spec filters
-  if (filters.socket) params.append('socket', filters.socket);
-  if (filters.memory) params.append('memory', filters.memory);
-  if (filters.storage) params.append('storage', filters.storage);
-  if (filters.form_factor) params.append('form_factor', filters.form_factor);
-  if (filters.interface) params.append('interface', filters.interface);
-  if (filters.wattage) params.append('wattage', filters.wattage);
-  if (filters.generation) params.append('generation', filters.generation);
-  if (filters.process_size) params.append('process_size', filters.process_size);
+  // Add dynamic spec filters
+  const specKeys = [
+    'socket',
+    'form_factor',
+    'memory_type',
+    'storage_type',
+    'interface',
+    'generation',
+    'process_size',
+  ];
+  for (const key of specKeys) {
+    const value = filters[key];
+    if (value && typeof value === 'string') {
+      params.append(key, value);
+    }
+  }
 
   return params.toString();
 }
 
 const API_VERSION = 'v1';
+const API_BASE = import.meta.env.VITE_API_URL + API_VERSION;
+
+export async function GetCategories(): Promise<Category[]> {
+  const response = await fetch(API_BASE + '/categories', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! status: ' + response.status);
+  }
+
+  const json = await response.json();
+  return json.response as Category[];
+}
+
+export async function GetBrands(): Promise<Brand[]> {
+  const response = await fetch(API_BASE + '/brands', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! status: ' + response.status);
+  }
+
+  const json = await response.json();
+  return json.response as Brand[];
+}
 
 export async function GetAllComponents(): Promise<Component[]> {
-  const response = await fetch(
-    import.meta.env.VITE_API_URL + API_VERSION + '/components/all',
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetch(API_BASE + '/components/all', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -142,7 +121,7 @@ export async function GetComponents(
   }
 
   const queryParams = buildQueryParams({ ...filters, ...pagination });
-  const url = `${import.meta.env.VITE_API_URL}${API_VERSION}/components${queryParams ? `?${queryParams}` : ''}`;
+  const url = `${API_BASE}/components${queryParams ? `?${queryParams}` : ''}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -161,19 +140,16 @@ export async function GetComponents(
     throw new Error(json.message || 'No data received');
   }
 
-  return json.response;
+  return json.response as ComponentResponse;
 }
 
 export async function GetComponentById(id: string): Promise<Component> {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_URL}${API_VERSION}/components/${id}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE}/components/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
   if (!response.ok) {
     if (response.status === 404) {
@@ -188,23 +164,23 @@ export async function GetComponentById(id: string): Promise<Component> {
 
 export async function GetAvailableFilters(
   lang: string
-): Promise<AvailableFilter> {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_URL}${API_VERSION}/components/filters`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept-Language': lang,
-      },
-    }
-  );
+): Promise<AvailableFilters> {
+  const response = await fetch(`${API_BASE}/components/filters`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Language': lang,
+    },
+  });
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const json = await response.json();
+  const json: ApiResponse<AvailableFilters> = await response.json();
+  if (!json.response) {
+    throw new Error(json.message || 'No data received');
+  }
 
-  return json.response as AvailableFilter;
+  return json.response;
 }

@@ -1,23 +1,57 @@
-export interface Component {
+export interface Category {
   id: string;
   name: string;
-  category: CategoryType;
-  brand: string;
-  models: string;
-  specs: Specs;
-  price: PriceItem[];
-  image_url: string[];
+  display_name: string;
+  description: string;
+  icon_url: string;
+  sort_order: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export type CategoryType =
-  | 'CPU'
-  | 'GPU'
-  | 'MAINBOARD'
-  | 'RAM'
-  | 'STORAGE'
-  | 'PSU';
+export interface Brand {
+  id: string;
+  name: string;
+  display_name: string;
+  logo_url: string;
+  website: string;
+  country: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Component {
+  id: string;
+  name: string;
+  category_id: string;
+  brand_id: string;
+  models: string;
+  price: PriceItem[];
+  image_url: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ComponentSpec {
+  id: number;
+  component_id: string;
+  spec_key: string;
+  spec_value: string;
+  spec_type: string;
+  is_filterable: boolean;
+  created_at: string;
+}
+
+export interface ComponentWithRelations extends Component {
+  category_name?: string;
+  category_display?: string;
+  brand_name?: string;
+  brand_display?: string;
+  specs_map?: Record<string, string>;
+}
 
 export interface PriceItem {
   currency: string;
@@ -25,218 +59,70 @@ export interface PriceItem {
   symbol: string;
 }
 
-export type Specs =
-  | CPUSpecs
-  | GPUSpecs
-  | MainboardSpecs
-  | RAMSpecs
-  | StorageSpecs
-  | PSUSpecs;
+export interface FilterOption {
+  key: string;
+  value: string;
+  display_name?: string;
+  count: number;
+}
 
-export interface CPUSpecs {
-  category: 'CPU';
-  architecture: {
-    code_name: string;
-    generation: string;
-    memory_support: string;
-  };
-  physical: {
-    socket: string;
-    foundry: string;
-    process_size: string;
-  };
-  cache: {
-    l1: string;
-    l2: string;
-    l3: string;
-  };
-  performance: {
-    cores: number;
-    threads: number;
-    integrated_graphics: string;
-    frequency: string;
-    turbo_clock: string;
-    base_clock: string;
-    tdp: string;
-  };
-  other: {
-    market: string;
-    release_date: string;
+export interface ComponentStats {
+  total_components: number;
+  by_category: Record<string, number>;
+  by_brand: Record<string, number>;
+  price_range: {
+    min_price: number;
+    max_price: number;
+    currency: string;
   };
 }
 
-export interface GPUSpecs {
-  category: 'GPU';
-  architecture: {
-    code_name: string;
-    generation: string;
-    process_size: string;
-  };
-  physical: {
-    length: string;
-    width: string;
-    height: string;
-    slots: number;
-    weight: string;
-    power_pins: string;
-  };
-  memory: {
-    size: string;
-    type: string;
-    bus: string;
-    bandwidth: string;
-  };
-  performance: {
-    base_clock: string;
-    boost_clock: string;
-    memory_clock: string;
-    cuda_cores?: number;
-    stream_procs?: number;
-    rt_cores?: number;
-    tensor_cores?: number;
-    tdp: string;
-  };
-  display: {
-    max_resolution: string;
-    max_displays: number;
-    outputs: string[];
-  };
-  other: {
-    market: string;
-    release_date: string;
+export interface AvailableFilters {
+  categories: Category[];
+  brands: Brand[];
+  specs: Record<string, FilterOption[]>;
+  price_range: {
+    min_price: number;
+    max_price: number;
+    currency: string;
   };
 }
 
-export interface MainboardSpecs {
-  category: 'MAINBOARD';
-  physical: {
-    form_factor: string;
-    length: string;
-    width: string;
-  };
-  chipset: {
-    name: string;
-    manufacturer: string;
-  };
-  cpu: {
-    socket: string;
-    supported_cpus: string[];
-  };
-  memory: {
-    type: string;
-    max_capacity: string;
-    slots: number;
-    max_speed: string;
-  };
-  expansion: {
-    pcie_slots: {
-      version: string;
-      lanes: string;
-      count: number;
-    }[];
-    other_slots: string[];
-  };
-  storage: {
-    sata_ports: number;
-    m2_slots: {
-      key_type: string;
-      length: string;
-      interface: string;
-      generation: string;
-    }[];
-  };
-  connectivity: {
-    ethernet: string[];
-    wifi: string;
-    usb: {
-      usb2: number;
-      usb3: number;
-      usbc: number;
-    };
-    audio: string[];
-    display: string[];
-  };
-  other: {
-    rgb_lighting: boolean;
-    release_date: string;
-  };
+export interface ComponentFilter {
+  category_id?: string;
+  brand_id?: string;
+  min_price?: number;
+  max_price?: number;
+  search?: string;
+  sort_by?:
+    | 'name'
+    | 'price'
+    | 'created_at'
+    | 'updated_at'
+    | 'brand'
+    | 'category';
+  sort_order?: 'asc' | 'desc';
+  currency?: string;
+  // Spec filters - dynamic based on available specs
+  [key: string]: string | number | undefined;
 }
 
-export interface RAMSpecs {
-  category: 'RAM';
-  physical: {
-    form_factor: string;
-    modules: number;
-  };
-  memory: {
-    type: string;
-    capacity: string;
-    per_module: string;
-  };
-  performance: {
-    speed: string;
-    latency: string;
-    voltage: string;
-    timing: string;
-  };
-  other: {
-    rgb_lighting: boolean;
-    heat_sink: boolean;
-    release_date: string;
-  };
+export interface PaginationMeta {
+  current_page: number;
+  page_size?: number;
+  total_pages?: number;
+  total_records?: number;
 }
 
-export interface StorageSpecs {
-  category: 'STORAGE';
-  physical: {
-    type: string;
-    form_factor: string;
-    interface: string;
-    capacity: string;
-  };
-  performance: {
-    read_speed: string;
-    write_speed: string;
-    iops: string;
-    latency: string;
-    endurance: string;
-  };
-  features: {
-    encryption: boolean;
-    cache: string;
-    controller: string;
-  };
-  other: {
-    warranty: string;
-    release_date: string;
-  };
+export interface ComponentResponse {
+  components: ComponentWithRelations[];
+  pagination: PaginationMeta;
+  filters: ComponentFilter;
+  summary: ComponentStats;
 }
 
-export interface PSUSpecs {
-  category: 'PSU';
-  physical: {
-    form_factor: string;
-    length: string;
-    width: string;
-    height: string;
-    weight: string;
-  };
-  power: {
-    wattage: string;
-    efficiency: string;
-    certification: string;
-    modular: boolean;
-  };
-  connectors: {
-    motherboard: string;
-    cpu: string;
-    pcie: string;
-    sata: string;
-    molex: string;
-  };
-  other: {
-    fan_size: string;
-    warranty: string;
-    release_date: string;
-  };
+export interface ApiResponse<T> {
+  status: number;
+  message: string;
+  response?: T;
 }

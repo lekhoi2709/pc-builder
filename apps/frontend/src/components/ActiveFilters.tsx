@@ -39,6 +39,16 @@ export const ActiveFilters = () => {
       </div>
     );
 
+  const activeFilterStringFormatted = (str: string): string => {
+    const strArr = str.split('_');
+    if (strArr[1] === 'id' || !strArr[1]) {
+      return strArr[0];
+    } else if (strArr[0] === 'storage') {
+      return strArr[1];
+    }
+    return strArr[0] + ' ' + strArr[1];
+  };
+
   return (
     <div className="font-saira flex justify-between">
       <div className="flex flex-wrap items-center gap-2">
@@ -48,12 +58,19 @@ export const ActiveFilters = () => {
               key={key}
               className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
             >
-              {key}:{' '}
-              {priceFormatter(
-                parseInt(value as string),
-                langToLocale[lang || 'vn'] || 'vi-VN',
-                'currency'
-              )}
+              <span className="flex flex-wrap gap-1">
+                <p className="capitalize">
+                  {activeFilterStringFormatted(key)}:
+                </p>
+                <p>
+                  {priceFormatter(
+                    parseInt(value as string),
+                    langToLocale[lang || 'vn'] || 'vi-VN',
+                    'currency'
+                  )}
+                </p>
+              </span>
+
               <CircleXIcon
                 className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
                 onClick={() => removeFilter(key)}
@@ -64,7 +81,14 @@ export const ActiveFilters = () => {
               key={key}
               className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
             >
-              {key}: {String(value)}
+              <span className="flex flex-wrap gap-1">
+                <p className="capitalize">
+                  {activeFilterStringFormatted(String(key))}:
+                </p>
+                <p className="capitalize">
+                  {activeFilterStringFormatted(String(value))}
+                </p>
+              </span>
               <CircleXIcon
                 className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
                 onClick={() => removeFilter(key)}
@@ -80,9 +104,9 @@ export const ActiveFilters = () => {
         </button>
       </div>
       <div className="flex items-center gap-2">
-        {/* <p>Default Sorting</p>
-        <div className="border-primary-950 h-[50%] w-fit border-l" /> */}
-        <SortingIndicator content={activeFilters[0].key} />
+        <SortingIndicator
+          content={activeFilterStringFormatted(String(activeFilters[0].key))}
+        />
       </div>
     </div>
   );

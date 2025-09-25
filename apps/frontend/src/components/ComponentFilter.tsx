@@ -1,17 +1,14 @@
 import { ListFilterPlusIcon } from 'lucide-react';
-import {
-  type ComponentResponse,
-  type ComponentFilter,
-  GetAvailableFilters,
-} from '../services/api';
+import { GetAvailableFilters } from '../services/api';
 import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
 import { memo } from 'react';
+import type { ComponentResponse, ComponentFilter } from '../types/components';
 
-const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
+const ComponentFilters = memo(({ data }: { data?: ComponentResponse }) => {
   const { filters, setFilters } = useComponentStore();
   const { lang } = useParams();
 
@@ -29,7 +26,7 @@ const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
     refetchOnWindowFocus: false,
   });
 
-  if (filterQuery.isLoading && !filterQuery.data) {
+  if ((filterQuery.isLoading && !filterQuery.data) || !data) {
     return (
       <aside className="border-primary-600/50 dark:border-primary-400/50 fixed z-10 hidden h-full min-h-screen w-[20vw] flex-col items-center justify-center gap-4 border-r-[0.5px] bg-transparent p-4 px-6 md:flex">
         <div className="border-primary-600/50 dark:border-primary-400/50 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
@@ -49,27 +46,27 @@ const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
         <h3 className="mb-2 text-lg font-semibold">Categories</h3>
         <div className="flex flex-wrap gap-2">
           {filterQuery.data &&
-            filterQuery.data.categories.map(category => (
-              <button
-                key={category}
-                className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={() => handleFilterChange('category', category)}
-                disabled={!data.summary.by_category[category]}
-              >
-                <link
-                  type="image/png"
-                  sizes="16x16"
-                  rel="icon"
-                  href="https://icons8.com/icon/osQ0ttYWdlt-/motherboard"
-                />
-                <span className="flex items-center gap-1">
-                  {category}
-                  <p className="text-sm opacity-50 group-disabled:hidden">
-                    {data.summary.by_category[category] || 0}
-                  </p>
-                </span>
-              </button>
-            ))}
+            filterQuery.data.categories.map(category => {
+              const categoryCount =
+                data.summary.by_category[category.display_name] || 0;
+              const isAvailable = categoryCount > 0;
+
+              return (
+                <button
+                  key={category.id}
+                  className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => handleFilterChange('category_id', category.id)}
+                  disabled={!isAvailable}
+                >
+                  <span className="flex items-center gap-1">
+                    {category.display_name}
+                    <p className="text-sm opacity-50 group-disabled:hidden">
+                      {categoryCount}
+                    </p>
+                  </span>
+                </button>
+              );
+            })}
         </div>
       </section>
       <section>
@@ -77,23 +74,24 @@ const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
         <div className="flex flex-wrap gap-2">
           {filterQuery.data &&
             filterQuery.data.brands.map(brand => {
-              const isBrandAvailable = data.summary.by_brand[brand] != null;
+              const brandCount = data.summary.by_brand[brand.display_name] || 0;
+              const isBrandAvailable = brandCount > 0;
+
               if (isBrandAvailable) {
                 return (
                   <span
-                    key={brand}
+                    key={brand.id}
                     className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-                    onClick={() => handleFilterChange('brand', brand)}
+                    onClick={() => handleFilterChange('brand_id', brand.id)}
                   >
                     <span className="flex items-center gap-1">
-                      {brand}
-                      <p className="text-sm opacity-50">
-                        {isBrandAvailable && data.summary.by_brand[brand]}
-                      </p>
+                      {brand.display_name}
+                      <p className="text-sm opacity-50">{brandCount}</p>
                     </span>
                   </span>
                 );
               }
+              return null;
             })}
         </div>
       </section>
@@ -109,4 +107,4 @@ const ComponentFilter = memo(({ data }: { data: ComponentResponse }) => {
   );
 });
 
-export default ComponentFilter;
+export default ComponentFilters;

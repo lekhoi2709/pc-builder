@@ -1,22 +1,41 @@
 import { create } from 'zustand';
-import type { ComponentFilter, PaginationMeta } from '../services/api';
+import type {
+  Brand,
+  Category,
+  ComponentFilter,
+  PaginationMeta,
+} from '../types/components';
 
 interface ActiveFilter {
   key: keyof ComponentFilter;
-  value: string | number;
+  value?: string | number;
+  display_name?: string;
 }
 
 interface ComponentStore {
   filters: ComponentFilter;
   activeFilters: ActiveFilter[];
   pagination: PaginationMeta;
+  categories: Category[];
+  brands: Brand[];
+  availableSpecs: Record<string, Array<{ value: string; count: number }>>;
+
   setFilters: (filter: Partial<ComponentFilter>) => void;
   setPagination: (pagination: Partial<PaginationMeta>) => void;
   clearFilter: () => void;
   removeFilter: (key: keyof ComponentFilter) => void;
+  setCategories: (categories?: Category[]) => void;
+  setBrands: (brands?: Brand[]) => void;
+  setAvailableSpecs: (
+    specs: Record<string, Array<{ value: string; count: number }>>
+  ) => void;
+
+  getCategoryById: (id: string) => Category | undefined;
+  getBrandById: (id: string) => Brand | undefined;
+  getActiveFiltersWithDisplayNames: () => ActiveFilter[];
 }
 
-export const useComponentStore = create<ComponentStore>(set => ({
+export const useComponentStore = create<ComponentStore>((set, get) => ({
   filters: {
     sort_by: 'name',
     sort_order: 'asc',
@@ -26,6 +45,10 @@ export const useComponentStore = create<ComponentStore>(set => ({
     current_page: 1,
     page_size: 12,
   },
+  categories: [],
+  brands: [],
+  availableSpecs: {},
+
   setFilters: filter =>
     set(state => {
       const newFilters = { ...state.filters, ...filter };
@@ -39,7 +62,10 @@ export const useComponentStore = create<ComponentStore>(set => ({
             value !== '' &&
             key !== 'currency'
         )
-        .map(([k, value]) => ({ key: k as keyof ComponentFilter, value }));
+        .map(([k, value]) => ({
+          key: k as keyof ComponentFilter,
+          value,
+        }));
 
       return {
         filters: newFilters,
@@ -47,8 +73,10 @@ export const useComponentStore = create<ComponentStore>(set => ({
         pagination: { ...state.pagination, current_page: 1 },
       };
     }),
+
   setPagination: pagination =>
     set(state => ({ pagination: { ...state.pagination, ...pagination } })),
+
   clearFilter: () =>
     set(state => ({
       filters: {
@@ -58,6 +86,7 @@ export const useComponentStore = create<ComponentStore>(set => ({
       activeFilters: [],
       pagination: { current_page: 1, page_size: state.pagination.page_size },
     })),
+
   removeFilter: key =>
     set(state => {
       const newFilters = { ...state.filters, [key]: undefined };
@@ -71,7 +100,10 @@ export const useComponentStore = create<ComponentStore>(set => ({
             value !== '' &&
             key !== 'currency'
         )
-        .map(([k, value]) => ({ key: k as keyof ComponentFilter, value }));
+        .map(([k, value]) => ({
+          key: k as keyof ComponentFilter,
+          value,
+        }));
 
       return {
         filters: newFilters,
@@ -79,4 +111,18 @@ export const useComponentStore = create<ComponentStore>(set => ({
         pagination: { ...state.pagination, current_page: 1 },
       };
     }),
+
+  setCategories: categories => set({ categories }),
+  setBrands: brands => set({ brands }),
+  setAvailableSpecs: specs => set({ availableSpecs: specs }),
+
+  getCategoryById: id => get().categories.find(cat => cat.id === id),
+  getBrandById: id => get().brands.find(brand => brand.id === id),
+
+  getActiveFiltersWithDisplayNames: () => {
+    const state = get();
+    return state.activeFilters.map(filter => ({
+      ...filter,
+    }));
+  },
 }));
