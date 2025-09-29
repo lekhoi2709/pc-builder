@@ -85,7 +85,16 @@ const ComponentFilters = memo(({ data }: { data?: ComponentResponse }) => {
                     onClick={() => handleFilterChange('brand_id', brand.id)}
                   >
                     <span className="flex items-center gap-1">
-                      {brand.display_name}
+                      <span className="flex items-center gap-2">
+                        <img
+                          src={brand.logo_url}
+                          alt=""
+                          className="h-full w-[50px] object-contain"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        {brand.display_name}
+                      </span>
                       <p className="text-sm opacity-50">{brandCount}</p>
                     </span>
                   </span>

@@ -68,12 +68,14 @@ func RegisterRoutes(router *gin.Engine) {
 		adminCategories := admin.Group("/categories")
 		{
 			adminCategories.POST("", componentController.CreateCategory)
+			adminCategories.PATCH("/:id", componentController.UpdateCategory)
 		}
 
 		// Admin brand management
 		adminBrands := admin.Group("/brands")
 		{
 			adminBrands.POST("", componentController.CreateBrand)
+			adminBrands.PATCH("/:id", componentController.UpdateBrand)
 		}
 	}
 

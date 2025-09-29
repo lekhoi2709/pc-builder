@@ -26,21 +26,6 @@ func NewComponentController(db *gorm.DB) *ComponentController {
 	}
 }
 
-func (ctrl *ComponentController) GetAvailableFilters(c *gin.Context) {
-	lang := c.GetHeader("Accept-Language")
-	if lang == "" {
-		lang = "vn"
-	}
-
-	filters, err := ctrl.repo.GetAvailableFilters(lang)
-	if err != nil {
-		utils.InternalServerError(c, "Failed to fetch available filters", err)
-		return
-	}
-
-	utils.SuccessResponse(c, "Available filters fetched successfully", filters)
-}
-
 func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 	var pagination repositories.PaginationParams
 	pagination.Page = 1
@@ -225,8 +210,8 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 
 	var request struct {
 		Name       string                 `json:"name"`
-		CategoryID int                    `json:"category_id"`
-		BrandID    int                    `json:"brand_id"`
+		CategoryID string                 `json:"category_id"`
+		BrandID    string                 `json:"brand_id"`
 		Models     string                 `json:"models"`
 		Price      models.Price           `json:"price"`
 		ImageURL   models.ImageURL        `json:"image_url"`
@@ -253,10 +238,10 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 		if request.Name != "" {
 			updates["name"] = request.Name
 		}
-		if request.CategoryID > 0 {
+		if request.CategoryID != "" {
 			updates["category_id"] = request.CategoryID
 		}
-		if request.BrandID > 0 {
+		if request.BrandID != "" {
 			updates["brand_id"] = request.BrandID
 		}
 		if request.Models != "" {
@@ -476,102 +461,6 @@ func (ctrl *ComponentController) GetAllComponents(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, "Components fetched successfully", components)
-}
-
-func (ctrl *ComponentController) CreateCategory(c *gin.Context) {
-	var request struct {
-		ID          string `json:"id" binding:"required"`
-		Name        string `json:"name" binding:"required"`
-		DisplayName string `json:"display_name" binding:"required"`
-		Description string `json:"description"`
-		IconURL     string `json:"icon_url"`
-		SortOrder   int    `json:"sort_order"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.BadRequestError(c, "Invalid request body", err)
-		return
-	}
-
-	category := &models.Category{
-		ID:          request.ID,
-		Name:        request.Name,
-		DisplayName: request.DisplayName,
-		Description: request.Description,
-		IconURL:     request.IconURL,
-		SortOrder:   request.SortOrder,
-	}
-
-	if err := ctrl.repo.CreateCategory(category); err != nil {
-		if strings.Contains(err.Error(), "duplicate key") {
-			utils.ConflictError(c, "Category with this ID already exists")
-			return
-		}
-
-		utils.InternalServerError(c, "Failed to create category", err)
-		return
-	}
-
-	utils.CreatedResponse(c, "Category created successfully", category)
-}
-
-func (ctrl *ComponentController) GetAllCategories(c *gin.Context) {
-	categories, err := ctrl.repo.GetAllCategories()
-	if err != nil {
-		utils.InternalServerError(c, "Failed to fetch categories", err)
-		return
-	}
-
-	utils.SuccessResponse(c, "Categories fetched successfully", categories)
-}
-
-func (ctrl *ComponentController) CreateBrand(c *gin.Context) {
-	var request struct {
-		ID          string `json:"id" binding:"required"`
-		Name        string `json:"name" binding:"required"`
-		DisplayName string `json:"display_name" binding:"required"`
-		Description string `json:"description"`
-		LogoURL     string `json:"logo_url"`
-		Website     string `json:"website"`
-		Country     string `json:"country"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.BadRequestError(c, "Invalid request body", err)
-		return
-	}
-
-	brand := &models.Brand{
-		ID:          request.ID,
-		Name:        request.Name,
-		DisplayName: request.DisplayName,
-		LogoURL:     request.LogoURL,
-		Website:     request.Website,
-		Country:     request.Country,
-	}
-
-	if err := ctrl.repo.CreateBrand(brand); err != nil {
-		if strings.Contains(err.Error(), "duplicate key") {
-			utils.ConflictError(c, "Brand with this ID already exists")
-			return
-		}
-
-		utils.InternalServerError(c, "Failed to create brand", err)
-		return
-	}
-
-	utils.CreatedResponse(c, "Brand created successfully", brand)
-}
-
-func (ctrl *ComponentController) GetAllBrands(c *gin.Context) {
-
-	brands, err := ctrl.repo.GetAllBrands()
-	if err != nil {
-		utils.InternalServerError(c, "Failed to fetch brands", err)
-		return
-	}
-
-	utils.SuccessResponse(c, "Brands fetched successfully", brands)
 }
 
 // Helper function to determine if a spec is filterable
