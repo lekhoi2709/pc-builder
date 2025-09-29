@@ -9,7 +9,7 @@ import { memo } from 'react';
 import type { ComponentResponse, ComponentFilter } from '../types/components';
 
 const ComponentFilters = memo(({ data }: { data?: ComponentResponse }) => {
-  const { filters, setFilters } = useComponentStore();
+  const { filters, setFilters, removeFilter } = useComponentStore();
   const { lang } = useParams();
 
   const handleFilterChange = (
@@ -55,7 +55,11 @@ const ComponentFilters = memo(({ data }: { data?: ComponentResponse }) => {
                 <button
                   key={category.id}
                   className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
-                  onClick={() => handleFilterChange('category_id', category.id)}
+                  onClick={() =>
+                    filters.category_id
+                      ? removeFilter('category_id')
+                      : handleFilterChange('category_id', category.id)
+                  }
                   disabled={!isAvailable}
                 >
                   <span className="flex items-center gap-1">
@@ -82,7 +86,11 @@ const ComponentFilters = memo(({ data }: { data?: ComponentResponse }) => {
                   <span
                     key={brand.id}
                     className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-                    onClick={() => handleFilterChange('brand_id', brand.id)}
+                    onClick={() =>
+                      filters.brand_id
+                        ? removeFilter('brand_id')
+                        : handleFilterChange('brand_id', brand.id)
+                    }
                   >
                     <span className="flex items-center gap-1">
                       <span className="flex items-center gap-2">

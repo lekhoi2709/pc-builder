@@ -1,4 +1,10 @@
-import { CircleXIcon, ArrowUpAzIcon, ArrowDownAZIcon } from 'lucide-react';
+import {
+  CircleXIcon,
+  ArrowUpAzIcon,
+  ArrowDownAZIcon,
+  ArrowUp01Icon,
+  ArrowDown01Icon,
+} from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
@@ -35,6 +41,13 @@ export const ActiveFilters = () => {
       <div className="font-saira flex w-full justify-end">
         <div className="flex items-center gap-2 self-end">
           <SortingIndicator content="Default Sorting" />
+          <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+          <SortingIndicator
+            content="Price"
+            sort_by="price"
+            IconUp={ArrowUp01Icon}
+            IconDown={ArrowDown01Icon}
+          />
         </div>
       </div>
     );
@@ -107,6 +120,13 @@ export const ActiveFilters = () => {
         <SortingIndicator
           content={activeFilterStringFormatted(String(activeFilters[0].key))}
         />
+        <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+        <SortingIndicator
+          content="Price"
+          sort_by="price"
+          IconUp={ArrowUp01Icon}
+          IconDown={ArrowDown01Icon}
+        />
       </div>
     </div>
   );
@@ -116,31 +136,61 @@ function SortingIndicator({
   content = '',
   containerCN,
   textCN,
+  IconUp = ArrowUpAzIcon,
+  IconDown = ArrowDownAZIcon,
+  sort_by = 'name',
 }: {
   content?: string;
   containerCN?: string;
   textCN?: string;
+  IconUp?: React.ElementType;
+  IconDown?: React.ElementType;
+  sort_by?:
+    | 'name'
+    | 'price'
+    | 'created_at'
+    | 'updated_at'
+    | 'brand'
+    | 'category';
 }) {
   const { filters, setFilters } = useComponentStore();
+
+  const isActive = filters.sort_by === sort_by;
+  const showIcon = isActive;
+  const isAscending = filters.sort_order === 'asc';
 
   return (
     <span
       className={twMerge(
-        'text-primary-950 dark:text-primary-50 hover:bg-primary-100 dark:hover:bg-primary-600/50 flex cursor-pointer items-center gap-1 rounded p-2 capitalize',
+        'text-primary-950 dark:text-primary-50 dark:hover:bg-primary-600/50 hover:bg-primary-200 flex cursor-pointer items-center gap-1 rounded p-2 capitalize transition-colors',
+        isActive && 'bg-primary-100 dark:bg-primary-800/50',
         containerCN
       )}
-      onClick={() =>
-        setFilters({
-          ...filters,
-          sort_order: filters.sort_order === 'asc' ? 'desc' : 'asc',
-        })
-      }
+      onClick={() => {
+        if (filters.sort_by === sort_by) {
+          setFilters({
+            ...filters,
+            sort_order: filters.sort_order === 'asc' ? 'desc' : 'asc',
+            sort_by: sort_by,
+          });
+        } else {
+          setFilters({
+            ...filters,
+            sort_by: sort_by,
+            sort_order: 'asc',
+          });
+        }
+      }}
     >
       <p className={twMerge('', textCN)}>{content}</p>
-      {filters.sort_order === 'asc' ? (
-        <ArrowDownAZIcon className="h-4 w-4" />
-      ) : (
-        <ArrowUpAzIcon className="h-4 w-4" />
+      {showIcon && (
+        <>
+          {isAscending ? (
+            <IconDown className="h-4 w-4" />
+          ) : (
+            <IconUp className="h-4 w-4" />
+          )}
+        </>
       )}
     </span>
   );

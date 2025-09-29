@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useComponentStore } from '../stores/componentStore';
-import type { ComponentFilter } from '../services/api';
+import type { ComponentFilter } from '../types/components';
 
 interface PriceRangeSliderProps {
   min?: number;
@@ -25,7 +25,7 @@ const currencyToLocale: Record<string, string> = {
 export default function PriceRangeSlider({
   min = 0,
   max = 1000,
-  step = 10,
+  step = 100,
   currency = 'VND',
   onChange,
 }: PriceRangeSliderProps) {
