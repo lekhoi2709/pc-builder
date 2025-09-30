@@ -62,6 +62,7 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
    ```
 
 4. **Verify the installation**
+
    ```bash
    curl http://localhost:8080/health
    # Expected: {"status":"ok"}
@@ -86,24 +87,42 @@ A comprehensive PC component management service built with Go, Gin, GORM, and Po
 
 ### Project Structure
 
-```
-pc-builder/
-├── backend/
-│   ├── config/         # Configuration management
-│   ├── controller/     # API controllers
-│   ├── db/             # Database initialization
-│   ├── helpers/        # Helper functions
-│   ├── middlewares/    # API middlewares
-│   ├── models/         # Data models
-│   ├── routes/         # Route definitions
-│   ├── main.go         # Application entry point
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   ├── go.mod
-│   ├── go.sum
-│   ├── .env.example
-│   └── README.md
-└── frontend/
+```text
+apps/backend/
+├── api/
+│   ├── controllers/        # Request handlers
+│   │   ├── admin_controller.go
+│   │   ├── auth_controller.go
+│   │   ├── components_controller.go
+│   │   └── filters_controller.go
+│   ├── middlewares/        # Authentication, CORS, security
+│   │   ├── check_role.go
+│   │   ├── jwt_middleware.go
+│   │   └── security.go
+│   ├── models/             # Database models
+│   │   ├── components.go
+│   │   └── user.go
+│   ├── repositories/       # Database queries
+│   │   ├── components_repository.go
+│   │   └── filters_repository.go
+│   └── routes/             # Route definitions
+│       └── router.go
+├── config/                 # Configuration loader
+│   └── load_env.go
+├── db/                     # Database initialization
+│   └── db.go
+├── utils/                  # Helper functions
+│   ├── error.go
+│   ├── generate_jwt.go
+│   ├── hash_password.go
+│   └── response.go
+├── main.go                 # Application entry point
+├── Dockerfile              # Docker build instructions
+├── docker-compose.yml      # Docker services configuration
+├── .env.example            # Environment variables template
+├── .env                    # Your environment variables
+├── go.mod                  # Go dependencies
+└── README.md               # This file
 ```
 
 ### Environment Variables
@@ -131,29 +150,20 @@ pc-builder/
 
 ### Phase 2: Enhanced Backend (In Progress)
 
-- [ ] User authentication
-- [ ] Component relationships
-- [ ] Advanced search & filtering
-- [ ] Data validation & error handling
+- [x] User authentication
+- [x] Component relationships
+- [x] Advanced search & filtering
+- [x] Data validation & error handling
 - [ ] API documentation
 
-### Phase 3: Frontend Development
-
-- [ ] React.js web application
-- [ ] Component browsing interface
-- [ ] PC build configurator
-- [ ] User dashboard
-- [ ] Responsive design
-
-### Phase 4: Advanced Features
+### Phase 3: Advanced Features
 
 - [ ] Component compatibility checker
 - [ ] Price tracking & alerts
 - [ ] User reviews & ratings
 - [ ] Build sharing & community features
-- [ ] Mobile application
 
-### Phase 5: Production Ready
+### Phase 4: Production Ready
 
 - [ ] Comprehensive testing suite
 - [ ] Performance optimization
@@ -163,7 +173,7 @@ pc-builder/
 
 ## 👥 Authors
 
-- Le Dinh Khoi - Initial work
+- **GitHub:** [@lekhoi2709](https://github.com/lekhoi2709) - Le Dinh Khoi
 
 ## 🙏 Acknowledgments
 
