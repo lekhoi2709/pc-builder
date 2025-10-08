@@ -48,71 +48,69 @@ export default function Components() {
   const data = componentQuery.data;
 
   return (
-    <section className="font-saira max-w-screen z-0 flex min-h-screen flex-col items-center bg-transparent">
-      <main className="flex w-full flex-col md:block">
-        <ComponentFilter data={data} />
-        <div className="z-0 mt-20 flex h-full min-h-screen flex-col gap-4 p-6 px-8 md:w-full md:pl-[22vw]">
-          <h1 className="text-2xl font-semibold">Components</h1>
-          <ActiveFilters />
-          <section className="flex flex-wrap justify-center gap-8 md:justify-start">
-            {data && data.components ? (
-              data.components.map(component => (
-                <ComponentCard key={component.id} component={component} />
-              ))
-            ) : (
-              <div>No Component Found</div>
-            )}
-          </section>
-          <section className="mt-auto w-full self-center">
-            {data && data.pagination && (
-              <div className="w-full">
-                <p className="text-sm text-gray-500">
-                  Page {data.pagination.current_page} of{' '}
-                  {data.pagination.total_pages}
-                </p>
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <button
-                    onClick={() =>
-                      setPagination({
-                        ...pagination,
-                        current_page: Math.max(1, pagination.current_page - 1),
-                      })
-                    }
-                    disabled={pagination.current_page <= 1}
-                    className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
-                  >
-                    <ArrowBigLeftIcon className="inline stroke-[1.5]" />
-                  </button>
-                  <Pagination
-                    totalPages={data.pagination.total_pages!}
-                    currentPage={data.pagination.current_page}
-                    delta={delta}
-                    setPagination={setPagination}
-                  />
-                  <button
-                    onClick={() =>
-                      setPagination({
-                        ...pagination,
-                        current_page: Math.min(
-                          data.pagination.total_pages!,
-                          pagination.current_page + 1
-                        ),
-                      })
-                    }
-                    disabled={
-                      pagination.current_page >= data.pagination.total_pages!
-                    }
-                    className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
-                  >
-                    <ArrowBigRightIcon className="inline stroke-[1.5]" />
-                  </button>
-                </div>
+    <main className="font-saira max-w-screen z-0 flex min-h-screen w-screen flex-col items-center bg-transparent md:block">
+      <ComponentFilter data={data} />
+      <div className="md:pt-25 z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-6 pr-8 md:pl-[22vw]">
+        <h1 className="text-2xl font-semibold">Components</h1>
+        <ActiveFilters />
+        <section className="flex flex-wrap justify-center gap-8 md:justify-start">
+          {data && data.components ? (
+            data.components.map(component => (
+              <ComponentCard key={component.id} component={component} />
+            ))
+          ) : (
+            <div>No Component Found</div>
+          )}
+        </section>
+        <section className="mt-auto w-full self-center">
+          {data && data.pagination && (
+            <div className="w-full">
+              <p className="text-sm text-gray-500">
+                Page {data.pagination.current_page} of{' '}
+                {data.pagination.total_pages}
+              </p>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <button
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      current_page: Math.max(1, pagination.current_page - 1),
+                    })
+                  }
+                  disabled={pagination.current_page <= 1}
+                  className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                >
+                  <ArrowBigLeftIcon className="inline stroke-[1.5]" />
+                </button>
+                <Pagination
+                  totalPages={data.pagination.total_pages!}
+                  currentPage={data.pagination.current_page}
+                  delta={delta}
+                  setPagination={setPagination}
+                />
+                <button
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      current_page: Math.min(
+                        data.pagination.total_pages!,
+                        pagination.current_page + 1
+                      ),
+                    })
+                  }
+                  disabled={
+                    pagination.current_page >= data.pagination.total_pages!
+                  }
+                  className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                >
+                  <ArrowBigRightIcon className="inline stroke-[1.5]" />
+                </button>
               </div>
-            )}
-          </section>
-        </div>
-      </main>
-    </section>
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
   );
 }
 
