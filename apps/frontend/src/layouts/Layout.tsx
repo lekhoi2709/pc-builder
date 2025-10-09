@@ -1,11 +1,18 @@
-import { Outlet } from 'react-router';
+import { useState } from 'react';
+import { Outlet, useLocation } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
 
 export default function Layout() {
+  const location = useLocation();
+  const isAtComponentPage = location.pathname.includes('/component');
+  const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
   return (
     <main className="max-w-screen dark:bg-light-dark dark:text-primary-50 text-primary-900 relative h-full min-h-screen w-screen bg-transparent transition-colors duration-500 ease-in-out">
-      <StickyNavbar />
-      <Outlet />
+      <StickyNavbar
+        className="fixed right-4 top-4 z-50 hidden h-fit xl:flex"
+        isSideBarOpen={isAtComponentPage ? isSideBarOpen : undefined}
+      />
+      <Outlet context={{ isSideBarOpen, setIsSideBarOpen }} />
     </main>
   );
 }

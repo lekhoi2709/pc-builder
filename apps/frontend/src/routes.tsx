@@ -1,9 +1,9 @@
 import { createBrowserRouter, redirect } from 'react-router';
 import Home from './pages/Home';
 import Components from './pages/Components';
-import Layout from './layouts/Layout';
 import getUserLocale from './utils/getUserLocale';
 import About from './pages/About';
+import Layout from './layouts/Layout';
 
 function redirectToLocale() {
   const locale = getUserLocale();
@@ -41,12 +41,8 @@ const router = createBrowserRouter([
   {
     path: '/:lang',
     Component: Layout,
-    children: [{ index: true, Component: Home }],
-  },
-  {
-    path: '/:lang',
-    Component: Layout,
     children: [
+      { index: true, Component: Home },
       { path: 'components', Component: Components },
       { path: 'about', Component: About },
     ],

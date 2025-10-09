@@ -1,7 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
-import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
+import {
+  ArrowBigLeftIcon,
+  ArrowBigRightIcon,
+  PanelLeftIcon,
+} from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { useEffect, useState } from 'react';
 import React from 'react';
@@ -9,11 +13,15 @@ import { ActiveFilters } from '../components/ActiveFilters';
 import { useParams } from 'react-router';
 import ComponentFilter from '../components/ComponentFilter';
 import type { PaginationMeta } from '../types/components';
+import { twMerge } from 'tailwind-merge';
+import { motion, type Variants } from 'framer-motion';
+import { useSideBarOpen } from '../hooks/useSideBarOpen';
 
 export default function Components() {
   const { lang } = useParams();
   const { filters, pagination, setPagination } = useComponentStore();
   const delta = useResponsivePagination(setPagination);
+  const { isSideBarOpen, setIsSideBarOpen } = useSideBarOpen();
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination, lang],
@@ -46,21 +54,68 @@ export default function Components() {
   }
 
   const data = componentQuery.data;
+  const listVariants: Variants = {
+    collapse: {
+      paddingLeft: '2.5rem',
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      },
+    },
+    expand: {
+      paddingLeft: '22.5%',
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      },
+    },
+  };
 
   return (
     <main className="font-saira max-w-screen z-0 flex min-h-screen w-screen flex-col items-center bg-transparent md:block">
-      <ComponentFilter data={data} />
-      <div className="md:pt-25 z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-6 pr-8 md:pl-[22vw]">
-        <h1 className="text-2xl font-semibold">Components</h1>
+      <ComponentFilter
+        data={data}
+        isSideBarOpen={isSideBarOpen}
+        setIsSideBarOpen={setIsSideBarOpen}
+        className="fixed left-0 top-0 z-40 h-screen xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:rounded-[36px]"
+      />
+      <motion.div
+        className={twMerge(
+          'z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-8 md:pt-28'
+        )}
+        variants={listVariants}
+        animate={isSideBarOpen ? 'expand' : 'collapse'}
+        initial="collapse"
+      >
+        <span className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold">Components</h1>
+          <button
+            className={twMerge(
+              'border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-400/50 hover:bg-primary-200 border-1 cursor-pointer rounded-full p-2 px-3 transition-colors',
+              isSideBarOpen ? 'hidden xl:block' : ''
+            )}
+            onClick={() => setIsSideBarOpen(prev => !prev)}
+          >
+            <PanelLeftIcon className="w-5" />
+          </button>
+        </span>
         <ActiveFilters />
-        <section className="flex flex-wrap justify-center gap-8 md:justify-start">
-          {data && data.components ? (
-            data.components.map(component => (
-              <ComponentCard key={component.id} component={component} />
-            ))
-          ) : (
-            <div>No Component Found</div>
+        <section
+          className={twMerge(
+            'flex w-full justify-center',
+            isSideBarOpen ? 'md:justify-start' : ''
           )}
+        >
+          <div className="flex flex-wrap justify-center gap-8 xl:justify-start">
+            {data && data.components
+              ? data.components.map(component => (
+                  <ComponentCard key={component.id} component={component} />
+                ))
+              : 'No Component Found'}
+          </div>
         </section>
         <section className="mt-auto w-full self-center">
           {data && data.pagination && (
@@ -109,7 +164,7 @@ export default function Components() {
             </div>
           )}
         </section>
-      </div>
+      </motion.div>
     </main>
   );
 }
