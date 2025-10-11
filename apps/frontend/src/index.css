@@ -31,25 +31,74 @@ body {
 
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
-  --color-primary-50: oklch(0.958 0.0202 279.94);
-  --color-primary-100: oklch(0.9221 0.0381 280.77);
-  --color-primary-200: oklch(0.858 0.0696 280.35);
-  --color-primary-300: oklch(0.7715 0.1131 278.95);
-  --color-primary-400: oklch(0.6801 0.1583 276.93);
-  --color-primary-500: oklch(0.6032 0.1916 274.77);
-  --color-primary-600: oklch(0.5288 0.2157 272.04);
-  --color-primary-700: oklch(0.4701 0.2033 271.53);
-  --color-primary-800: oklch(0.4125 0.1661 272.14);
-  --color-primary-900: oklch(0.372 0.1253 274.01);
-  --color-primary-950: oklch(0.2635 0.0805 275.5);
+  /* custom color */
+  /* ===== AQUAMARINE PALETTE ===== */
+  --color-aquamarine-100: oklch(0.91 0.04 172);
+  --color-aquamarine-200: oklch(0.81 0.1 172);
+  --color-aquamarine-300: oklch(0.68 0.15 172);
+  --color-aquamarine-400: oklch(0.63 0.14 172);
+  --color-aquamarine-500: oklch(0.48 0.11 172);
+  --color-aquamarine-600: oklch(0.29 0.07 172);
 
-  --color-accent-400: #7a85c1 --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-glass: rgba(255, 255, 255, 0.08);
-  --color-text: #f8fafc;
-  --color-text-dark: #121212;
-  --color-light-dark: #18181b;
+  /* ===== ELECTRIC BLUE PALETTE ===== */
+  --color-electric-100: oklch(0.91 0.04 202);
+  --color-electric-200: oklch(0.81 0.1 202);
+  --color-electric-300: oklch(0.68 0.15 202);
+  --color-electric-400: oklch(0.63 0.14 202);
+  --color-electric-500: oklch(0.48 0.11 202);
+  --color-electric-600: oklch(0.29 0.07 202);
 
+  /* ===== STEEL PALETTE ===== */
+  --color-steel-100: oklch(0.92 0.04 235);
+  --color-steel-200: oklch(0.81 0.1 235);
+  --color-steel-300: oklch(0.69 0.15 235);
+  --color-steel-400: oklch(0.64 0.14 235);
+  --color-steel-500: oklch(0.49 0.11 235);
+  --color-steel-600: oklch(0.29 0.07 235);
+
+  /* ===== BLUE PALETTE ===== */
+  --color-blue-100: oklch(0.92 0.04 260);
+  --color-blue-200: oklch(0.82 0.1 260);
+  --color-blue-300: oklch(0.71 0.15 260);
+  --color-blue-400: oklch(0.65 0.14 260);
+  --color-blue-500: oklch(0.5 0.11 260);
+  --color-blue-600: oklch(0.3 0.07 260);
+
+  --color-primary-100: var(--color-blue-100);
+  --color-primary-200: var(--color-blue-200);
+  --color-primary-300: var(--color-blue-300);
+  --color-primary-400: var(--color-blue-400);
+  --color-primary-500: var(--color-blue-500);
+  --color-primary-600: var(--color-blue-600);
+
+  --color-secondary-100: var(--color-steel-100);
+  --color-secondary-200: var(--color-steel-200);
+  --color-secondary-300: var(--color-steel-300);
+  --color-secondary-400: var(--color-steel-400);
+  --color-secondary-500: var(--color-steel-500);
+  --color-secondary-600: var(--color-steel-600);
+
+  --color-accent-100: var(--color-electric-100);
+  --color-accent-200: var(--color-electric-200);
+  --color-accent-300: var(--color-electric-300);
+  --color-accent-400: var(--color-electric-400);
+  --color-accent-500: var(--color-electric-500);
+  --color-accent-600: var(--color-electric-600);
+
+  --color-success-100: var(--color-aquamarine-100);
+  --color-success-200: var(--color-aquamarine-200);
+  --color-success-300: var(--color-aquamarine-300);
+  --color-success-400: var(--color-aquamarine-400);
+  --color-success-500: var(--color-aquamarine-500);
+  --color-success-600: var(--color-aquamarine-600);
+
+  --color-dark: oklch(0.2694 0.0104 242.08);
+  --color-dark-elevated: oklch(0.3006 0.01 229.23);
+
+  --color-light: oklch(0.9911 0 0);
+  --color-light-elevated: oklch(0.9761 0 0);
+
+  /* font */
   --font-saira: 'Saira', sans-serif;
 }
 

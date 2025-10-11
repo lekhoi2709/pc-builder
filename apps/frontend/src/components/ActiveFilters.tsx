@@ -63,13 +63,13 @@ export const ActiveFilters = () => {
   };
 
   return (
-    <div className="font-saira flex justify-between">
+    <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
       <div className="flex flex-wrap items-center gap-2">
         {activeFilters.map(({ key, value }) =>
           key === 'max_price' || key === 'min_price' ? (
             <span
               key={key}
-              className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
+              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
             >
               <span className="flex flex-wrap gap-1">
                 <p className="capitalize">
@@ -92,7 +92,7 @@ export const ActiveFilters = () => {
           ) : (
             <span
               key={key}
-              className="bg-primary-100/50 border-primary-300 dark:text-primary-50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded border px-2 py-1 dark:border-transparent"
+              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
             >
               <span className="flex flex-wrap gap-1">
                 <p className="capitalize">
@@ -111,12 +111,12 @@ export const ActiveFilters = () => {
         )}
         <button
           onClick={clearFilter}
-          className="text-primary-700 dark:text-primary-200 ml-2 cursor-pointer text-xs hover:underline"
+          className="ml-2 cursor-pointer text-xs text-red-600 hover:underline dark:text-red-400"
         >
           Clear All
         </button>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2">
         <SortingIndicator
           content={activeFilterStringFormatted(String(activeFilters[0].key))}
         />
@@ -162,8 +162,9 @@ function SortingIndicator({
   return (
     <span
       className={twMerge(
-        'text-primary-950 dark:text-primary-50 dark:hover:bg-primary-600/50 hover:bg-primary-200 flex cursor-pointer items-center gap-1 rounded p-2 capitalize transition-colors',
-        isActive && 'bg-primary-100 dark:bg-primary-800/50',
+        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 flex cursor-pointer items-center gap-1 rounded border-transparent p-2 capitalize transition-colors duration-300 ease-in-out',
+        isActive &&
+          'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20',
         containerCN
       )}
       onClick={() => {

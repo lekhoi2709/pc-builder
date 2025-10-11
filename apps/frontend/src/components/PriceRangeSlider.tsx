@@ -190,11 +190,11 @@ export default function PriceRangeSlider({
       <div className="relative">
         <div
           ref={sliderRef}
-          className="relative h-2 cursor-pointer rounded-full bg-gray-200"
+          className="bg-accent-600/20 dark:bg-accent-400/20 relative h-2 cursor-pointer rounded-full"
         >
           {/* Range Track */}
           <div
-            className="bg-primary-500 absolute h-2 rounded-full"
+            className="bg-accent-200 dark:bg-accent-400/80 absolute h-2 rounded-full"
             style={{
               left: `${minPercentage}%`,
               right: `${100 - maxPercentage}%`,
@@ -236,7 +236,7 @@ export default function PriceRangeSlider({
                 'decimal'
               )}
               onChange={e => handleInputChange('min', e.target.value)}
-              className="focus:ring-primary-500 w-full rounded-md border border-gray-300 py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-2"
+              className="border-light-elevated dark:border-dark-elevated border-1 bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
               min={min}
               max={maxValue - step}
               placeholder={String(min)}
@@ -260,7 +260,7 @@ export default function PriceRangeSlider({
                 'decimal'
               )}
               onChange={e => handleInputChange('max', e.target.value)}
-              className="focus:ring-primary-500 w-full rounded-md border border-gray-300 py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-2"
+              className="border-light-elevated dark:border-dark-elevated border-1 bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
               min={min}
               max={max}
               placeholder={String(max)}
@@ -272,7 +272,7 @@ export default function PriceRangeSlider({
         </div>
       </div>
       <button
-        className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 flex w-full cursor-pointer items-center justify-center rounded p-4 py-2"
+        className="bg-accent-200 dark:bg-accent-400/80 dark:hover:bg-accent-400/50 hover:bg-accent-300 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 flex w-full cursor-pointer items-center justify-center rounded p-4 py-2 transition-colors duration-300 ease-in-out"
         onClick={() => {
           setFilters({
             ...(filters as ComponentFilter),

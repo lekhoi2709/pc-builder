@@ -4,6 +4,7 @@ import { ComponentCard } from '../components/ComponentCard';
 import {
   ArrowBigLeftIcon,
   ArrowBigRightIcon,
+  PanelLeftDashedIcon,
   PanelLeftIcon,
 } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
@@ -75,7 +76,7 @@ export default function Components() {
   };
 
   return (
-    <main className="font-saira max-w-screen z-0 flex min-h-screen w-screen flex-col items-center bg-transparent md:block">
+    <main className="font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center bg-transparent md:block">
       <ComponentFilter
         data={data}
         isSideBarOpen={isSideBarOpen}
@@ -94,12 +95,16 @@ export default function Components() {
           <h1 className="text-2xl font-semibold">Components</h1>
           <button
             className={twMerge(
-              'border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-400/50 hover:bg-primary-200 border-1 cursor-pointer rounded-full p-2 px-3 transition-colors',
+              'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out',
               isSideBarOpen ? 'hidden xl:block' : ''
             )}
             onClick={() => setIsSideBarOpen(prev => !prev)}
           >
-            <PanelLeftIcon className="w-5" />
+            {isSideBarOpen ? (
+              <PanelLeftDashedIcon className="w-5" />
+            ) : (
+              <PanelLeftIcon className="w-5" />
+            )}
           </button>
         </span>
         <ActiveFilters />
@@ -133,7 +138,7 @@ export default function Components() {
                     })
                   }
                   disabled={pagination.current_page <= 1}
-                  className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                  className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                 >
                   <ArrowBigLeftIcon className="inline stroke-[1.5]" />
                 </button>
@@ -156,7 +161,7 @@ export default function Components() {
                   disabled={
                     pagination.current_page >= data.pagination.total_pages!
                   }
-                  className="dark:bg-primary-800/50 dark:hover:bg-primary-600/50 bg-primary-100 hover:bg-primary-200 cursor-pointer rounded px-4 py-2 disabled:opacity-50"
+                  className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                 >
                   <ArrowBigRightIcon className="inline stroke-[1.5]" />
                 </button>
@@ -239,7 +244,7 @@ const renderPageNumbers = (
     page === '...' ? (
       <span
         key={`ellipsis-${idx}`}
-        className="text-primary-900 dark:text-primary-50 px-2"
+        className="text-primary-600 dark:text-primary-100 px-2"
       >
         ...
       </span>
@@ -249,11 +254,12 @@ const renderPageNumbers = (
         onClick={() =>
           setPagination({ ...pagination, current_page: page as number })
         }
-        className={`text-primary-900 dark:text-primary-50 cursor-pointer rounded px-4 py-2 ${
+        className={twMerge(
+          'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
           pagination.current_page === page
-            ? 'bg-primary-500 !text-primary-50 dark:bg-primary-300 dark:!text-primary-950'
-            : 'bg-primary-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-600/50'
-        }`}
+            ? 'bg-accent-200 dark:bg-accent-400/80 hover:bg-accent-200 hover:dark:bg-accent-400/80 hover:border-transparent'
+            : 'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20'
+        )}
       >
         {page}
       </button>

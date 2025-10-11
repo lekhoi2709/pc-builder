@@ -1,4 +1,8 @@
-import { ListFilterPlusIcon, PanelLeftIcon } from 'lucide-react';
+import {
+  ListFilterPlusIcon,
+  PanelLeftDashedIcon,
+  PanelLeftIcon,
+} from 'lucide-react';
 import { GetAvailableFilters } from '../services/api';
 import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
@@ -74,7 +78,7 @@ const ComponentFilters = memo(
     return (
       <motion.aside
         className={twMerge(
-          'border-primary-600/50 dark:border-primary-400/50 font-saira scrollbar-hidden xl:border-1 dark:dark:bg-light-dark flex w-full min-w-[15rem] flex-col gap-4 overflow-y-auto bg-white p-4 px-6 xl:w-[20%] xl:bg-transparent xl:backdrop-blur-sm',
+          'font-saira scrollbar-hidden xl:border-1 border-primary-700 xl:border-secondary-300 xl:hover:border-secondary-400 xl:dark:border-secondary-500 xl:bg-secondary-500/20 xl:dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 bg-light dark:bg-dark flex w-full min-w-[15rem] flex-col gap-4 overflow-y-auto p-4 px-6 transition-colors duration-300 ease-in-out xl:w-[20%] xl:backdrop-blur-sm',
           className
         )}
         variants={listVariants}
@@ -88,17 +92,21 @@ const ComponentFilters = memo(
           </span>
           <button
             className={twMerge(
-              'border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-400/50 hover:bg-primary-200 border-1 cursor-pointer rounded-full p-2 px-3 transition-colors xl:hidden'
+              'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out xl:hidden'
             )}
             onClick={() => setIsSideBarOpen(prev => !prev)}
           >
-            <PanelLeftIcon className="w-5" />
+            {isSideBarOpen ? (
+              <PanelLeftDashedIcon className="w-5" />
+            ) : (
+              <PanelLeftIcon className="w-5" />
+            )}
           </button>
         </span>
         <SearchComponentBar />
-        <section>
+        <section className="text-primary-900 dark:text-primary-50">
           <h3 className="mb-2 text-lg font-semibold">Categories</h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.categories.map(category => {
                 const categoryCount =
@@ -106,15 +114,13 @@ const ComponentFilters = memo(
                 const isAvailable = categoryCount > 0;
 
                 return (
-                  <button
-                    key={category.id}
-                    className="bg-primary-100 dark:hover:bg-primary-600/50 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 group line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
-                    onClick={() =>
-                      filters.category_id
-                        ? removeFilter('category_id')
-                        : handleFilterChange('category_id', category.id)
-                    }
-                    disabled={!isAvailable}
+                  <FilterChip
+                    id={category.id}
+                    filter_type="category_id"
+                    filters={filters}
+                    removeFilter={removeFilter}
+                    handleFilterChange={handleFilterChange}
+                    isDisabled={!isAvailable}
                   >
                     <span className="flex items-center gap-1">
                       {category.display_name}
@@ -122,14 +128,14 @@ const ComponentFilters = memo(
                         {categoryCount}
                       </p>
                     </span>
-                  </button>
+                  </FilterChip>
                 );
               })}
           </div>
         </section>
-        <section>
+        <section className="text-primary-900 dark:text-primary-50">
           <h3 className="mb-2 text-lg font-semibold">Brands</h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.brands.map(brand => {
                 const brandCount =
@@ -138,14 +144,12 @@ const ComponentFilters = memo(
 
                 if (isBrandAvailable) {
                   return (
-                    <span
-                      key={brand.id}
-                      className="bg-primary-100 hover:bg-primary-200 border-primary-600/50 dark:border-primary-400/50 dark:hover:bg-primary-600/50 dark:bg-primary-800/50 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-                      onClick={() =>
-                        filters.brand_id
-                          ? removeFilter('brand_id')
-                          : handleFilterChange('brand_id', brand.id)
-                      }
+                    <FilterChip
+                      id={brand.id}
+                      filter_type="brand_id"
+                      filters={filters}
+                      removeFilter={removeFilter}
+                      handleFilterChange={handleFilterChange}
                     >
                       <span className="flex items-center gap-1">
                         <span className="flex items-center gap-2">
@@ -160,7 +164,7 @@ const ComponentFilters = memo(
                         </span>
                         <p className="text-sm opacity-50">{brandCount}</p>
                       </span>
-                    </span>
+                    </FilterChip>
                   );
                 }
                 return null;
@@ -179,5 +183,41 @@ const ComponentFilters = memo(
     );
   }
 );
+
+function FilterChip({
+  id,
+  filter_type,
+  filters,
+  removeFilter,
+  handleFilterChange,
+  isDisabled,
+  children,
+}: {
+  id: string;
+  filter_type: string;
+  filters: ComponentFilter;
+  removeFilter: (key: keyof ComponentFilter) => void;
+  handleFilterChange: (
+    key: keyof ComponentFilter,
+    value: string | number | undefined
+  ) => void;
+  isDisabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      key={id}
+      className="bg-accent-200/50 dark:bg-accent-400/80 border-primary-200 border-1 hover:bg-accent-300/50 dark:hover:bg-accent-400 border-border dark:border-border-dark dark:bg-selected-dark line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+      onClick={() =>
+        filters.brand_id
+          ? removeFilter(filter_type)
+          : handleFilterChange(filter_type, id)
+      }
+      disabled={isDisabled}
+    >
+      <span className="flex items-center gap-1">{children}</span>
+    </button>
+  );
+}
 
 export default ComponentFilters;
