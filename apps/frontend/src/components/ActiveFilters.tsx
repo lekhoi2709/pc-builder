@@ -8,6 +8,7 @@ import {
 import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
+import { memo } from 'react';
 
 const langToCurrency: Record<string, string> = {
   vn: 'VND',
@@ -19,7 +20,7 @@ const langToLocale: Record<string, string> = {
   en: 'en-US',
 };
 
-export const ActiveFilters = () => {
+export const ActiveFilters = memo(() => {
   const { activeFilters, removeFilter, clearFilter } = useComponentStore();
   const { lang } = useParams();
   const currency = langToCurrency[lang || 'vn'] || 'VND';
@@ -130,7 +131,7 @@ export const ActiveFilters = () => {
       </div>
     </div>
   );
-};
+});
 
 function SortingIndicator({
   content = '',
