@@ -13,6 +13,7 @@ func SetupSecurityMiddleware(router *gin.Engine) {
 	corsConfig := cors.Config{
 		AllowOrigins: []string{
 			"http://localhost:5173",
+			"https://pc-builder-frontend-odbrf1cg0-lekhoi2709s-projects.vercel.app",
 		},
 		AllowMethods: []string{
 			http.MethodGet,

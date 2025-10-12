@@ -14,6 +14,12 @@ import (
 var DB *gorm.DB
 
 func InitPostgres(cfg *config.Config) *gorm.DB {
+	sslMode := cfg.DB.SslMode
+
+	if cfg.Environment == "production" && sslMode == "disable" {
+		sslMode = "require"
+	}
+
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s timezone=UTC",
 		cfg.DB.Host,
