@@ -127,17 +127,18 @@ apps/backend/
 
 ### Environment Variables
 
-| Variable      | Description       | Default       |
-| ------------- | ----------------- | ------------- |
-| `DB_HOST`     | Database host     | `db`          |
-| `DB_PORT`     | Database port     | `5432`        |
-| `DB_USER`     | Database user     | `postgres`    |
-| `DB_PASSWORD` | Database password | _required_    |
-| `DB_NAME`     | Database name     | `pc_builder`  |
-| `DB_SSLMODE`  | SSL mode          | `disable`     |
-| `PORT`        | Application port  | `8080`        |
-| `JWT_SECRET`  | JWT secret key    | _required_    |
-| `ENVIRONMENT` | Environment       | `development` |
+| Variable          | Description       | Default                 |
+| ----------------- | ----------------- | ----------------------- |
+| `DB_HOST`         | Database host     | `db`                    |
+| `DB_PORT`         | Database port     | `5432`                  |
+| `DB_USER`         | Database user     | `postgres`              |
+| `DB_PASSWORD`     | Database password | _required_              |
+| `DB_NAME`         | Database name     | `pc_builder`            |
+| `DB_SSLMODE`      | SSL mode          | `disable`               |
+| `PORT`            | Application port  | `8080`                  |
+| `JWT_SECRET`      | JWT secret key    | _required_              |
+| `ENVIRONMENT`     | Environment       | `development`           |
+| `ALLOWED_ORIGINS` | Allowed Origins   | `http://localhost:5173` |
 
 ## 📋 Roadmap
 

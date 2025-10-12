@@ -9,17 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupSecurityMiddleware(router *gin.Engine) {
+func SetupSecurityMiddleware(router *gin.Engine, allowedOrigins []string) {
 	corsConfig := cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:5173",
-			"https://pc-builder-frontend-odbrf1cg0-lekhoi2709s-projects.vercel.app",
-		},
+		AllowOrigins: allowedOrigins,
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodPut,
+			http.MethodPatch,
 			http.MethodDelete,
+			http.MethodOptions,
 		},
 		AllowHeaders: []string{
 			"Origin", "Content-Type", "X-CSRF-Token", "Authorization",

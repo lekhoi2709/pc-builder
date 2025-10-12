@@ -35,7 +35,7 @@ func main() {
 
 	router := gin.New()
 
-	middlewares.SetupSecurityMiddleware(router)
+	middlewares.SetupSecurityMiddleware(router, appConfig.AllowedOrigins)
 	middlewares.SetupTrustedProxies(router)
 
 	router.GET("", func(context *gin.Context) {
