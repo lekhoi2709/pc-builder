@@ -261,7 +261,7 @@ const ComponentPageLayout = memo(
           <ActiveFilters />
           <section
             className={twMerge(
-              'flex w-full justify-center',
+              'flex w-full justify-center md:justify-start',
               props.isSideBarOpen ? 'md:justify-start' : ''
             )}
           >
