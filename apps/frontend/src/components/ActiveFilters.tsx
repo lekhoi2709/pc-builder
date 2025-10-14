@@ -184,7 +184,7 @@ function SortingIndicator({
         }
       }}
     >
-      <p className={twMerge('', textCN)}>{content}</p>
+      <p className={twMerge('prevent-select', textCN)}>{content}</p>
       {showIcon && (
         <>
           {isAscending ? (
