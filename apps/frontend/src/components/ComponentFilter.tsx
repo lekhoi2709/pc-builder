@@ -162,8 +162,8 @@ const ComponentFilters = memo(
         <section className="w-full">
           <h3 className="mb-2 text-lg font-semibold">Price</h3>
           <PriceRangeSlider
-            min={filterQuery.data?.price_range.min_price || 0}
-            max={filterQuery.data?.price_range.max_price || 1000}
+            min={data.summary.price_range.min_price || 0}
+            max={data.summary.price_range.max_price || 1000}
             currency={filterQuery.data?.price_range.currency || 'VND'}
           />
         </section>

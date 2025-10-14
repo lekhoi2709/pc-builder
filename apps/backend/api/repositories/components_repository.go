@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"pc-builder/backend/api/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -418,12 +419,15 @@ func (r *ComponentRepository) getComponentSummary(filters ComponentFilter) Compo
 		MaxPrice float64 `json:"max_price"`
 	}
 
+	// Create base query with filters applied
 	priceQuery := r.db.Table("components").
 		Select(`MIN((price_item->>'amount')::numeric) as min_price, MAX((price_item->>'amount')::numeric) as max_price`).
 		Joins(`CROSS JOIN LATERAL jsonb_array_elements(price) as price_item`).
-		Where(`price_item->>'currency' = ? AND is_active = true`, currency)
+		Joins("JOIN categories ON components.category_id = categories.id").
+		Where(`price_item->>'currency' = ? AND components.is_active = true`, currency)
 
-	priceQuery = r.applyFiltersForSummary(priceQuery, filters)
+	// Apply filters to price query
+	priceQuery = r.applyFiltersForPriceRange(priceQuery, filters)
 	priceQuery.Scan(&priceResult)
 
 	return ComponentStats{
@@ -463,4 +467,51 @@ func isFilterableSpec(key string) bool {
 		}
 	}
 	return false
+}
+
+func (r *ComponentRepository) applyFiltersForPriceRange(query *gorm.DB, filters ComponentFilter) *gorm.DB {
+	if filters.CategoryID != "" {
+		query = query.Where("components.category_id = ?", filters.CategoryID)
+	}
+
+	if filters.BrandID != "" {
+		query = query.Where(`
+			EXISTS (
+				SELECT 1 FROM component_brands
+				WHERE component_brands.component_id = components.id
+				AND component_brands.brand_id = ?
+			)
+		`, filters.BrandID)
+	}
+
+	if filters.Search != "" {
+		searchTerm := "%" + strings.ToLower(filters.Search) + "%"
+		query = query.Where(`
+			LOWER(components.name) LIKE ? OR
+			LOWER(categories.display_name) LIKE ? OR
+			LOWER(components.models) LIKE ? OR
+			EXISTS (
+				SELECT 1 FROM component_brands cb
+				JOIN brands b ON cb.brand_id = b.id
+				WHERE cb.component_id = components.id
+				AND LOWER(b.display_name) LIKE ?
+			)
+		`, searchTerm, searchTerm, searchTerm, searchTerm)
+	}
+
+	// Apply spec filters if any
+	for key, value := range filters.Specs {
+		if value != "" {
+			query = query.Where(`
+				EXISTS (
+					SELECT 1 FROM component_specs cs
+					WHERE cs.component_id = components.id
+					AND cs.spec_key = ?
+					AND LOWER(cs.spec_value) LIKE LOWER(?)
+				)
+			`, key, "%"+value+"%")
+		}
+	}
+
+	return query
 }
