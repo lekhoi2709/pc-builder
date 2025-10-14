@@ -41,6 +41,7 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 		&models.Category{},
 		&models.Brand{},
 		&models.Component{},
+		&models.ComponentBrands{},
 		&models.ComponentSpec{},
 		&models.User{},
 	); err != nil {

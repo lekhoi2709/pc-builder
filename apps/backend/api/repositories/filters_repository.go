@@ -27,12 +27,13 @@ func (r *ComponentRepository) GetAvailableFilters(lang string) (*AvailableFilter
 	}
 
 	err = r.db.
-		Select("brands.*, COUNT(components.id) as component_count").
+		Select("brands.*, COUNT(DISTINCT components.id) as component_count").
 		Table("brands").
-		Joins("LEFT JOIN components ON brands.id = components.brand_id AND components.is_active = true").
+		Joins("LEFT JOIN component_brands ON brands.id = component_brands.brand_id").
+		Joins("LEFT JOIN components ON components.id = component_brands.component_id AND components.is_active = true").
 		Where("brands.is_active = true").
 		Group("brands.id").
-		Having("COUNT(components.id) > 0").
+		Having("COUNT(DISTINCT components.id) > 0").
 		Order("brands.display_name").
 		Find(&brands).Error
 	if err != nil {
@@ -84,16 +85,27 @@ func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilt
 	}
 
 	if filters.BrandID != "" {
-		query = query.Where("components.brand_id = ?", filters.BrandID)
+		query = query.Where(`
+			EXISTS (
+				SELECT 1 FROM component_brands
+				WHERE component_brands.component_id = components.id
+				AND component_brands.brand_id = ?
+			)
+		`, filters.BrandID)
 	}
 
 	if filters.Search != "" {
 		searchTerm := "%" + strings.ToLower(filters.Search) + "%"
 		query = query.Where(`
 			LOWER(components.name) LIKE ? OR
-			LOWER(brands.display_name) LIKE ? OR
 			LOWER(categories.display_name) LIKE ? OR
-			LOWER(components.models) LIKE ?
+			LOWER(components.models) LIKE ? OR
+			EXISTS (
+				SELECT 1 FROM component_brands
+				JOIN brands ON component_brands.brand_id = brands.id
+				WHERE component_brands.component_id = components.id
+				AND LOWER(brands.display_name) LIKE ?
+			)
 		`, searchTerm, searchTerm, searchTerm, searchTerm)
 	}
 
@@ -162,7 +174,13 @@ func (r *ComponentRepository) applyFiltersForSummary(query *gorm.DB, filters Com
 	}
 
 	if filters.BrandID != "" {
-		query = query.Where("components.brand_id = ?", filters.BrandID)
+		query = query.Where(`
+			EXISTS (
+				SELECT 1 FROM component_brands
+				WHERE component_brands.component_id = components.id
+				AND component_brands.brand_id = ?
+			)
+		`, filters.BrandID)
 	}
 
 	if filters.Search != "" {

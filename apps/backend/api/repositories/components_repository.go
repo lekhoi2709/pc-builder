@@ -15,17 +15,17 @@ func NewComponentRepository(db *gorm.DB) *ComponentRepository {
 	return &ComponentRepository{db: db}
 }
 
-// ComponentFilter struct for the new structure
 type ComponentFilter struct {
-	CategoryID string            `form:"category_id"`
-	BrandID    string            `form:"brand_id"`
-	MinPrice   float64           `form:"min_price"`
-	MaxPrice   float64           `form:"max_price"`
-	Search     string            `form:"search"`
-	SortBy     string            `form:"sort_by"`
-	SortOrder  string            `form:"sort_order"`
-	Currency   string            `form:"currency"`
-	Specs      map[string]string `form:"-"` // Handle specs separately
+	CategoryID       string            `form:"category_id"`
+	BrandID          string            `form:"brand_id"`
+	PrimaryBrandOnly bool              `form:"primary_brand_only"`
+	MinPrice         float64           `form:"min_price"`
+	MaxPrice         float64           `form:"max_price"`
+	Search           string            `form:"search"`
+	SortBy           string            `form:"sort_by"`
+	SortOrder        string            `form:"sort_order"`
+	Currency         string            `form:"currency"`
+	Specs            map[string]string `form:"-"`
 }
 
 type PaginationParams struct {
@@ -80,6 +80,11 @@ type ComponentPriceRange struct {
 	Currency string  `json:"currency"`
 }
 
+type BrandAssociation struct {
+	BrandID   string `json:"brand_id"`
+	IsPrimary bool   `json:"is_primary"`
+}
+
 func groupSpecsByKey(specResults []models.ComponentSpec) map[string][]FilterOption {
 	specsMap := make(map[string][]FilterOption)
 	for _, spec := range specResults {
@@ -90,7 +95,6 @@ func groupSpecsByKey(specResults []models.ComponentSpec) map[string][]FilterOpti
 		option := FilterOption{
 			Key:   spec.SpecKey,
 			Value: spec.SpecValue,
-			// Count: spec.Count,
 		}
 		specsMap[spec.SpecKey] = append(specsMap[spec.SpecKey], option)
 	}
@@ -103,7 +107,6 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 			components.id,
 			components.name,
 			components.category_id,
-			components.brand_id,
 			components.models,
 			components.price,
 			components.image_url,
@@ -112,11 +115,14 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 			components.updated_at,
 			categories.name as category_name,
 			categories.display_name as category_display,
-			brands.name as brand_name,
-			brands.display_name as brand_display
+			(SELECT brands.name FROM brands
+			 JOIN component_brands ON brands.id = component_brands.brand_id
+			 WHERE component_brands.component_id = components.id LIMIT 1) as brand_name,
+			(SELECT brands.display_name FROM brands
+			 JOIN component_brands ON brands.id = component_brands.brand_id
+			 WHERE component_brands.component_id = components.id LIMIT 1) as brand_display
 		`).
 		Joins("JOIN categories ON components.category_id = categories.id").
-		Joins("JOIN brands ON components.brand_id = brands.id").
 		Where("components.is_active = true")
 
 	query = r.applyFilters(query, filters)
@@ -124,7 +130,6 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 	var totalRecords int64
 	countQuery := r.db.Model(&models.Component{}).
 		Joins("JOIN categories ON components.category_id = categories.id").
-		Joins("JOIN brands ON components.brand_id = brands.id").
 		Where("components.is_active = true")
 	countQuery = r.applyFilters(countQuery, filters)
 	err := countQuery.Count(&totalRecords).Error
@@ -141,8 +146,6 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 		models.Component
 		CategoryName    string `json:"category_name"`
 		CategoryDisplay string `json:"category_display"`
-		BrandName       string `json:"brand_name"`
-		BrandDisplay    string `json:"brand_display"`
 	}
 
 	err = query.Find(&componentResults).Error
@@ -156,8 +159,11 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 			Component:       result.Component,
 			CategoryName:    result.CategoryName,
 			CategoryDisplay: result.CategoryDisplay,
-			BrandName:       result.BrandName,
-			BrandDisplay:    result.BrandDisplay,
+		}
+
+		err = r.loadComponentBrands(&comp)
+		if err != nil {
+			return nil, err
 		}
 
 		err = r.loadComponentSpecs(&comp)
@@ -183,6 +189,46 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 		Filters: filters,
 		Summary: summary,
 	}, nil
+}
+
+func (r *ComponentRepository) GetComponentByID(id string) (*models.ComponentWithRelations, error) {
+	var component models.ComponentWithRelations
+	err := r.db.
+		Select(`
+			components.id,
+			components.name,
+			components.category_id,
+			components.models,
+			components.price,
+			components.image_url,
+			components.is_active,
+			components.created_at,
+			components.updated_at,
+			categories.name as category_name,
+			categories.display_name as category_display
+		`).
+		Table("components").
+		Joins("JOIN categories ON components.category_id = categories.id").
+		Where("components.id = ? AND components.is_active = true", id).
+		First(&component).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Load brands
+	err = r.loadComponentBrands(&component)
+	if err != nil {
+		return nil, err
+	}
+
+	// Load specs
+	err = r.loadComponentSpecs(&component)
+	if err != nil {
+		return nil, err
+	}
+
+	return &component, nil
 }
 
 func (r *ComponentRepository) applySorting(query *gorm.DB, filters ComponentFilter) *gorm.DB {
@@ -211,7 +257,14 @@ func (r *ComponentRepository) applySorting(query *gorm.DB, filters ComponentFilt
 			 LIMIT 1) %s
 		`, currency, sortOrder))
 	case "brand":
-		query = query.Order("brands.display_name " + sortOrder)
+		query = query.Order(fmt.Sprintf(`
+			(SELECT brands.display_name
+			 FROM component_brands
+			 JOIN brands ON component_brands.brand_id = brands.id
+			 WHERE component_brands.component_id = components.id
+			 AND component_brands.is_primary = true
+			 LIMIT 1) %s
+		`, sortOrder))
 	case "category":
 		query = query.Order("categories.display_name " + sortOrder)
 	default:
@@ -219,6 +272,40 @@ func (r *ComponentRepository) applySorting(query *gorm.DB, filters ComponentFilt
 	}
 
 	return query
+}
+
+func (r *ComponentRepository) loadComponentBrands(component *models.ComponentWithRelations) error {
+	var brandAssociations []struct {
+		BrandID      string
+		BrandName    string
+		BrandDisplay string
+		IsPrimary    bool
+	}
+
+	err := r.db.Table("component_brands").
+		Select("component_brands.brand_id, brands.name as brand_name, brands.display_name as brand_display, component_brands.is_primary").
+		Joins("JOIN brands ON component_brands.brand_id = brands.id").
+		Where("component_brands.component_id = ?", component.ID).
+		Order("component_brands.is_primary DESC, brands.display_name ASC").
+		Find(&brandAssociations).Error
+
+	if err != nil {
+		return err
+	}
+
+	component.BrandNames = []string{}
+	component.BrandDisplays = []string{}
+	component.PrimaryBrand = ""
+
+	for _, assoc := range brandAssociations {
+		component.BrandNames = append(component.BrandNames, assoc.BrandName)
+		component.BrandDisplays = append(component.BrandDisplays, assoc.BrandDisplay)
+		if assoc.IsPrimary && component.PrimaryBrand == "" {
+			component.PrimaryBrand = assoc.BrandDisplay
+		}
+	}
+
+	return nil
 }
 
 func (r *ComponentRepository) loadComponentSpecs(component *models.ComponentWithRelations) error {
@@ -236,11 +323,23 @@ func (r *ComponentRepository) loadComponentSpecs(component *models.ComponentWith
 	return nil
 }
 
-func (r *ComponentRepository) CreateComponent(component *models.Component, specs map[string]string) error {
+func (r *ComponentRepository) CreateComponent(component *models.Component, brandAssociations []BrandAssociation, specs map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(component).Error
 		if err != nil {
 			return err
+		}
+
+		for _, brandAssoc := range brandAssociations {
+			componentBrand := models.ComponentBrands{
+				ComponentID: component.ID,
+				BrandID:     brandAssoc.BrandID,
+				IsPrimary:   brandAssoc.IsPrimary,
+			}
+			err := tx.Create(&componentBrand).Error
+			if err != nil {
+				return err
+			}
 		}
 
 		for key, value := range specs {
@@ -290,11 +389,16 @@ func (r *ComponentRepository) getComponentSummary(filters ComponentFilter) Compo
 	}
 
 	brandQuery := r.db.Table("components").
-		Select("brands.display_name as brand_name, COUNT(*) as count").
-		Joins("JOIN brands ON components.brand_id = brands.id").
-		Where("components.is_active = true").
-		Group("brands.display_name")
+		Select("brands.display_name as brand_name, COUNT(DISTINCT components.id) as count").
+		Joins("JOIN component_brands ON components.id = component_brands.component_id").
+		Joins("JOIN brands ON component_brands.brand_id = brands.id").
+		Where("components.is_active = true")
 
+	if filters.PrimaryBrandOnly {
+		brandQuery = brandQuery.Where("component_brands.is_primary = true")
+	}
+
+	brandQuery = brandQuery.Group("brands.display_name")
 	brandQuery = r.applyFiltersForSummary(brandQuery, filters)
 	brandQuery.Find(&brandResults)
 

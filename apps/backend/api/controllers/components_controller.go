@@ -7,6 +7,7 @@ import (
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/api/repositories"
 	"pc-builder/backend/utils"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -51,6 +52,7 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 
 	filters.CategoryID = c.Query("category_id")
 	filters.BrandID = c.Query("brand_id")
+	filters.PrimaryBrandOnly = c.Query("primary_brand_only") == "true"
 	filters.Search = c.Query("search")
 	filters.SortBy = c.Query("sort_by")
 	filters.SortOrder = c.Query("sort_order")
@@ -84,14 +86,14 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 
 func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 	var request struct {
-		ID         string                 `json:"id" binding:"required"`
-		Name       string                 `json:"name" binding:"required"`
-		CategoryID string                 `json:"category_id" binding:"required"`
-		BrandID    string                 `json:"brand_id" binding:"required"`
-		Models     string                 `json:"models"`
-		Price      models.Price           `json:"price" binding:"required"`
-		ImageURL   models.ImageURL        `json:"image_url" binding:"required"`
-		Specs      map[string]interface{} `json:"specs"`
+		ID         string                          `json:"id" binding:"required"`
+		Name       string                          `json:"name" binding:"required"`
+		CategoryID string                          `json:"category_id" binding:"required"`
+		BrandIDs   []repositories.BrandAssociation `json:"brand_ids" binding:"required,min=1"`
+		Models     string                          `json:"models"`
+		Price      models.Price                    `json:"price" binding:"required"`
+		ImageURL   models.ImageURL                 `json:"image_url" binding:"required"`
+		Specs      map[string]interface{}          `json:"specs"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -100,16 +102,18 @@ func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 	}
 
 	var category models.Category
-	var brand models.Brand
 
 	if err := ctrl.db.First(&category, "id = ?", request.CategoryID).Error; err != nil {
 		utils.BadRequestError(c, "Invalid category ID", err)
 		return
 	}
 
-	if err := ctrl.db.First(&brand, "id = ?", request.BrandID).Error; err != nil {
-		utils.BadRequestError(c, "Invalid brand ID", err)
-		return
+	for _, brandAssoc := range request.BrandIDs {
+		var brand models.Brand
+		if err := ctrl.db.First(&brand, "id = ?", brandAssoc.BrandID).Error; err != nil {
+			utils.BadRequestError(c, fmt.Sprintf("Invalid brand ID: %s", brandAssoc.BrandID), err)
+			return
+		}
 	}
 
 	// Convert price and image_url to JSON
@@ -129,7 +133,6 @@ func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 		ID:         request.ID,
 		Name:       request.Name,
 		CategoryID: request.CategoryID,
-		BrandID:    request.BrandID,
 		Models:     request.Models,
 		Price:      priceJSON,
 		ImageURL:   imageJSON,
@@ -146,7 +149,7 @@ func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 		}
 	}
 
-	err = ctrl.repo.CreateComponent(component, specsMap)
+	err = ctrl.repo.CreateComponent(component, request.BrandIDs, specsMap)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
 			utils.ConflictError(c, "Component with this ID already exists")
@@ -163,60 +166,27 @@ func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 func (ctrl *ComponentController) GetComponentByID(c *gin.Context) {
 	id := c.Param("id")
 
-	var component models.ComponentWithRelations
-	err := ctrl.db.
-		Select(`
-			components.id,
-			components.name,
-			components.category_id,
-			components.brand_id,
-			components.models,
-			components.price,
-			components.image_url,
-			components.is_active,
-			components.created_at,
-			components.updated_at,
-			categories.name as category_name,
-			categories.display_name as category_display,
-			brands.name as brand_name,
-			brands.display_name as brand_display
-		`).
-		Table("components").
-		Joins("JOIN categories ON components.category_id = categories.id").
-		Joins("JOIN brands ON components.brand_id = brands.id").
-		Where("components.id = ? AND components.is_active = true", id).
-		First(&component).Error
-
+	component, err := ctrl.repo.GetComponentByID(id)
 	if err != nil {
 		utils.NotFoundError(c, "Component not found")
 		return
 	}
 
-	// Load specs
-	var specs []models.ComponentSpec
-	ctrl.db.Where("component_id = ?", id).Find(&specs)
-
-	component.SpecsMap = make(map[string]string)
-	for _, spec := range specs {
-		component.SpecsMap[spec.SpecKey] = spec.SpecValue
-	}
-
 	utils.SuccessResponse(c, "Component fetched successfully", component)
 }
 
-// UpdateComponent updates an existing component
 func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 	id := c.Param("id")
 
 	var request struct {
-		Name       string                 `json:"name"`
-		CategoryID string                 `json:"category_id"`
-		BrandID    string                 `json:"brand_id"`
-		Models     string                 `json:"models"`
-		Price      models.Price           `json:"price"`
-		ImageURL   models.ImageURL        `json:"image_url"`
-		Specs      map[string]interface{} `json:"specs"`
-		IsActive   *bool                  `json:"is_active"`
+		Name       string                          `json:"name"`
+		CategoryID string                          `json:"category_id"`
+		BrandIDs   []repositories.BrandAssociation `json:"brand_ids"`
+		Models     string                          `json:"models"`
+		Price      models.Price                    `json:"price"`
+		ImageURL   models.ImageURL                 `json:"image_url"`
+		Specs      map[string]interface{}          `json:"specs"`
+		IsActive   *bool                           `json:"is_active"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -240,9 +210,6 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 		}
 		if request.CategoryID != "" {
 			updates["category_id"] = request.CategoryID
-		}
-		if request.BrandID != "" {
-			updates["brand_id"] = request.BrandID
 		}
 		if request.Models != "" {
 			updates["models"] = request.Models
@@ -271,6 +238,28 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 			err := tx.Model(&existingComponent).Updates(updates).Error
 			if err != nil {
 				return err
+			}
+		}
+
+		// Update brands if provided
+		if len(request.BrandIDs) > 0 {
+			// Delete existing brand associations
+			err := tx.Where("component_id = ?", id).Delete(&models.ComponentBrands{}).Error
+			if err != nil {
+				return err
+			}
+
+			// Create new brand associations
+			for _, brandAssoc := range request.BrandIDs {
+				componentBrand := models.ComponentBrands{
+					ComponentID: id,
+					BrandID:     brandAssoc.BrandID,
+					IsPrimary:   brandAssoc.IsPrimary,
+				}
+				err := tx.Create(&componentBrand).Error
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -313,15 +302,14 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 func (ctrl *ComponentController) DeleteComponent(c *gin.Context) {
 	id := c.Param("id")
 
-	var component models.Component
-	err := ctrl.db.Where("id = ?", id).First(&component).Error
+	// Soft delete by setting is_active to false
+	err := ctrl.db.Delete(models.ComponentSpec{}, "component_id = ?", id).Error
 	if err != nil {
-		utils.NotFoundError(c, "Component not found")
+		utils.InternalServerError(c, "Failed to delete component specs", err)
 		return
 	}
 
-	// Soft delete by setting is_active to false
-	err = ctrl.db.Model(&component).Update("is_active", false).Error
+	err = ctrl.db.Delete(models.Component{}, "id = ?", id).Error
 	if err != nil {
 		utils.InternalServerError(c, "Failed to delete component", err)
 		return
@@ -334,14 +322,14 @@ func (ctrl *ComponentController) DeleteComponent(c *gin.Context) {
 func (ctrl *ComponentController) BulkCreateComponents(c *gin.Context) {
 	var request struct {
 		Components []struct {
-			ID         string                 `json:"id" binding:"required"`
-			Name       string                 `json:"name" binding:"required"`
-			CategoryID string                 `json:"category_id" binding:"required"`
-			BrandID    string                 `json:"brand_id" binding:"required"`
-			Models     string                 `json:"models"`
-			Price      models.Price           `json:"price" binding:"required"`
-			ImageURL   models.ImageURL        `json:"image_url" binding:"required"`
-			Specs      map[string]interface{} `json:"specs"`
+			ID         string                          `json:"id" binding:"required"`
+			Name       string                          `json:"name" binding:"required"`
+			CategoryID string                          `json:"category_id" binding:"required"`
+			BrandIDs   []repositories.BrandAssociation `json:"brand_ids" binding:"required,min=1"`
+			Models     string                          `json:"models"`
+			Price      models.Price                    `json:"price" binding:"required"`
+			ImageURL   models.ImageURL                 `json:"image_url" binding:"required"`
+			Specs      map[string]interface{}          `json:"specs"`
 		} `json:"components" binding:"required,min=1,max=100"`
 	}
 
@@ -394,7 +382,6 @@ func (ctrl *ComponentController) BulkCreateComponents(c *gin.Context) {
 			ID:         compReq.ID,
 			Name:       compReq.Name,
 			CategoryID: compReq.CategoryID,
-			BrandID:    compReq.BrandID,
 			Models:     compReq.Models,
 			Price:      priceJSON,
 			ImageURL:   imageJSON,
@@ -408,7 +395,7 @@ func (ctrl *ComponentController) BulkCreateComponents(c *gin.Context) {
 		}
 
 		// Create component
-		err = ctrl.repo.CreateComponent(component, specsMap)
+		err = ctrl.repo.CreateComponent(component, compReq.BrandIDs, specsMap)
 		if err != nil {
 			if strings.Contains(err.Error(), "duplicate key") {
 				result.Error = "Component with this ID already exists"
@@ -446,12 +433,11 @@ func (ctrl *ComponentController) BulkCreateComponents(c *gin.Context) {
 	})
 }
 
-// GetAllComponents returns all active components (for simple listing)
 func (ctrl *ComponentController) GetAllComponents(c *gin.Context) {
 	var components []models.Component
 
 	err := ctrl.db.
-		Select("id, name, category_id, brand_id, models, price, image_url, created_at, updated_at").
+		Select("*").
 		Where("is_active = true").
 		Find(&components).Error
 
@@ -471,10 +457,5 @@ func isFilterableSpec(key string) bool {
 		"wattage", "efficiency", "certification",
 	}
 
-	for _, filterable := range filterableSpecs {
-		if key == filterable {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(filterableSpecs, key)
 }
