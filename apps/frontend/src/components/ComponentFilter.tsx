@@ -240,7 +240,7 @@ const ComponentFilterLayout = memo(
           </span>
           <button
             className={twMerge(
-              'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out xl:hidden'
+              'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 mr-2 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out xl:mr-0 xl:hidden'
             )}
             onClick={() => props.setIsSideBarOpen(prev => !prev)}
           >

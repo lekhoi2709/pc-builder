@@ -39,7 +39,7 @@ export default function Components() {
 
   const listVariants: Variants = {
     collapse: {
-      paddingLeft: '2.5rem',
+      paddingLeft: 'var(--padding-left-from)',
       transition: {
         type: 'spring',
         stiffness: 300,
@@ -47,7 +47,7 @@ export default function Components() {
       },
     },
     expand: {
-      paddingLeft: '22.5%',
+      paddingLeft: 'var(--padding-left-to)',
       opacity: 1,
       transition: {
         type: 'spring',
@@ -227,7 +227,7 @@ const ComponentPageLayout = memo(
     const delta = useResponsivePagination(setPagination);
 
     return (
-      <main className="font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center bg-transparent md:block">
+      <main className="font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]">
         <ComponentFilter
           data={props.data}
           isSideBarOpen={props.isSideBarOpen}
@@ -236,7 +236,7 @@ const ComponentPageLayout = memo(
         />
         <motion.div
           className={twMerge(
-            'z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-8 md:pt-28'
+            'z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-8 xl:pt-28'
           )}
           variants={props.listVariants}
           animate={props.isSideBarOpen ? 'expand' : 'collapse'}
@@ -247,7 +247,7 @@ const ComponentPageLayout = memo(
             <button
               className={twMerge(
                 'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out',
-                props.isSideBarOpen ? 'hidden xl:block' : ''
+                props.isSideBarOpen ? 'invisible xl:visible' : ''
               )}
               onClick={() => props.setIsSideBarOpen(prev => !prev)}
             >
@@ -261,11 +261,11 @@ const ComponentPageLayout = memo(
           <ActiveFilters />
           <section
             className={twMerge(
-              'flex w-full justify-center md:justify-start',
-              props.isSideBarOpen ? 'md:justify-start' : ''
+              'flex w-full items-center justify-center xl:justify-start',
+              props.isSideBarOpen ? 'xl:justify-start' : ''
             )}
           >
-            <div className="flex flex-wrap justify-center gap-8 xl:justify-start">
+            <div className="flex w-full flex-wrap justify-center gap-8 xl:justify-start">
               {children}
             </div>
           </section>

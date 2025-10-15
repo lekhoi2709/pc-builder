@@ -48,12 +48,20 @@ const StickyNavbar = memo(
       withSidebar: {
         width: '77%',
         marginLeft: '0rem',
-        transition: { type: 'spring', stiffness: 250, damping: 25 },
+        transition: {
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+        },
       },
       noSidebar: {
         width: '97.2%',
         marginLeft: '4%',
-        transition: { type: 'spring', stiffness: 250, damping: 25 },
+        transition: {
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+        },
       },
     };
 

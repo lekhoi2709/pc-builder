@@ -13,7 +13,7 @@ export const ComponentCard = memo(({ component }: { component: Component }) => {
   };
 
   return (
-    <div className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-secondary-500/30 border-1 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl p-4 backdrop-blur-sm transition-all duration-300 ease-in-out hover:scale-105 hover:cursor-pointer hover:shadow-md">
+    <div className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-secondary-500/30 border-1 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl p-4 backdrop-blur-sm transition-all duration-300 ease-in-out hover:cursor-pointer hover:shadow-md xl:hover:scale-105">
       <img
         src={component.image_url[0]}
         alt={component.name}
