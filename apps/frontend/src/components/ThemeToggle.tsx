@@ -38,7 +38,7 @@ const ThemeToggle = memo(({ className }: { className?: string }) => {
     <nav
       ref={navRef}
       className={twMerge(
-        '!bg-accent-200/20 dark:!bg-accent-400/20 rounded-4xl relative flex p-1 backdrop-blur-sm',
+        '!bg-accent-200/20 dark:!bg-accent-400/20 rounded-4xl relative flex p-1 xl:backdrop-blur-sm',
         className
       )}
     >
@@ -63,7 +63,7 @@ const ThemeToggle = memo(({ className }: { className?: string }) => {
         >
           <i
             className={twMerge(
-              'dark:text-primary-100 text-primary-600 duration-400 transition-colors ease-in-out',
+              'dark:text-primary-100 text-primary-600 transition-colors duration-300 ease-in-out',
               activeIndex == index
                 ? '!text-amber-600 dark:!text-amber-400/70'
                 : ''

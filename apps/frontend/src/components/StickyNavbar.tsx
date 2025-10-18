@@ -54,7 +54,7 @@ const StickyNavbar = memo(
         },
       },
       noSidebar: {
-        width: '97.2%',
+        width: '98%',
         marginLeft: '4%',
         transition: {
           type: 'spring',

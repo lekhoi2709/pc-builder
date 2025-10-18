@@ -34,7 +34,7 @@ export function useHoverIndicator({
 
   const updateIndicator = (index: number | null): void => {
     if (index !== null && itemRefs.current[index]) {
-      const item = itemRefs.current[index] ?? 0;
+      const item = itemRefs.current[index] ?? 1;
       const nav = navRef.current;
 
       if (item && nav) {
