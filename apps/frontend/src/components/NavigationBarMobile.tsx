@@ -27,10 +27,7 @@ export default function NavigationBarMobile({
         isSideBarOpen: isSideBarOpen!,
         setIsSideBarOpen: setIsSideBarOpen,
         title: locationPage + ' Page' || routes[0].name || 'Home Page',
-        className: twMerge(
-          'xl:hidden bg-light dark:bg-dark backdrop-blur-sm',
-          className
-        ),
+        className: twMerge('xl:hidden', className),
       }}
     >
       <div className="flex h-full flex-col justify-between">
@@ -62,7 +59,7 @@ export default function NavigationBarMobile({
             );
           })}
         </nav>
-        <ThemeToggle className="bg-accent-200/20 dark:bg-accent-400/20 w-fit self-end" />
+        <ThemeToggle className="bg-accent-200/20 dark:bg-accent-400/20 w-fit self-start" />
       </div>
     </SideBarLayout>
   );

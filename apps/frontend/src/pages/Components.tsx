@@ -1,12 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
-import {
-  ArrowBigLeftIcon,
-  ArrowBigRightIcon,
-  PanelLeftDashedIcon,
-  PanelLeftIcon,
-} from 'lucide-react';
+import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import {
   memo,
@@ -24,6 +19,7 @@ import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
 import { useSideBarOpen } from '../hooks/useSideBarOpen';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import SideBarButton from '../components/SideBarButton';
 
 export default function Components() {
   const { lang } = useParams();
@@ -255,19 +251,10 @@ const ComponentPageLayout = memo(
         >
           <span className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Components</h1>
-            <button
-              className={twMerge(
-                'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out',
-                props.isSideBarOpen ? 'invisible xl:visible' : ''
-              )}
-              onClick={() => props.setIsSideBarOpen(prev => !prev)}
-            >
-              {props.isSideBarOpen ? (
-                <PanelLeftDashedIcon className="w-5" />
-              ) : (
-                <PanelLeftIcon className="w-5" />
-              )}
-            </button>
+            <SideBarButton
+              isSideBarOpen={props.isSideBarOpen}
+              setIsSideBarOpen={props.setIsSideBarOpen}
+            />
           </span>
           <div className="flex flex-col gap-4">
             <button
