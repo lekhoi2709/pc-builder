@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge';
 export default function Layout() {
   const location = useLocation();
   const isAtComponentPage = location.pathname.includes('/component');
-  const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
+  const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(false);
 
   const locationPath = location.pathname.split('/')[2];
 

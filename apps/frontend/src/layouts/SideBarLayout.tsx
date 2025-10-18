@@ -44,7 +44,7 @@ const SideBarLayout = memo(
     return (
       <motion.aside
         className={twMerge(
-          'font-saira scrollbar-hidden xl:border-1 border-primary-700 xl:border-secondary-300 xl:hover:border-secondary-400 xl:dark:border-secondary-500 xl:bg-secondary-500/20 xl:dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 bg-light dark:bg-dark fixed left-0 top-0 z-50 flex h-dvh w-full min-w-[15rem] flex-col gap-4 overflow-y-auto p-4 px-8 transition-colors duration-300 ease-in-out xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:w-[20%] xl:rounded-[36px] xl:px-6 xl:backdrop-blur-sm',
+          'font-saira scrollbar-hidden xl:border-1 border-primary-700 xl:border-secondary-300 xl:hover:border-secondary-400 xl:dark:border-secondary-500 xl:bg-secondary-500/20 xl:dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 bg-light dark:bg-dark fixed left-0 top-0 z-50 flex h-dvh w-full flex-col gap-4 overflow-y-auto p-4 px-8 transition-colors duration-300 ease-in-out xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:w-[20%] xl:min-w-[15rem] xl:rounded-[36px] xl:px-6 xl:backdrop-blur-sm',
           '[--sidebar-move-from:-100%] [--sidebar-move-to:0%] [--sidebar-opacity-from:0] [--sidebar-opacity-to:1]',
           props.className
         )}
