@@ -43,7 +43,7 @@ export default function Layout() {
   return (
     <main
       className={twMerge(
-        'max-w-screen dark:bg-dark bg-light text-primary-600 dark:text-primary-100 relative h-full min-h-dvh w-screen transition-colors duration-500 ease-in-out'
+        'max-w-screen dark:bg-dark bg-light text-primary-600 dark:text-primary-100 relative h-full min-h-screen w-screen transition-colors duration-500 ease-in-out'
       )}
     >
       <StickyNavbar
