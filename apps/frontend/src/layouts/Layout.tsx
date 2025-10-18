@@ -3,11 +3,17 @@ import { Outlet, useLocation } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
 import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
 import NavigationBarMobile from '../components/NavigationBarMobile';
+import { useTheme } from '../hooks/useTheme';
 
 export default function Layout() {
   const location = useLocation();
   const isAtComponentPage = location.pathname.includes('/component');
   const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
+  const { theme } = useTheme();
+  const isDarkMode =
+    theme === 'Dark' ||
+    (theme === 'System' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   const locationPath = location.pathname.split('/')[2];
 
@@ -37,7 +43,21 @@ export default function Layout() {
     document.title = locationPage
       ? `${locationPage} - PC Builder`
       : 'PC Builder';
-  }, [locationPage]);
+
+    // Update meta theme-color tag
+    const themeColorMeta =
+      document.querySelector('meta[name="theme-color"]') ||
+      document.createElement('meta');
+
+    themeColorMeta.setAttribute('name', 'theme-color');
+
+    const themeColor = isDarkMode ? '#22272b' : '#fcfcfc';
+    themeColorMeta.setAttribute('content', themeColor);
+
+    if (!document.querySelector('meta[name="theme-color"]')) {
+      document.head.appendChild(themeColorMeta);
+    }
+  }, [locationPage, isDarkMode]);
 
   return (
     <main className="max-w-screen dark:bg-dark bg-light text-primary-600 dark:text-primary-100 relative h-full min-h-screen w-screen transition-colors duration-500 ease-in-out">
