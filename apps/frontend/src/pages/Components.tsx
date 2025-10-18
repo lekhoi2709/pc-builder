@@ -23,6 +23,7 @@ import type { ComponentResponse, PaginationMeta } from '../types/components';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
 import { useSideBarOpen } from '../hooks/useSideBarOpen';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export default function Components() {
   const { lang } = useParams();
@@ -225,14 +226,24 @@ const ComponentPageLayout = memo(
   }) => {
     const { pagination, setPagination } = useComponentStore();
     const delta = useResponsivePagination(setPagination);
+    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+    const isDesktop = useMediaQuery('(min-width: 1280px)');
 
     return (
-      <main className="font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]">
+      <main
+        className={twMerge(
+          'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]',
+          props.isSideBarOpen
+            ? 'h-screen overflow-y-hidden xl:h-full xl:overflow-y-auto'
+            : 'overflow-y-auto'
+        )}
+      >
         <ComponentFilter
           data={props.data}
-          isSideBarOpen={props.isSideBarOpen}
-          setIsSideBarOpen={props.setIsSideBarOpen}
-          className="fixed left-0 top-0 z-40 h-screen xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:rounded-[36px]"
+          isSideBarOpen={isDesktop ? props.isSideBarOpen : isFilterOpen}
+          setIsSideBarOpen={
+            isDesktop ? props.setIsSideBarOpen : setIsFilterOpen
+          }
         />
         <motion.div
           className={twMerge(
@@ -258,7 +269,15 @@ const ComponentPageLayout = memo(
               )}
             </button>
           </span>
-          <ActiveFilters />
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => setIsFilterOpen(prev => !prev)}
+              className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 w-full cursor-pointer self-end rounded px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
+            >
+              Filters
+            </button>
+            <ActiveFilters />
+          </div>
           <section
             className={twMerge(
               'flex w-full items-center justify-center xl:justify-start',

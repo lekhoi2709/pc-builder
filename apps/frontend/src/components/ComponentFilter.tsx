@@ -1,8 +1,4 @@
-import {
-  ListFilterPlusIcon,
-  PanelLeftDashedIcon,
-  PanelLeftIcon,
-} from 'lucide-react';
+import { ListFilterPlusIcon } from 'lucide-react';
 import { GetAvailableFilters } from '../services/api';
 import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
@@ -11,8 +7,10 @@ import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
 import { memo, type Dispatch, type SetStateAction } from 'react';
 import type { ComponentResponse, ComponentFilter } from '../types/components';
-import { twMerge } from 'tailwind-merge';
-import { motion, type Variants } from 'framer-motion';
+
+import SideBarLayout from '../layouts/SideBarLayout';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { ActiveFilters } from './ActiveFilters';
 
 const ComponentFilters = memo(
   ({
@@ -28,6 +26,7 @@ const ComponentFilters = memo(
   }) => {
     const { filters, setFilters, removeFilter } = useComponentStore();
     const { lang } = useParams();
+    const isMobile = useMediaQuery('(max-width: 1280px)');
 
     const handleFilterChange = (
       key: keyof ComponentFilter,
@@ -43,56 +42,40 @@ const ComponentFilters = memo(
       refetchOnWindowFocus: false,
     });
 
-    const listVariants: Variants = {
-      collapse: {
-        x: '-100%',
-        opacity: 0,
-        pointerEvents: 'none',
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 30,
-        },
-      },
-      expand: {
-        x: 0,
-        opacity: 1,
-        pointerEvents: 'auto',
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 30,
-        },
-      },
-    };
-
     if (!filterQuery.data || !data) {
       return (
-        <ComponentFilterLayout
+        <SideBarLayout
           props={{
             className: className,
             isSideBarOpen: isSideBarOpen,
             setIsSideBarOpen: setIsSideBarOpen,
-            listVariants: listVariants,
+            title: 'Filters',
+            titleIcon: (
+              <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
+            ),
           }}
         >
           <p className="text-lg text-red-500">Error loading filters</p>
           <p className="text-sm text-red-500">{filterQuery.error?.message}</p>
-        </ComponentFilterLayout>
+        </SideBarLayout>
       );
     }
 
     return (
-      <ComponentFilterLayout
+      <SideBarLayout
         props={{
           className: className,
           isSideBarOpen: isSideBarOpen,
           setIsSideBarOpen: setIsSideBarOpen,
-          listVariants: listVariants,
+          title: 'Filters',
+          titleIcon: (
+            <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
+          ),
         }}
       >
         <SearchComponentBar />
         <section className="text-primary-900 dark:text-primary-50">
+          {isMobile && <ActiveFilters isHavingSort={false} />}
           <h3 className="mb-2 text-lg font-semibold">Categories</h3>
           <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
             {filterQuery.data &&
@@ -103,6 +86,7 @@ const ComponentFilters = memo(
 
                 return (
                   <FilterChip
+                    key={category.id}
                     id={category.id}
                     filter_type="category_id"
                     filters={filters}
@@ -133,6 +117,7 @@ const ComponentFilters = memo(
                 if (isBrandAvailable) {
                   return (
                     <FilterChip
+                      key={brand.id}
                       id={brand.id}
                       filter_type="brand_id"
                       filters={filters}
@@ -167,7 +152,7 @@ const ComponentFilters = memo(
             currency={filterQuery.data?.price_range.currency || 'VND'}
           />
         </section>
-      </ComponentFilterLayout>
+      </SideBarLayout>
     );
   }
 );
@@ -207,54 +192,5 @@ function FilterChip({
     </button>
   );
 }
-
-type ComponentFilterLayout = {
-  className?: string;
-  listVariants: Variants;
-  isSideBarOpen: boolean;
-  setIsSideBarOpen: Dispatch<SetStateAction<boolean>>;
-};
-
-const ComponentFilterLayout = memo(
-  ({
-    children,
-    props,
-  }: {
-    children: React.ReactNode;
-    props: ComponentFilterLayout;
-  }) => {
-    return (
-      <motion.aside
-        className={twMerge(
-          'font-saira scrollbar-hidden xl:border-1 border-primary-700 xl:border-secondary-300 xl:hover:border-secondary-400 xl:dark:border-secondary-500 xl:bg-secondary-500/20 xl:dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 bg-light dark:bg-dark flex w-full min-w-[15rem] flex-col gap-4 overflow-y-auto p-4 px-6 transition-colors duration-300 ease-in-out xl:w-[20%] xl:backdrop-blur-sm',
-          props.className
-        )}
-        variants={props.listVariants}
-        animate={props.isSideBarOpen ? 'expand' : 'collapse'}
-        initial="collapse"
-      >
-        <span className="my-4 flex items-center justify-between">
-          <span className="flex items-center gap-2 text-xl font-semibold">
-            <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
-            Filters
-          </span>
-          <button
-            className={twMerge(
-              'border-accent-200/50 hover:border-secondary-400 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-accent-300/50 border-1 mr-2 cursor-pointer rounded-full p-2 px-3 transition-all duration-300 ease-in-out xl:mr-0 xl:hidden'
-            )}
-            onClick={() => props.setIsSideBarOpen(prev => !prev)}
-          >
-            {props.isSideBarOpen ? (
-              <PanelLeftDashedIcon className="w-5" />
-            ) : (
-              <PanelLeftIcon className="w-5" />
-            )}
-          </button>
-        </span>
-        {children}
-      </motion.aside>
-    );
-  }
-);
 
 export default ComponentFilters;

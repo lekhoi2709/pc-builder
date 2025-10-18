@@ -20,118 +20,126 @@ const langToLocale: Record<string, string> = {
   en: 'en-US',
 };
 
-export const ActiveFilters = memo(() => {
-  const { activeFilters, removeFilter, clearFilter } = useComponentStore();
-  const { lang } = useParams();
-  const currency = langToCurrency[lang || 'vn'] || 'VND';
+export const ActiveFilters = memo(
+  ({ isHavingSort = true }: { isHavingSort?: boolean }) => {
+    const { activeFilters, removeFilter, clearFilter } = useComponentStore();
+    const { lang } = useParams();
+    const currency = langToCurrency[lang || 'vn'] || 'VND';
 
-  const priceFormatter = (
-    value: number,
-    locale: string,
-    style: 'decimal' | 'currency' | 'percent' | 'unit' = 'currency'
-  ) => {
-    const formatter = new Intl.NumberFormat(locale, {
-      style: style,
-      currency,
-    });
-    return formatter.format(value);
-  };
+    const priceFormatter = (
+      value: number,
+      locale: string,
+      style: 'decimal' | 'currency' | 'percent' | 'unit' = 'currency'
+    ) => {
+      const formatter = new Intl.NumberFormat(locale, {
+        style: style,
+        currency,
+      });
+      return formatter.format(value);
+    };
 
-  if (activeFilters.length === 0)
+    if (activeFilters.length === 0)
+      return (
+        isHavingSort && (
+          <div className="font-saira flex w-full justify-end">
+            <div className="flex items-center gap-2 self-end">
+              <SortingIndicator content="Default Sorting" />
+              <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+              <SortingIndicator
+                content="Price"
+                sort_by="price"
+                IconUp={ArrowUp01Icon}
+                IconDown={ArrowDown01Icon}
+              />
+            </div>
+          </div>
+        )
+      );
+
+    const activeFilterStringFormatted = (str: string): string => {
+      const strArr = str.split('_');
+      if (strArr[1] === 'id' || !strArr[1]) {
+        return strArr[0];
+      } else if (strArr[0] === 'storage') {
+        return strArr[1];
+      }
+      return strArr[0] + ' ' + strArr[1];
+    };
+
     return (
-      <div className="font-saira flex w-full justify-end">
-        <div className="flex items-center gap-2 self-end">
-          <SortingIndicator content="Default Sorting" />
-          <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
-          <SortingIndicator
-            content="Price"
-            sort_by="price"
-            IconUp={ArrowUp01Icon}
-            IconDown={ArrowDown01Icon}
-          />
+      <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
+        <div className="flex flex-wrap items-center gap-2">
+          {activeFilters.map(({ key, value }) =>
+            key === 'max_price' || key === 'min_price' ? (
+              <span
+                key={key}
+                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              >
+                <span className="flex flex-wrap gap-1">
+                  <p className="capitalize">
+                    {activeFilterStringFormatted(key)}:
+                  </p>
+                  <p>
+                    {priceFormatter(
+                      parseInt(value as string),
+                      langToLocale[lang || 'vn'] || 'vi-VN',
+                      'currency'
+                    )}
+                  </p>
+                </span>
+
+                <CircleXIcon
+                  className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                  onClick={() => removeFilter(key)}
+                />
+              </span>
+            ) : (
+              <span
+                key={key}
+                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              >
+                <span className="flex flex-wrap gap-1">
+                  <p className="capitalize">
+                    {activeFilterStringFormatted(String(key))}:
+                  </p>
+                  <p className="capitalize">
+                    {activeFilterStringFormatted(String(value))}
+                  </p>
+                </span>
+                <CircleXIcon
+                  className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                  onClick={() => removeFilter(key)}
+                />
+              </span>
+            )
+          )}
+          <button
+            onClick={clearFilter}
+            className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50"
+          >
+            Clear All
+          </button>
         </div>
+        {isHavingSort && (
+          <div className="ml-auto flex items-center gap-2">
+            <SortingIndicator
+              content={activeFilterStringFormatted(
+                String(activeFilters[0].key)
+              )}
+            />
+            <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+            <SortingIndicator
+              content="Price"
+              sort_by="price"
+              IconUp={ArrowUp01Icon}
+              IconDown={ArrowDown01Icon}
+            />
+          </div>
+        )}
       </div>
     );
-
-  const activeFilterStringFormatted = (str: string): string => {
-    const strArr = str.split('_');
-    if (strArr[1] === 'id' || !strArr[1]) {
-      return strArr[0];
-    } else if (strArr[0] === 'storage') {
-      return strArr[1];
-    }
-    return strArr[0] + ' ' + strArr[1];
-  };
-
-  return (
-    <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
-      <div className="flex flex-wrap items-center gap-2">
-        {activeFilters.map(({ key, value }) =>
-          key === 'max_price' || key === 'min_price' ? (
-            <span
-              key={key}
-              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-            >
-              <span className="flex flex-wrap gap-1">
-                <p className="capitalize">
-                  {activeFilterStringFormatted(key)}:
-                </p>
-                <p>
-                  {priceFormatter(
-                    parseInt(value as string),
-                    langToLocale[lang || 'vn'] || 'vi-VN',
-                    'currency'
-                  )}
-                </p>
-              </span>
-
-              <CircleXIcon
-                className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                onClick={() => removeFilter(key)}
-              />
-            </span>
-          ) : (
-            <span
-              key={key}
-              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-            >
-              <span className="flex flex-wrap gap-1">
-                <p className="capitalize">
-                  {activeFilterStringFormatted(String(key))}:
-                </p>
-                <p className="capitalize">
-                  {activeFilterStringFormatted(String(value))}
-                </p>
-              </span>
-              <CircleXIcon
-                className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                onClick={() => removeFilter(key)}
-              />
-            </span>
-          )
-        )}
-        <button
-          onClick={clearFilter}
-          className="ml-2 cursor-pointer text-xs text-red-600 hover:underline dark:text-red-400"
-        >
-          Clear All
-        </button>
-      </div>
-      <div className="ml-auto flex items-center gap-2">
-        <SortingIndicator
-          content={activeFilterStringFormatted(String(activeFilters[0].key))}
-        />
-        <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
-        <SortingIndicator
-          content="Price"
-          sort_by="price"
-          IconUp={ArrowUp01Icon}
-          IconDown={ArrowDown01Icon}
-        />
-      </div>
-    </div>
-  );
-});
+  }
+);
 
 function SortingIndicator({
   content = '',
