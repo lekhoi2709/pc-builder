@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
 import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
@@ -8,7 +8,6 @@ import { twMerge } from 'tailwind-merge';
 export default function Layout() {
   const location = useLocation();
   const isAtComponentPage = location.pathname.includes('/component');
-  const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(false);
 
   const locationPath = location.pathname.split('/')[2];
 
@@ -48,15 +47,10 @@ export default function Layout() {
     >
       <StickyNavbar
         className="fixed right-4 top-4 z-50 hidden h-fit xl:flex"
-        isSideBarOpen={isAtComponentPage ? isSideBarOpen : undefined}
+        isAtComponentPage={isAtComponentPage}
       />
-      <NavigationBarMobile
-        isSideBarOpen={isSideBarOpen}
-        setIsSideBarOpen={setIsSideBarOpen}
-        routes={routes}
-        locationPage={locationPage}
-      />
-      <Outlet context={{ isSideBarOpen, setIsSideBarOpen }} />
+      <NavigationBarMobile routes={routes} locationPage={locationPage} />
+      <Outlet />
     </main>
   );
 }

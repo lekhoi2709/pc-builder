@@ -4,14 +4,15 @@ import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { memo } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
+import { useExclusivePanel } from '../stores/exclusivePanelStore';
 
 const StickyNavbar = memo(
   ({
     className,
-    isSideBarOpen,
+    isAtComponentPage,
   }: {
     className?: string;
-    isSideBarOpen?: boolean;
+    isAtComponentPage: boolean;
   }) => {
     const location = useLocation();
     const routes = [
@@ -30,6 +31,8 @@ const StickyNavbar = memo(
     ];
 
     const { lang } = useParams();
+    const { isSideBarOpen } = useExclusivePanel();
+    console.log('StickyNavbar Sidebar', isSideBarOpen);
 
     const activeIndex = routes.findIndex(
       val => val.path == location.pathname.replace(`/${lang}`, '')
@@ -67,11 +70,13 @@ const StickyNavbar = memo(
     return (
       <motion.header
         className={twMerge(
-          'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen border-1 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full px-4 font-bold backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
+          'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen border-1 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full px-4 font-bold shadow-md backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
           className
         )}
         variants={navbarVariants}
-        animate={isSideBarOpen ? 'withSidebar' : 'noSidebar'}
+        animate={
+          isSideBarOpen && isAtComponentPage ? 'withSidebar' : 'noSidebar'
+        }
         initial="noSidebar"
       >
         <span>Logo</span>

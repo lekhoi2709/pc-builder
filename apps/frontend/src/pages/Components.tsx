@@ -3,13 +3,7 @@ import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
-import {
-  memo,
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react';
+import { memo, useEffect, useState } from 'react';
 import React from 'react';
 import { ActiveFilters } from '../components/ActiveFilters';
 import { useParams } from 'react-router';
@@ -17,14 +11,13 @@ import ComponentFilter from '../components/ComponentFilter';
 import type { ComponentResponse, PaginationMeta } from '../types/components';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
-import { useSideBarOpen } from '../hooks/useSideBarOpen';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
+import { useExclusivePanel } from '../stores/exclusivePanelStore';
 
 export default function Components() {
   const { lang } = useParams();
   const { filters, pagination } = useComponentStore();
-  const { isSideBarOpen, setIsSideBarOpen } = useSideBarOpen();
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination, lang],
@@ -59,8 +52,6 @@ export default function Components() {
       <ComponentPageLayout
         props={{
           data: undefined,
-          isSideBarOpen: isSideBarOpen,
-          setIsSideBarOpen: setIsSideBarOpen,
           listVariants: listVariants,
         }}
       >
@@ -79,8 +70,6 @@ export default function Components() {
       <ComponentPageLayout
         props={{
           data: undefined,
-          isSideBarOpen: isSideBarOpen,
-          setIsSideBarOpen: setIsSideBarOpen,
           listVariants: listVariants,
         }}
       >
@@ -98,8 +87,6 @@ export default function Components() {
     <ComponentPageLayout
       props={{
         data: data,
-        isSideBarOpen: isSideBarOpen,
-        setIsSideBarOpen: setIsSideBarOpen,
         listVariants: listVariants,
       }}
     >
@@ -207,8 +194,6 @@ const renderPageNumbers = (
 
 type ComponentPageLayoutProps = {
   data?: ComponentResponse;
-  isSideBarOpen: boolean;
-  setIsSideBarOpen: Dispatch<SetStateAction<boolean>>;
   listVariants: Variants;
 };
 
@@ -222,43 +207,42 @@ const ComponentPageLayout = memo(
   }) => {
     const { pagination, setPagination } = useComponentStore();
     const delta = useResponsivePagination(setPagination);
-    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+    const { isSideBarOpen, isFilterOpen, toggleSidebar, toggleFilter } =
+      useExclusivePanel();
+
     const isDesktop = useMediaQuery('(min-width: 1280px)');
 
     return (
       <main
         className={twMerge(
           'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center overflow-y-auto bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]',
-          props.isSideBarOpen
+          isSideBarOpen
             ? 'h-screen overflow-y-hidden xl:h-full xl:overflow-y-auto'
             : 'overflow-y-auto'
         )}
       >
         <ComponentFilter
           data={props.data}
-          isSideBarOpen={isDesktop ? props.isSideBarOpen : isFilterOpen}
-          setIsSideBarOpen={
-            isDesktop ? props.setIsSideBarOpen : setIsFilterOpen
-          }
+          isSideBarOpen={isDesktop ? isSideBarOpen : isFilterOpen}
         />
         <motion.div
           className={twMerge(
             'z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-8 xl:pt-28'
           )}
           variants={props.listVariants}
-          animate={props.isSideBarOpen ? 'expand' : 'collapse'}
+          animate={isSideBarOpen ? 'expand' : 'collapse'}
           initial="collapse"
         >
           <span className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Components</h1>
             <SideBarButton
-              isSideBarOpen={props.isSideBarOpen}
-              setIsSideBarOpen={props.setIsSideBarOpen}
+              isSideBarOpen={isSideBarOpen}
+              toggleSidebar={toggleSidebar}
             />
           </span>
           <div className="flex flex-col gap-4">
             <button
-              onClick={() => setIsFilterOpen(prev => !prev)}
+              onClick={toggleFilter}
               className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 w-full cursor-pointer self-end rounded px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
             >
               Filters
@@ -268,7 +252,7 @@ const ComponentPageLayout = memo(
           <section
             className={twMerge(
               'flex w-full items-center justify-center xl:justify-start',
-              props.isSideBarOpen ? 'xl:justify-start' : ''
+              isSideBarOpen ? 'xl:justify-start' : ''
             )}
           >
             <div className="flex w-full flex-wrap justify-center gap-8 xl:justify-start">

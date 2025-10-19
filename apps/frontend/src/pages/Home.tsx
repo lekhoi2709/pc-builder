@@ -1,9 +1,9 @@
 import { twMerge } from 'tailwind-merge';
 import SideBarButton from '../components/SideBarButton';
-import { useSideBarOpen } from '../hooks/useSideBarOpen';
+import { useExclusivePanel } from '../stores/exclusivePanelStore';
 
 export default function Home() {
-  const { isSideBarOpen, setIsSideBarOpen } = useSideBarOpen();
+  const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
 
   return (
     <main
@@ -18,7 +18,7 @@ export default function Home() {
         <h1 className="text-xl font-semibold">Logo</h1>
         <SideBarButton
           isSideBarOpen={isSideBarOpen}
-          setIsSideBarOpen={setIsSideBarOpen}
+          toggleSidebar={toggleSidebar}
         />
       </section>
       <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 p-8 xl:pt-28">

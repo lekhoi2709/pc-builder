@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
-import { memo, type Dispatch, type SetStateAction } from 'react';
+import { memo } from 'react';
 import type { ComponentResponse, ComponentFilter } from '../types/components';
 
 import SideBarLayout from '../layouts/SideBarLayout';
@@ -15,14 +15,10 @@ import { ActiveFilters } from './ActiveFilters';
 const ComponentFilters = memo(
   ({
     data,
-    className,
     isSideBarOpen,
-    setIsSideBarOpen,
   }: {
     data?: ComponentResponse;
-    className?: string;
     isSideBarOpen: boolean;
-    setIsSideBarOpen: Dispatch<SetStateAction<boolean>>;
   }) => {
     const { filters, setFilters, removeFilter } = useComponentStore();
     const { lang } = useParams();
@@ -46,9 +42,7 @@ const ComponentFilters = memo(
       return (
         <SideBarLayout
           props={{
-            className: className,
             isSideBarOpen: isSideBarOpen,
-            setIsSideBarOpen: setIsSideBarOpen,
             title: 'Filters',
             titleIcon: (
               <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
@@ -64,9 +58,9 @@ const ComponentFilters = memo(
     return (
       <SideBarLayout
         props={{
-          className: className,
+          className:
+            'border-secondary-300 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400',
           isSideBarOpen: isSideBarOpen,
-          setIsSideBarOpen: setIsSideBarOpen,
           title: 'Filters',
           titleIcon: (
             <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />

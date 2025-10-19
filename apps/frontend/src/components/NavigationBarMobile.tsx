@@ -1,18 +1,15 @@
 import { NavLink } from 'react-router';
 import SideBarLayout from '../layouts/SideBarLayout';
 import { twMerge } from 'tailwind-merge';
-import type { Dispatch, JSX, SetStateAction } from 'react';
+import type { JSX } from 'react';
 import ThemeToggle from './ThemeToggle';
+import { useExclusivePanel } from '../stores/exclusivePanelStore';
 
 export default function NavigationBarMobile({
-  isSideBarOpen,
-  setIsSideBarOpen,
   routes,
   locationPage,
   className,
 }: {
-  isSideBarOpen?: boolean;
-  setIsSideBarOpen: Dispatch<SetStateAction<boolean>>;
   routes: {
     path: string;
     icon: JSX.Element;
@@ -21,11 +18,11 @@ export default function NavigationBarMobile({
   locationPage?: string;
   className?: string;
 }) {
+  const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
   return (
     <SideBarLayout
       props={{
         isSideBarOpen: isSideBarOpen!,
-        setIsSideBarOpen: setIsSideBarOpen,
         title: locationPage + ' Page' || routes[0].name || 'Home Page',
         className: twMerge('xl:hidden', className),
       }}
@@ -39,7 +36,7 @@ export default function NavigationBarMobile({
               <NavLink
                 to={route.path}
                 key={route.path}
-                onClick={() => setIsSideBarOpen(false)}
+                onClick={toggleSidebar}
                 className={twMerge(
                   'text-primary-600 dark:text-primary-100 group/navlink hover:bg-accent-200 dark:hover:bg-accent-400/80 transition-color flex items-center gap-4 rounded-lg p-3 px-4 duration-300 ease-in-out',
                   isAtPage &&
