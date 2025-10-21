@@ -1,5 +1,8 @@
-# PC Builder
-
+<p align="center">
+  <picture>
+    <img src="/apps/frontend/public/logo/pc-builder-logo-transparent-2.png" width="500" alt="PC Builder">
+  </picture>
+</p>
 <div align="center">
   <p align="center">
     <a href="https://opensource.org/licenses/MIT"><img alt="MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"/></a>

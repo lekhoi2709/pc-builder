@@ -24,6 +24,12 @@ export default function NavigationBarMobile({
       props={{
         isSideBarOpen: isSideBarOpen!,
         title: locationPage + ' Page' || routes[0].name || 'Home Page',
+        titleIcon: (
+          <img
+            src="/logo/pc-builder-logo-transparent.png"
+            className="prevent-select w-8 object-contain"
+          />
+        ),
         className: twMerge('xl:hidden', className),
       }}
     >

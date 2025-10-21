@@ -15,7 +15,15 @@ export default function About() {
       )}
     >
       <section className="flex w-full items-center justify-between xl:hidden">
-        <h1 className="text-xl font-semibold">Logo</h1>
+        <span className="ml-2 flex items-center gap-2">
+          <img
+            src={'/logo/pc-builder-logo-transparent.png'}
+            className="prevent-select w-10 object-contain"
+            loading="lazy"
+            alt="PC Builder"
+          />
+          <p className="font-saira text-accent-400">PC Builder</p>
+        </span>
         <SideBarButton
           isSideBarOpen={isSideBarOpen}
           toggleSidebar={toggleSidebar}

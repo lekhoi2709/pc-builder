@@ -32,7 +32,6 @@ const StickyNavbar = memo(
 
     const { lang } = useParams();
     const { isSideBarOpen } = useExclusivePanel();
-    console.log('StickyNavbar Sidebar', isSideBarOpen);
 
     const activeIndex = routes.findIndex(
       val => val.path == location.pathname.replace(`/${lang}`, '')
@@ -79,7 +78,15 @@ const StickyNavbar = memo(
         }
         initial="noSidebar"
       >
-        <span>Logo</span>
+        <span className="ml-2 flex items-center gap-2">
+          <img
+            src={'/logo/pc-builder-logo-transparent.png'}
+            className="prevent-select w-10 object-contain"
+            loading="lazy"
+            alt="PC Builder"
+          />
+          <p className="font-saira">PC Builder</p>
+        </span>
         <nav
           ref={navRef}
           className="relative flex h-fit transform gap-20 bg-transparent py-2"
