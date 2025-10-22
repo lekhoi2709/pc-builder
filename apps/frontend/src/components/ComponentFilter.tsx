@@ -82,7 +82,7 @@ const ComponentFilters = memo(
                   <FilterChip
                     key={category.id}
                     id={category.id}
-                    filter_type="category_id"
+                    filterType="category_id"
                     filters={filters}
                     removeFilter={removeFilter}
                     handleFilterChange={handleFilterChange}
@@ -113,7 +113,7 @@ const ComponentFilters = memo(
                     <FilterChip
                       key={brand.id}
                       id={brand.id}
-                      filter_type="brand_id"
+                      filterType="brand_id"
                       filters={filters}
                       removeFilter={removeFilter}
                       handleFilterChange={handleFilterChange}
@@ -153,7 +153,7 @@ const ComponentFilters = memo(
 
 function FilterChip({
   id,
-  filter_type,
+  filterType,
   filters,
   removeFilter,
   handleFilterChange,
@@ -161,7 +161,7 @@ function FilterChip({
   children,
 }: {
   id: string;
-  filter_type: string;
+  filterType: keyof ComponentFilter;
   filters: ComponentFilter;
   removeFilter: (key: keyof ComponentFilter) => void;
   handleFilterChange: (
@@ -176,9 +176,9 @@ function FilterChip({
       key={id}
       className="bg-accent-200/50 dark:bg-accent-400/80 border-primary-200 border-1 hover:bg-accent-300/50 dark:hover:bg-accent-400 border-border dark:border-border-dark dark:bg-selected-dark line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
       onClick={() =>
-        filters.brand_id
-          ? removeFilter(filter_type)
-          : handleFilterChange(filter_type, id)
+        filters?.[filterType as keyof ComponentFilter]
+          ? removeFilter(filterType as keyof ComponentFilter)
+          : handleFilterChange(filterType, id)
       }
       disabled={isDisabled}
     >

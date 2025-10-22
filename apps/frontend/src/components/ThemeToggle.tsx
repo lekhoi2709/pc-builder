@@ -1,10 +1,9 @@
-import { memo } from 'react';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { useTheme, type Theme } from '../hooks/useTheme';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
-const ThemeToggle = memo(({ className }: { className?: string }) => {
+const ThemeToggle = ({ className }: { className?: string }) => {
   const { toggleTheme } = useTheme();
 
   const themeIcons = [
@@ -75,6 +74,6 @@ const ThemeToggle = memo(({ className }: { className?: string }) => {
       ))}
     </nav>
   );
-});
+};
 
 export default ThemeToggle;

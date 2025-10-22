@@ -1,9 +1,8 @@
 import { useParams } from 'react-router';
 import type { Component } from '../types/components';
 import getLocalizedPrice from '../utils/getLocalizedPrice';
-import { memo } from 'react';
 
-export const ComponentCard = memo(({ component }: { component: Component }) => {
+export const ComponentCard = ({ component }: { component: Component }) => {
   const { lang } = useParams();
   const { price } = getLocalizedPrice(component.price, lang || 'vn');
   const onImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -32,4 +31,4 @@ export const ComponentCard = memo(({ component }: { component: Component }) => {
       </span>
     </div>
   );
-});
+};
