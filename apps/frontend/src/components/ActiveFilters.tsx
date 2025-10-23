@@ -9,6 +9,7 @@ import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
 import { memo } from 'react';
+import type { ComponentFilter } from '../types/components';
 
 const langToCurrency: Record<string, string> = {
   vn: 'VND',
@@ -22,7 +23,8 @@ const langToLocale: Record<string, string> = {
 
 export const ActiveFilters = memo(
   ({ isHavingSort = true }: { isHavingSort?: boolean }) => {
-    const { activeFilters, removeFilter, clearFilter } = useComponentStore();
+    const { activeFilters, removeFilter, clearFilter, categories, brands } =
+      useComponentStore();
     const { lang } = useParams();
     const currency = langToCurrency[lang || 'vn'] || 'VND';
 
@@ -66,34 +68,72 @@ export const ActiveFilters = memo(
       return strArr[0] + ' ' + strArr[1];
     };
 
+    const getDisplayName = (
+      key: keyof ComponentFilter,
+      value: string
+    ): string => {
+      if (key === 'category_id') {
+        const category = categories.find(c => c.id === value);
+        return category?.display_name || value;
+      }
+      if (key === 'brand_id') {
+        const brand = brands.find(b => b.id === value);
+        return brand?.display_name || value;
+      }
+      return value;
+    };
+
     return (
       <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
         <div className="flex flex-wrap items-center gap-2">
-          {activeFilters.map(({ key, value }) =>
-            key === 'max_price' || key === 'min_price' ? (
-              <span
-                key={key}
-                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-              >
-                <span className="flex flex-wrap gap-1">
-                  <p className="capitalize">
-                    {activeFilterStringFormatted(key)}:
-                  </p>
-                  <p>
-                    {priceFormatter(
-                      parseInt(value as string),
-                      langToLocale[lang || 'vn'] || 'vi-VN',
-                      'currency'
-                    )}
-                  </p>
-                </span>
+          {activeFilters.map(({ key, value }) => {
+            if (key === 'max_price' || key === 'min_price') {
+              return (
+                <span
+                  key={key}
+                  className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+                >
+                  <span className="flex flex-wrap gap-1">
+                    <p className="capitalize">
+                      {activeFilterStringFormatted(key)}:
+                    </p>
+                    <p>
+                      {priceFormatter(
+                        parseInt(value as string),
+                        langToLocale[lang || 'vn'] || 'vi-VN',
+                        'currency'
+                      )}
+                    </p>
+                  </span>
 
-                <CircleXIcon
-                  className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                  onClick={() => removeFilter(key)}
-                />
-              </span>
-            ) : (
+                  <CircleXIcon
+                    className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                    onClick={() => removeFilter(key)}
+                  />
+                </span>
+              );
+            }
+            if (Array.isArray(value)) {
+              return value.map(val => (
+                <span
+                  key={`${key}-${val}`}
+                  className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+                >
+                  <span className="flex flex-wrap gap-1">
+                    <p className="capitalize">
+                      {activeFilterStringFormatted(String(key))}:
+                    </p>
+                    <p className="capitalize">{getDisplayName(key, val)}</p>
+                  </span>
+                  <CircleXIcon
+                    className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
+                    onClick={() => removeFilter(key, val)}
+                  />
+                </span>
+              ));
+            }
+
+            return (
               <span
                 key={key}
                 className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
@@ -111,8 +151,8 @@ export const ActiveFilters = memo(
                   onClick={() => removeFilter(key)}
                 />
               </span>
-            )
-          )}
+            );
+          })}
           <button
             onClick={clearFilter}
             className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"

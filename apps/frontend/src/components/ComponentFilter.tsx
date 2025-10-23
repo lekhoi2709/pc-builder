@@ -6,11 +6,12 @@ import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
 import { memo } from 'react';
-import type { ComponentResponse, ComponentFilter } from '../types/components';
+import type { ComponentResponse } from '../types/components';
 
 import SideBarLayout from '../layouts/SideBarLayout';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { ActiveFilters } from './ActiveFilters';
+import { twMerge } from 'tailwind-merge';
 
 const ComponentFilters = memo(
   ({
@@ -20,23 +21,25 @@ const ComponentFilters = memo(
     data?: ComponentResponse;
     isSideBarOpen: boolean;
   }) => {
-    const { filters, setFilters, removeFilter } = useComponentStore();
+    const { filters, toggleBrandFilter, toggleCategoryFilter } =
+      useComponentStore();
     const { lang } = useParams();
     const isMobile = useMediaQuery('(max-width: 1280px)');
-
-    const handleFilterChange = (
-      key: keyof ComponentFilter,
-      value: string | number | undefined
-    ) => {
-      setFilters({ ...filters, [key]: value });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     const filterQuery = useQuery({
       queryKey: ['available-filters', lang],
       queryFn: () => GetAvailableFilters(lang || 'vn'),
       refetchOnWindowFocus: false,
     });
+
+    const isCategorySelected = (categoryId: string) => {
+      return filters.category_id?.includes(categoryId) || false;
+    };
+
+    // Helper to check if brand is selected
+    const isBrandSelected = (brandId: string) => {
+      return filters.brand_id?.includes(brandId) || false;
+    };
 
     if (!filterQuery.data || !data) {
       return (
@@ -76,17 +79,15 @@ const ComponentFilters = memo(
               filterQuery.data.categories.map(category => {
                 const categoryCount =
                   data.summary.by_category[category.display_name] || 0;
-                const isAvailable = categoryCount > 0;
+                const isCategoryAvailable = categoryCount > 0;
+                const isSelected = isCategorySelected(category.id);
 
                 return (
                   <FilterChip
                     key={category.id}
-                    id={category.id}
-                    filterType="category_id"
-                    filters={filters}
-                    removeFilter={removeFilter}
-                    handleFilterChange={handleFilterChange}
-                    isDisabled={!isAvailable}
+                    isSelected={isSelected}
+                    onClick={() => toggleCategoryFilter(category.id)}
+                    isDisabled={!isCategoryAvailable}
                   >
                     <span className="flex items-center gap-1">
                       {category.display_name}
@@ -107,16 +108,14 @@ const ComponentFilters = memo(
                 const brandCount =
                   data.summary.by_brand[brand.display_name] || 0;
                 const isBrandAvailable = brandCount > 0;
+                const isSelected = isBrandSelected(brand.id);
 
                 if (isBrandAvailable) {
                   return (
                     <FilterChip
                       key={brand.id}
-                      id={brand.id}
-                      filterType="brand_id"
-                      filters={filters}
-                      removeFilter={removeFilter}
-                      handleFilterChange={handleFilterChange}
+                      isSelected={isSelected}
+                      onClick={() => toggleBrandFilter(brand.id)}
                     >
                       <span className="flex items-center gap-1">
                         <span className="flex items-center gap-2">
@@ -152,34 +151,24 @@ const ComponentFilters = memo(
 );
 
 function FilterChip({
-  id,
-  filterType,
-  filters,
-  removeFilter,
-  handleFilterChange,
+  isSelected,
   isDisabled,
+  onClick,
   children,
 }: {
-  id: string;
-  filterType: keyof ComponentFilter;
-  filters: ComponentFilter;
-  removeFilter: (key: keyof ComponentFilter) => void;
-  handleFilterChange: (
-    key: keyof ComponentFilter,
-    value: string | number | undefined
-  ) => void;
+  isSelected: boolean;
   isDisabled?: boolean;
+  onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
     <button
-      key={id}
-      className="bg-accent-200/50 dark:bg-accent-400/80 border-primary-200 border-1 hover:bg-accent-300/50 dark:hover:bg-accent-400 border-border dark:border-border-dark dark:bg-selected-dark line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
-      onClick={() =>
-        filters?.[filterType as keyof ComponentFilter]
-          ? removeFilter(filterType as keyof ComponentFilter)
-          : handleFilterChange(filterType, id)
-      }
+      className={twMerge(
+        'bg-accent-200/50 dark:bg-accent-400/80 border-primary-200 border-1 hover:bg-accent-300/50 dark:hover:bg-accent-400 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50',
+        isSelected &&
+          'dark:outline-primary-100 border-transparent shadow-2xl outline outline-dashed xl:outline-double'
+      )}
+      onClick={onClick}
       disabled={isDisabled}
     >
       <span className="flex items-center gap-1">{children}</span>

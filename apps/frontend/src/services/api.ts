@@ -29,8 +29,14 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
     params.append('page_size', filters.page_size.toString());
 
   // Add filter params
-  if (filters.category_id) params.append('category_id', filters.category_id);
-  if (filters.brand_id) params.append('brand_id', filters.brand_id);
+  if (filters.category_id && filters.category_id.length > 0) {
+    params.append('category_id', filters.category_id.join(','));
+  }
+
+  if (filters.brand_id && filters.brand_id.length > 0) {
+    params.append('brand_id', filters.brand_id.join(','));
+  }
+
   if (filters.min_price)
     params.append('min_price', filters.min_price.toString());
   if (filters.max_price)

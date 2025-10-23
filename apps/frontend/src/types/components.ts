@@ -89,8 +89,8 @@ export interface AvailableFilters {
 }
 
 export interface ComponentFilter {
-  category_id?: string;
-  brand_id?: string;
+  category_id?: string[];
+  brand_id?: string[];
   min_price?: number;
   max_price?: number;
   search?: string;
@@ -104,7 +104,7 @@ export interface ComponentFilter {
   sort_order?: 'asc' | 'desc';
   currency?: string;
   // Spec filters - dynamic based on available specs
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | string[] | undefined;
 }
 
 export interface PaginationMeta {
