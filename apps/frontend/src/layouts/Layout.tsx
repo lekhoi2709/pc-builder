@@ -4,6 +4,7 @@ import StickyNavbar from '../components/StickyNavbar';
 import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
 import NavigationBarMobile from '../components/NavigationBarMobile';
 import { twMerge } from 'tailwind-merge';
+import ProgressBar from '../components/ProgressBar';
 
 export default function Layout() {
   const location = useLocation();
@@ -45,6 +46,7 @@ export default function Layout() {
         'max-w-screen dark:bg-dark bg-light text-primary-600 dark:text-primary-100 relative h-full min-h-screen w-screen transition-colors duration-500 ease-in-out'
       )}
     >
+      <ProgressBar />
       <StickyNavbar
         className="fixed right-4 top-4 z-50 hidden h-fit xl:flex"
         isAtComponentPage={isAtComponentPage}

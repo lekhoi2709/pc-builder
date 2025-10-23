@@ -1,19 +1,29 @@
 import { createBrowserRouter, redirect } from 'react-router';
 import Home from './pages/Home';
 import Components from './pages/Components';
-import getUserLocale from './utils/getUserLocale';
+import getUserLocationFromIP from './utils/getUserLocale';
 import About from './pages/About';
 import Layout from './layouts/Layout';
 
-function redirectToLocale() {
-  const locale = getUserLocale();
-  return redirect(`/${locale}/`);
+async function redirectToLocale() {
+  try {
+    const locale = await getUserLocationFromIP();
+    return redirect(`/${locale}/`);
+  } catch (error) {
+    console.error('Error getting user locale:', error);
+    return redirect('/en/');
+  }
 }
 
 function redirectToLocalizedPath(path: string) {
-  return () => {
-    const locale = getUserLocale();
-    return redirect(`/${locale}${path}`);
+  return async () => {
+    try {
+      const locale = await getUserLocationFromIP();
+      return redirect(`/${locale}${path}`);
+    } catch (error) {
+      console.error('Error getting user locale:', error);
+      return redirect(`/en${path}`);
+    }
   };
 }
 
