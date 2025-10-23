@@ -6,7 +6,6 @@ import NavigationBarMobile from '../components/NavigationBarMobile';
 import { twMerge } from 'tailwind-merge';
 import ProgressBar from '../components/ProgressBar';
 import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function Layout() {
   const location = useLocation();
@@ -56,7 +55,6 @@ export default function Layout() {
       <NavigationBarMobile routes={routes} locationPage={locationPage} />
       <Outlet />
       <Analytics />
-      <SpeedInsights />
     </main>
   );
 }
