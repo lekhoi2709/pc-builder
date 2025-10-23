@@ -1,9 +1,8 @@
 interface LocationData {
-  country: string;
-  countryCode: string;
-  region?: string;
-  currency?: string;
-  city?: string;
+  country_code: string;
+  currency?: {
+    code: string;
+  };
 }
 
 interface LocaleMapping {
@@ -42,10 +41,13 @@ export async function getUserLocationFromIP(): Promise<string> {
     let locationData: LocationData | null = null;
 
     try {
-      const response = await fetch('http://ip-api.com/json/', {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-      });
+      const response = await fetch(
+        import.meta.env.VITE_IP_API + '&fields=country_code,currency',
+        {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        }
+      );
 
       if (response.ok) {
         locationData = await response.json();
@@ -54,8 +56,8 @@ export async function getUserLocationFromIP(): Promise<string> {
       console.warn('Primary geolocation service failed:', error);
     }
 
-    if (locationData && locationData.countryCode) {
-      const countryCode = locationData.countryCode;
+    if (locationData && locationData.country_code) {
+      const countryCode = locationData.country_code;
 
       const mapping = localeMap.find(m => m.countries.includes(countryCode));
 
