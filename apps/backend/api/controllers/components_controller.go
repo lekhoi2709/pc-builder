@@ -50,8 +50,20 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 		filters.MaxPrice = maxPrice
 	}
 
-	filters.CategoryID = c.Query("category_id")
-	filters.BrandID = c.Query("brand_id")
+	if categoryIDsParam := c.Query("category_id"); categoryIDsParam != "" {
+		filters.CategoryIDs = strings.Split(categoryIDsParam, ",")
+		for i := range filters.CategoryIDs {
+			filters.CategoryIDs[i] = strings.TrimSpace(filters.CategoryIDs[i])
+		}
+	}
+
+	if brandIDsParam := c.Query("brand_id"); brandIDsParam != "" {
+		filters.BrandIDs = strings.Split(brandIDsParam, ",")
+		for i := range filters.BrandIDs {
+			filters.BrandIDs[i] = strings.TrimSpace(filters.BrandIDs[i])
+		}
+	}
+
 	filters.PrimaryBrandOnly = c.Query("primary_brand_only") == "true"
 	filters.Search = c.Query("search")
 	filters.SortBy = c.Query("sort_by")

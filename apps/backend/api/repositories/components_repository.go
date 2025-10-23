@@ -17,8 +17,8 @@ func NewComponentRepository(db *gorm.DB) *ComponentRepository {
 }
 
 type ComponentFilter struct {
-	CategoryID       string            `form:"category_id"`
-	BrandID          string            `form:"brand_id"`
+	CategoryIDs      []string          `form:"category_id"`
+	BrandIDs         []string          `form:"brand_id"`
 	PrimaryBrandOnly bool              `form:"primary_brand_only"`
 	MinPrice         float64           `form:"min_price"`
 	MaxPrice         float64           `form:"max_price"`
@@ -470,18 +470,18 @@ func isFilterableSpec(key string) bool {
 }
 
 func (r *ComponentRepository) applyFiltersForPriceRange(query *gorm.DB, filters ComponentFilter) *gorm.DB {
-	if filters.CategoryID != "" {
-		query = query.Where("components.category_id = ?", filters.CategoryID)
+	if len(filters.CategoryIDs) > 0 {
+		query = query.Where("components.category_id IN ?", filters.CategoryIDs)
 	}
 
-	if filters.BrandID != "" {
+	if len(filters.BrandIDs) > 0 {
 		query = query.Where(`
 			EXISTS (
 				SELECT 1 FROM component_brands
 				WHERE component_brands.component_id = components.id
-				AND component_brands.brand_id = ?
+				AND component_brands.brand_id IN ?
 			)
-		`, filters.BrandID)
+		`, filters.BrandIDs)
 	}
 
 	if filters.Search != "" {

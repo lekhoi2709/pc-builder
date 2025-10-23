@@ -80,18 +80,18 @@ func (r *ComponentRepository) GetAvailableFilters(lang string) (*AvailableFilter
 }
 
 func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilter) *gorm.DB {
-	if filters.CategoryID != "" {
-		query = query.Where("components.category_id = ?", filters.CategoryID)
+	if len(filters.CategoryIDs) > 0 {
+		query = query.Where("components.category_id IN ?", filters.CategoryIDs)
 	}
 
-	if filters.BrandID != "" {
+	if len(filters.BrandIDs) > 0 {
 		query = query.Where(`
 			EXISTS (
 				SELECT 1 FROM component_brands
 				WHERE component_brands.component_id = components.id
-				AND component_brands.brand_id = ?
+				AND component_brands.brand_id IN ?
 			)
-		`, filters.BrandID)
+		`, filters.BrandIDs)
 	}
 
 	if filters.Search != "" {
@@ -169,18 +169,18 @@ func (r *ComponentRepository) GetAllBrands() ([]models.Brand, error) {
 }
 
 func (r *ComponentRepository) applyFiltersForSummary(query *gorm.DB, filters ComponentFilter) *gorm.DB {
-	if filters.CategoryID != "" {
-		query = query.Where("components.category_id = ?", filters.CategoryID)
+	if len(filters.CategoryIDs) > 0 {
+		query = query.Where("components.category_id IN ?", filters.CategoryIDs)
 	}
 
-	if filters.BrandID != "" {
+	if len(filters.BrandIDs) > 0 {
 		query = query.Where(`
 			EXISTS (
 				SELECT 1 FROM component_brands
 				WHERE component_brands.component_id = components.id
-				AND component_brands.brand_id = ?
+				AND component_brands.brand_id IN ?
 			)
-		`, filters.BrandID)
+		`, filters.BrandIDs)
 	}
 
 	if filters.Search != "" {
