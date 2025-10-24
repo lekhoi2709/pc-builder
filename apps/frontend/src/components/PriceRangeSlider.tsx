@@ -81,22 +81,28 @@ const PriceRangeSlider = memo(
     const getPercentage = (value: number) =>
       ((value - min) / (max - min)) * 100;
 
-    const handleMouseDown = (type: 'min' | 'max') => (e: React.MouseEvent) => {
-      e.preventDefault();
-      setIsDragging(type);
-    };
-
-    const handleMouseMove = useCallback(
-      (e: MouseEvent) => {
-        if (!isDragging || !sliderRef.current) return;
+    const calculateValueFromPosition = useCallback(
+      (clientX: number) => {
+        if (!sliderRef.current) return null;
 
         const rect = sliderRef.current.getBoundingClientRect();
         const percentage = Math.max(
           0,
-          Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)
+          Math.min(100, ((clientX - rect.left) / rect.width) * 100)
         );
-        const newValue =
-          Math.round(((percentage / 100) * (max - min) + min) / step) * step;
+        return (
+          Math.round(((percentage / 100) * (max - min) + min) / step) * step
+        );
+      },
+      [min, max, step]
+    );
+
+    const updateValue = useCallback(
+      (clientX: number) => {
+        if (!isDragging) return;
+
+        const newValue = calculateValueFromPosition(clientX);
+        if (newValue === null) return;
 
         if (isDragging === 'min') {
           const clampedValue = Math.max(
@@ -116,10 +122,49 @@ const PriceRangeSlider = memo(
           onChange?.(minValue, clampedValue);
         }
       },
-      [isDragging, min, max, step, minValue, maxValue, onChange]
+      [
+        isDragging,
+        min,
+        max,
+        step,
+        minValue,
+        maxValue,
+        onChange,
+        calculateValueFromPosition,
+      ]
+    );
+
+    const handleMouseDown = (type: 'min' | 'max') => (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsDragging(type);
+    };
+
+    const handleTouchStart = (type: 'min' | 'max') => (e: React.TouchEvent) => {
+      e.preventDefault();
+      setIsDragging(type);
+    };
+
+    const handleMouseMove = useCallback(
+      (e: MouseEvent) => {
+        updateValue(e.clientX);
+      },
+      [updateValue]
+    );
+
+    const handleTouchMove = useCallback(
+      (e: TouchEvent) => {
+        if (e.touches.length > 0) {
+          updateValue(e.touches[0].clientX);
+        }
+      },
+      [updateValue]
     );
 
     const handleMouseUp = useCallback(() => {
+      setIsDragging(null);
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
       setIsDragging(null);
     }, []);
 
@@ -127,13 +172,23 @@ const PriceRangeSlider = memo(
       if (isDragging) {
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('touchmove', handleTouchMove);
+        document.addEventListener('touchend', handleTouchEnd);
 
         return () => {
           document.removeEventListener('mousemove', handleMouseMove);
           document.removeEventListener('mouseup', handleMouseUp);
+          document.removeEventListener('touchmove', handleTouchMove);
+          document.removeEventListener('touchend', handleTouchEnd);
         };
       }
-    }, [isDragging, handleMouseMove, handleMouseUp]);
+    }, [
+      isDragging,
+      handleMouseMove,
+      handleMouseUp,
+      handleTouchMove,
+      handleTouchEnd,
+    ]);
 
     const validateAndLimitInput = (value: string): string => {
       // Remove any non-numeric characters except for leading minus sign
@@ -251,6 +306,7 @@ const PriceRangeSlider = memo(
               }`}
               style={{ left: `${minPercentage}%` }}
               onMouseDown={handleMouseDown('min')}
+              onTouchStart={handleTouchStart('min')}
             />
 
             {/* Max Handle */}
@@ -260,6 +316,7 @@ const PriceRangeSlider = memo(
               }`}
               style={{ left: `${maxPercentage}%` }}
               onMouseDown={handleMouseDown('max')}
+              onTouchStart={handleTouchStart('max')}
             />
           </div>
         </div>
