@@ -20,6 +20,7 @@ html {
   overflow: auto;
   height: 100%;
   min-height: 100vh !important;
+  touch-action: none;
 }
 
 body {
