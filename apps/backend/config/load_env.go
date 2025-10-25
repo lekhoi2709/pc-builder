@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Environment    string
 	DB             PostgresConfig
+	Cloudinary     CloudinaryConfig
 	Port           string
 	AllowedOrigins []string
 }
@@ -22,6 +23,12 @@ type PostgresConfig struct {
 	Password       string
 	DbName         string
 	SslMode        string
+}
+
+type CloudinaryConfig struct {
+	CloudName string
+	ApiKey    string
+	ApiSecret string
 }
 
 func LoadEnv() (*Config, error) {
@@ -45,6 +52,11 @@ func LoadEnv() (*Config, error) {
 			Password: os.Getenv("DB_PASSWORD"),
 			DbName:   os.Getenv("DB_NAME"),
 			SslMode:  os.Getenv("DB_SSLMODE"),
+		},
+		Cloudinary: CloudinaryConfig{
+			CloudName: os.Getenv("CLOUDINARY_CLOUD_NAME"),
+			ApiKey:    os.Getenv("CLOUDINARY_API_KEY"),
+			ApiSecret: os.Getenv("CLOUDINARY_API_SECRET"),
 		},
 	}
 

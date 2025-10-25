@@ -4,6 +4,7 @@ import (
 	controller "pc-builder/backend/api/controllers"
 	"pc-builder/backend/api/middlewares"
 	"pc-builder/backend/db"
+	"pc-builder/backend/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +15,9 @@ const (
 	RoleVendor = "vendor"
 )
 
-func RegisterRoutes(router *gin.Engine) {
+func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinaryService) {
 	componentController := controller.NewComponentController(db.DB)
+	imageController := controller.NewImageController(cloudinaryService)
 
 	// Health check route
 	router.GET("/health", func(c *gin.Context) {
@@ -76,6 +78,13 @@ func RegisterRoutes(router *gin.Engine) {
 		{
 			adminBrands.POST("", componentController.CreateBrand)
 			adminBrands.PATCH("/:id", componentController.UpdateBrand)
+		}
+
+		adminImages := admin.Group("/images")
+		{
+			adminImages.POST("/upload", imageController.UploadSingleImage)
+			adminImages.POST("/upload-multiple", imageController.UploadMultipleImages)
+			adminImages.DELETE("", imageController.DeleteImage)
 		}
 	}
 

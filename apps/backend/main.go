@@ -7,12 +7,14 @@ import (
 	"pc-builder/backend/api/routes"
 	"pc-builder/backend/config"
 	"pc-builder/backend/db"
+	"pc-builder/backend/services"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 var appConfig *config.Config
+var cloudinaryService *services.CloudinaryService
 
 func init() {
 	var err error
@@ -22,6 +24,21 @@ func init() {
 	}
 
 	db.InitPostgres(appConfig)
+
+	cloudinaryService, err = services.NewCloudinaryService(
+		appConfig.Cloudinary.CloudName,
+		appConfig.Cloudinary.ApiKey,
+		appConfig.Cloudinary.ApiSecret,
+		"pc_builder",
+	)
+
+	if err != nil {
+		log.Printf("⚠️ Warning: Cloudinary service initialization failed: %v", err)
+		log.Println("Image upload features will be disabled")
+	} else {
+		log.Println("✅ Cloudinary service initialized")
+	}
+
 }
 
 func main() {
@@ -38,11 +55,16 @@ func main() {
 	middlewares.SetupSecurityMiddleware(router, appConfig.AllowedOrigins)
 	middlewares.SetupTrustedProxies(router)
 
+	router.Use(func(c *gin.Context) {
+		c.Set("cloudinaryService", cloudinaryService)
+		c.Next()
+	})
+
 	router.GET("", func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{"message": "Welcome to PC Builder API"})
 	})
 
-	routes.RegisterRoutes(router)
+	routes.RegisterRoutes(router, cloudinaryService)
 
 	port := appConfig.Port
 
