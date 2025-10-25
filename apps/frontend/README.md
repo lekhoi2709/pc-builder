@@ -1,34 +1,63 @@
-# PC Builder Frontend
+<p align="center">
+  <picture>
+    <img src="/apps/frontend/public/logo/pc-builder-logo-transparent-2.png" width="500" alt="PC Builder">
+  </picture>
+</p>
+<div align="center">
+  <p align="center">
+    <a href="https://opensource.org/licenses/MIT"><img alt="MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"/></a>
+    <a href="https://react.dev"><img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react" /></a>
+      <a href="https://www.typescriptlang.org/"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript" /></a>
+  <a href="https://vitejs.dev"><img alt="Vite" src="https://img.shields.io/badge/Vite-6.3-646CFF?logo=vite" /></a>
+  </p>
 
-A modern React application for browsing and filtering PC components. Built with React 19, TypeScript, TailwindCSS, and Vite.
+<p>A modern, performant React application for browsing and filtering PC components with an intuitive interface, multi-language support, and real-time filtering capabilities.</p>
 
-## ✨ Features
+<p align="center">
+<a href="https://pc-builder-frontend-orcin.vercel.app">Live Demo</a>
+•
+<a href="#">Documentation</a>
+•
+<a href="#">Report Bug</a>
+•
+<a href="#">Request Feature</a>
+</p>
 
-- 🔍 Advanced filtering (category, brand, price, specs)
-- 💰 Multi-currency support (VND, USD)
-- 🌍 Multi-language support (Vietnamese, English)
-- 🎨 Dark/Light theme with persistence
-- 🔎 Real-time search with debouncing
-- 📱 Fully responsive design
-- ⚡ Optimized performance with React Query caching
+</div>
 
-## 🛠️ Tech Stack
+---
 
-- React 19.1
-- TypeScript 5.8
-- Vite 6.3
-- TailwindCSS 4.1
-- Zustand (state management)
-- TanStack Query (data fetching)
-- React Router 7.7
-- Framer Motion (animations)
+## Features
 
-## 📋 Prerequisites
+- Advanced filtering (category, brand, price, specs)
+- Multi-currency support (VND, USD)
+- Dark/Light theme with persistence
+- Real-time search with debouncing
+- Fully responsive design
+- Optimized performance with React Query caching
 
-- Node.js v18+
-- Backend API running on `http://localhost:8080`
+## Tech Stack
 
-## 🚀 Getting Started
+| Category             | Technologies                      |
+| -------------------- | --------------------------------- |
+| **Core**             | React 19, TypeScript              |
+| **Build Tool**       | Vite                              |
+| **Styling**          | TailwindCSS 4                     |
+| **State Management** | Zustand                           |
+| **Data Fetching**    | TanStack Query                    |
+| **Routing**          | React Router                      |
+| **Animations**       | Framer Motion                     |
+| **Icons**            | Lucide React                      |
+| **Analytics**        | Vercel Analytics & Speed Insights |
+| **Utilities**        | tailwind-merge                    |
+
+## Prerequisites
+
+- **Node.js** v18+ (LTS recommended)
+- **npm** or **pnpm** or **yarn**
+- **Backend API** running (see [Backend README](../backend/README.md))
+
+## Getting Started
 
 ### 1. Install Dependencies
 
@@ -43,7 +72,13 @@ Create `.env` file:
 
 ```env
 VITE_API_URL=http://localhost:8080/api/
+VITE_IP_API=https://ipapi.co/json/?key=YOUR_API_KEY
 ```
+
+**Environment Variables:**
+
+- `VITE_API_URL` - Backend API base URL (required)
+- `VITE_IP_API` - IP geolocation API endpoint (optional, for auto-locale detection)
 
 ### 3. Start Development Server
 
@@ -51,24 +86,60 @@ VITE_API_URL=http://localhost:8080/api/
 npm run dev
 ```
 
-Access at `http://localhost:5173`
+Access the application at `http://localhost:5173`
 
-## 📁 Project Structure
+The app will automatically redirect to your locale:
 
-```text
+- Vietnamese users: `http://localhost:5173/vn/`
+- English users: `http://localhost:5173/en/`
+
+## Project Structure
+
+```bash
 src/
-├── components/    # React components
-├── pages/         # Page components
-├── hooks/         # Custom hooks
-├── stores/        # Zustand stores
-├── services/      # API services
-├── types/         # TypeScript types
-├── utils/         # Utility functions
-├── layouts/       # Layout components
-└── index.css      # Global styles
+├── assets/              # Static assets
+│   └── react.svg
+├── components/          # React components
+│   ├── ActiveFilters.tsx           # Filter chips display
+│   ├── ComponentCard.tsx           # Product card
+│   ├── ComponentFilter.tsx         # Filter sidebar
+│   ├── NavigationBarMobile.tsx     # Mobile nav drawer
+│   ├── PriceRangeSlider.tsx       # Price filter
+│   ├── ProgressBar.tsx            # Loading indicator
+│   ├── SearchComponentBar.tsx     # Search input
+│   ├── SideBarButton.tsx          # Toggle button
+│   ├── StickyNavbar.tsx           # Desktop navbar
+│   └── ThemeToggle.tsx            # Theme switcher
+├── hooks/               # Custom React hooks
+│   ├── useHoverIndicator.ts       # Nav indicator animation
+│   ├── useMediaQuery.ts           # Responsive helpers
+│   ├── useScrollPosition.ts       # Scroll detection
+│   ├── useSideBarOpen.ts          # Sidebar state
+│   └── useTheme.ts                # Theme management
+├── layouts/             # Layout components
+│   ├── HomeLayout.tsx             # Home page layout
+│   ├── Layout.tsx                 # Main app layout
+│   └── SideBarLayout.tsx          # Sidebar wrapper
+├── pages/               # Page components
+│   ├── About.tsx                  # About page
+│   ├── Components.tsx             # Component listing
+│   └── Home.tsx                   # Home page
+├── services/            # API services
+│   └── api.ts                     # API client
+├── stores/              # Zustand stores
+│   ├── componentStore.ts          # Component state
+│   └── exclusivePanelStore.ts    # Panel state
+├── types/               # TypeScript types
+│   └── components.ts              # Type definitions
+├── utils/               # Utility functions
+│   ├── getLocalizedPrice.ts      # Price formatting
+│   └── getUserLocale.ts          # Locale detection
+├── index.css            # Global styles & theme
+├── main.tsx             # App entry point
+└── routes.tsx           # Route configuration
 ```
 
-## 📖 Available Scripts
+## Available Scripts
 
 ```bash
 npm run dev           # Start dev server
@@ -79,85 +150,7 @@ npm run format        # Format code with Prettier
 npm run check-types   # Type check
 ```
 
-## 🎯 Key Components
-
-### ActiveFilters
-
-Displays active filter chips with options to remove or clear all.
-
-### ComponentFilter
-
-Sidebar with category, brand, and price range filtering.
-
-### ComponentCard
-
-Grid card displaying individual component details.
-
-### StickyNavbar
-
-Navigation bar with theme toggle and route links.
-
-### PriceRangeSlider
-
-Interactive slider for price filtering with min/max inputs.
-
-## 🌐 Internationalization
-
-The app supports multiple languages through URL routing:
-
-```text
-/vn/components →  Vietnamese (VND)
-/en/components →  English (USD)
-```
-
-Supported locales can be extended in `src/utils/getUserLocale.ts`
-
-## 🎨 Theming
-
-Theme is managed by `useTheme()` hook and stored in localStorage:
-
-- **Light**: Default light theme
-- **Dark**: Dark theme
-- **System**: Uses system preference
-
-## 🔧 API Integration
-
-Base URL: `http://localhost:8080/api/v1`
-
-Key endpoints:
-
-- `GET /components` - Get components with filters
-- `GET /components/:id` - Get single component
-- `GET /components/filters` - Get available filters
-- `GET /categories` - Get categories
-- `GET /brands` - Get brands
-
-See [Backend README](../backend/README.md) for full API documentation.
-
-## 📦 State Management
-
-Global state is managed with Zustand:
-
-```typescript
-const {
-  filters, // Current filters
-  pagination, // Page info
-  activeFilters, // Active filter chips
-  setFilters, // Update filters
-  clearFilter, // Clear all
-  removeFilter, // Remove specific filter
-} = useComponentStore();
-```
-
-## ⚡ Performance Optimizations
-
-- React Query caches API responses (5-min stale time)
-- Search is debounced by 400ms
-- Images are lazy-loaded
-- Heavy components use React.memo()
-- Automatic code splitting via Vite
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **API requests fail**: Ensure backend is running and `VITE_API_URL` is correct
 
@@ -165,13 +158,23 @@ const {
 
 **Build fails**: Run `npm run check-types` to find type errors
 
-## 📚 Related Documentation
+## Related Documentation
 
 - [Backend README](../backend/README.md) - API docs and setup
 - [Vite Docs](https://vitejs.dev/)
 - [React Docs](https://react.dev/)
 - [TailwindCSS Docs](https://tailwindcss.com/)
 
-## 📄 License
+---
+
+## License
 
 MIT License - part of PC Builder project
+
+---
+
+<div align="center">
+
+Made with ❤️ by [Le Dinh Khoi](https://github.com/lekhoi2709)
+
+</div>
