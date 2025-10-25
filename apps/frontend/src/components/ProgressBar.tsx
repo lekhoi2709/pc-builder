@@ -1,13 +1,15 @@
+import { useIsFetching } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useNavigation } from 'react-router';
 
 export default function ProgressBar() {
   const navigation = useNavigation();
+  const isFetching = useIsFetching();
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (navigation.state === 'loading') {
+    if (navigation.state === 'loading' || isFetching > 0) {
       setVisible(true);
       setProgress(30);
 
@@ -29,7 +31,7 @@ export default function ProgressBar() {
       }, 400);
       return () => clearTimeout(doneTimer);
     }
-  }, [navigation.state]);
+  }, [navigation.state, isFetching]);
 
   if (!visible) return null;
 
