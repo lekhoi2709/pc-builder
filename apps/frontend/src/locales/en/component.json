@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Components"
+  },
+  "filter": {
+    "title": "Filters",
+    "category": "Categories",
+    "brand": "Brands",
+    "price": {
+      "title": "Price",
+      "min": "Min Price",
+      "max": "Max Price"
+    },
+    "active": {
+      "active_brand": "Brand: ",
+      "active_category": "Category: ",
+      "active_min": "Min Price: ",
+      "active_max": "Max Price: "
+    },
+    "action": {
+      "search": "Search...",
+      "price": "Apply Price",
+      "clear": "Clear All"
+    }
+  },
+  "action": {
+    "pagination": {
+      "page": "Page {{page}} of {{total}}"
+    },
+    "sorting": {
+      "sorted_default": "Default Sorting",
+      "sorted_price": "Price",
+      "sorted_price_one": "Price: Low to High",
+      "sorted_price_zero": "Price: High to Low",
+      "sorted_brand": "Brands",
+      "sorted_category": "Categories"
+    }
+  }
+}

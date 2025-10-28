@@ -14,6 +14,7 @@ import { motion, type Variants } from 'framer-motion';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { Trans, useTranslation } from 'react-i18next';
 
 export default function Components() {
   const { lang } = useParams();
@@ -209,6 +210,7 @@ const ComponentPageLayout = memo(
     const delta = useResponsivePagination(setPagination);
     const { isSideBarOpen, isFilterOpen, toggleSidebar, toggleFilter } =
       useExclusivePanel();
+    const { t } = useTranslation('component');
 
     const isDesktop = useMediaQuery('(min-width: 1280px)');
 
@@ -234,7 +236,7 @@ const ComponentPageLayout = memo(
           initial="collapse"
         >
           <span className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Components</h1>
+            <h1 className="text-2xl font-semibold">{t('page.title')}</h1>
             <SideBarButton
               isSideBarOpen={isSideBarOpen}
               toggleSidebar={toggleSidebar}
@@ -262,10 +264,14 @@ const ComponentPageLayout = memo(
           <section className="mt-auto w-full self-center">
             {props.data && props.data.pagination && (
               <div className="w-full">
-                <p className="text-sm text-gray-500">
-                  Page {props.data.pagination.current_page} of{' '}
-                  {props.data.pagination.total_pages}
-                </p>
+                <Trans
+                  t={t}
+                  i18nKey={'action.pagination.page'}
+                  className="text-sm text-gray-500"
+                >
+                  Page {{ page: props.data.pagination.current_page }} of{' '}
+                  {{ total: props.data.pagination.total_pages }}
+                </Trans>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <button
                     onClick={() =>

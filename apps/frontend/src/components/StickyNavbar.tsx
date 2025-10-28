@@ -4,6 +4,7 @@ import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { motion, type Variants } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { useTranslation } from 'react-i18next';
 
 const StickyNavbar = ({
   className,
@@ -16,20 +17,21 @@ const StickyNavbar = ({
   const routes = [
     {
       path: '/',
-      name: 'Home',
+      name: 'nav.home',
     },
     {
       path: '/components',
-      name: 'Components',
+      name: 'nav.component',
     },
     {
       path: '/about',
-      name: 'About',
+      name: 'nav.about',
     },
   ];
 
   const { lang } = useParams();
   const { isSideBarOpen } = useExclusivePanel();
+  const { t } = useTranslation('common');
 
   const activeIndex = routes.findIndex(
     val => val.path == location.pathname.replace(`/${lang}`, '')
@@ -105,7 +107,7 @@ const StickyNavbar = ({
             onMouseLeave={handleMouseLeave}
           >
             <p className="font-semibold uppercase transition-all duration-500 ease-in-out group-hover/navlink:scale-110">
-              {route.name}
+              {t(route.name)}
             </p>
           </NavLink>
         ))}

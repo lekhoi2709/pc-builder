@@ -1,10 +1,12 @@
 import { CircleXIcon, SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useComponentStore } from '../stores/componentStore';
+import { useTranslation } from 'react-i18next';
 
 export default function SearchComponentBar() {
   const { filters, setFilters } = useComponentStore();
   const [term, setTerm] = useState(filters.search ?? '');
+  const { t } = useTranslation('component');
 
   useEffect(() => {
     setTerm(filters.search ?? '');
@@ -30,7 +32,7 @@ export default function SearchComponentBar() {
         type="text"
         value={term}
         onChange={e => setTerm(e.target.value)}
-        placeholder="Search..."
+        placeholder={t('filter.action.search')}
         className="border-light-elevated dark:border-dark-elevated border-1 bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 placeholder:text-primary-600/50 dark:placeholder:text-primary-100/50 rounded-4xl w-full px-4 py-2 pl-10 focus:outline-none focus:ring-1"
       />
       {term && (

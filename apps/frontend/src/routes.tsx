@@ -4,6 +4,7 @@ import Components from './pages/Components';
 import getUserLocationFromIP from './utils/getUserLocale';
 import About from './pages/About';
 import Layout from './layouts/Layout';
+import i18n from './locales/i18n/config';
 
 async function redirectToLocale() {
   try {
@@ -38,7 +39,6 @@ const router = createBrowserRouter([
     path: '/',
     loader: redirectToLocale,
   },
-
   // Non-localized routes that should redirect to localized versions
   {
     path: '/components',
@@ -51,6 +51,13 @@ const router = createBrowserRouter([
   {
     path: '/:lang',
     Component: Layout,
+    loader: ({ params }) => {
+      const lang = params.lang;
+      if (lang === 'en' || lang === 'vn') {
+        i18n.changeLanguage(lang);
+      }
+      return null;
+    },
     children: [
       { index: true, Component: Home },
       { path: 'components', Component: Components },

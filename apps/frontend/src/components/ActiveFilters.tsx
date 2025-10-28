@@ -1,5 +1,4 @@
 import {
-  CircleXIcon,
   ArrowUpAzIcon,
   ArrowDownAZIcon,
   ArrowUp01Icon,
@@ -8,8 +7,10 @@ import {
 import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
-import { memo } from 'react';
+import { memo, type MouseEventHandler } from 'react';
 import type { ComponentFilter } from '../types/components';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 const langToCurrency: Record<string, string> = {
   vn: 'VND',
@@ -26,6 +27,7 @@ export const ActiveFilters = memo(
     const { activeFilters, removeFilter, clearFilter, categories, brands } =
       useComponentStore();
     const { lang } = useParams();
+    const { t } = useTranslation('component');
     const currency = langToCurrency[lang || 'vn'] || 'VND';
 
     const priceFormatter = (
@@ -45,10 +47,11 @@ export const ActiveFilters = memo(
         isHavingSort && (
           <div className="font-saira flex w-full justify-end">
             <div className="flex items-center gap-2 self-end">
-              <SortingIndicator content="Default Sorting" />
+              <SortingIndicator t={t} content={'default'} />
               <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
               <SortingIndicator
-                content="Price"
+                t={t}
+                content="price"
                 sort_by="price"
                 IconUp={ArrowUp01Icon}
                 IconDown={ArrowDown01Icon}
@@ -58,12 +61,22 @@ export const ActiveFilters = memo(
         )
       );
 
-    const activeFilterStringFormatted = (str: string): string => {
+    const activeFilterStringFormatted = ({
+      isSortingFilter = false,
+      str,
+    }: {
+      isSortingFilter?: boolean;
+      str: string;
+    }): string => {
       const strArr = str.split('_');
       if (strArr[1] === 'id' || !strArr[1]) {
         return strArr[0];
       } else if (strArr[0] === 'storage') {
         return strArr[1];
+      } else if (strArr[0] === 'min' || strArr[0] === 'max') {
+        if (!isSortingFilter) {
+          return strArr[0];
+        } else return 'default';
       }
       return strArr[0] + ' ' + strArr[1];
     };
@@ -94,8 +107,12 @@ export const ActiveFilters = memo(
                   className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
                 >
                   <span className="flex flex-wrap gap-1">
-                    <p className="capitalize">
-                      {activeFilterStringFormatted(key)}:
+                    <p>
+                      {t('filter.active.active', {
+                        context: activeFilterStringFormatted({
+                          str: String(key),
+                        }),
+                      })}
                     </p>
                     <p>
                       {priceFormatter(
@@ -106,10 +123,7 @@ export const ActiveFilters = memo(
                     </p>
                   </span>
 
-                  <CircleXIcon
-                    className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                    onClick={() => removeFilter(key)}
-                  />
+                  <XIcon onClick={() => removeFilter(key)} />
                 </span>
               );
             }
@@ -120,15 +134,16 @@ export const ActiveFilters = memo(
                   className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
                 >
                   <span className="flex flex-wrap gap-1">
-                    <p className="capitalize">
-                      {activeFilterStringFormatted(String(key))}:
+                    <p>
+                      {t('filter.active.active', {
+                        context: activeFilterStringFormatted({
+                          str: String(key),
+                        }),
+                      })}
                     </p>
-                    <p className="capitalize">{getDisplayName(key, val)}</p>
+                    <p>{getDisplayName(key, val)}</p>
                   </span>
-                  <CircleXIcon
-                    className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                    onClick={() => removeFilter(key, val)}
-                  />
+                  <XIcon onClick={() => removeFilter(key, val)} />
                 </span>
               ));
             }
@@ -140,16 +155,11 @@ export const ActiveFilters = memo(
               >
                 <span className="flex flex-wrap gap-1">
                   <p className="capitalize">
-                    {activeFilterStringFormatted(String(key))}:
+                    {activeFilterStringFormatted({ str: String(key) })}:
                   </p>
-                  <p className="capitalize">
-                    {activeFilterStringFormatted(String(value))}
-                  </p>
+                  <p>{activeFilterStringFormatted({ str: String(value) })}</p>
                 </span>
-                <CircleXIcon
-                  className="z-10 ml-2 h-4 w-4 cursor-pointer text-red-500 hover:text-red-700"
-                  onClick={() => removeFilter(key)}
-                />
+                <XIcon onClick={() => removeFilter(key)} />
               </span>
             );
           })}
@@ -157,19 +167,22 @@ export const ActiveFilters = memo(
             onClick={clearFilter}
             className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
           >
-            Clear All
+            {t('filter.action.clear')}
           </button>
         </div>
         {isHavingSort && (
           <div className="ml-auto flex items-center gap-2">
             <SortingIndicator
-              content={activeFilterStringFormatted(
-                String(activeFilters[0].key)
-              )}
+              t={t}
+              content={activeFilterStringFormatted({
+                str: String(activeFilters[0].key),
+                isSortingFilter: true,
+              })}
             />
             <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
             <SortingIndicator
-              content="Price"
+              t={t}
+              content="price"
               sort_by="price"
               IconUp={ArrowUp01Icon}
               IconDown={ArrowDown01Icon}
@@ -188,6 +201,7 @@ function SortingIndicator({
   IconUp = ArrowUpAzIcon,
   IconDown = ArrowDownAZIcon,
   sort_by = 'name',
+  t,
 }: {
   content?: string;
   containerCN?: string;
@@ -201,9 +215,9 @@ function SortingIndicator({
     | 'updated_at'
     | 'brand'
     | 'category';
+  t: TFunction<'component', undefined>;
 }) {
   const { filters, setFilters } = useComponentStore();
-
   const isActive = filters.sort_by === sort_by;
   const showIcon = isActive;
   const isAscending = filters.sort_order === 'asc';
@@ -211,7 +225,7 @@ function SortingIndicator({
   return (
     <span
       className={twMerge(
-        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 flex cursor-pointer items-center gap-1 rounded border-transparent p-2 capitalize transition-colors duration-300 ease-in-out',
+        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 flex cursor-pointer items-center gap-1 rounded border-transparent p-2 transition-colors duration-300 ease-in-out',
         isActive &&
           'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20',
         containerCN
@@ -232,16 +246,38 @@ function SortingIndicator({
         }
       }}
     >
-      <p className={twMerge('prevent-select', textCN)}>{content}</p>
+      <p className={twMerge('prevent-select', textCN)}>
+        {isActive && sort_by === 'price'
+          ? t('action.sorting.sorted', {
+              context: sort_by,
+              count: isAscending ? 1 : 0,
+            })
+          : t('action.sorting.sorted', { context: content })}
+      </p>
       {showIcon && (
         <>
           {isAscending ? (
-            <IconDown className="h-4 w-4" />
-          ) : (
             <IconUp className="h-4 w-4" />
+          ) : (
+            <IconDown className="h-4 w-4" />
           )}
         </>
       )}
     </span>
+  );
+}
+
+function XIcon({ onClick }: { onClick?: MouseEventHandler<HTMLElement> }) {
+  return (
+    <i onClick={onClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 256 256"
+        className="z-10 ml-2 h-3 w-3 cursor-pointer text-red-500 hover:text-red-700"
+        fill="currentColor"
+      >
+        <path d="M 120 136 L 120 176 L 40 256 L 0 256 L 0 216 L 80 136 Z M 256 216 L 256 256 L 216 256 L 136 176 L 136 136 L 176 136 Z M 120 80 L 120 120 L 80 120 L 0 40 L 0 0 L 40 0 Z M 256 40 L 176 120 L 136 120 L 136 80 L 216 0 L 256 0 Z"></path>
+      </svg>
+    </i>
   );
 }

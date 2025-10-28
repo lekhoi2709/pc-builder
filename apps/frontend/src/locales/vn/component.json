@@ -1,0 +1,39 @@
+{
+  "page": {
+    "title": "Sản phẩm"
+  },
+  "filter": {
+    "title": "Bộ lọc",
+    "category": "Danh mục",
+    "brand": "Thương hiệu",
+    "price": {
+      "title": "Khoảng giá",
+      "min": "Giá thấp nhất",
+      "max": "Giá cao nhất"
+    },
+    "active": {
+      "active_brand": "Hãng: ",
+      "active_category": "Loại: ",
+      "active_min": "Giá thấp nhất: ",
+      "active_max": "Giá cao nhất: "
+    },
+    "action": {
+      "search": "Tìm kiếm...",
+      "price": "Áp dụng giá mới",
+      "clear": "Xóa hết"
+    }
+  },
+  "action": {
+    "pagination": {
+      "page": "Trang {{page}} trên {{total}}"
+    },
+    "sorting": {
+      "sorted_default": "Tên sản phẩm",
+      "sorted_price": "Giá",
+      "sorted_price_one": "Giá tăng dần",
+      "sorted_price_zero": "Giá giảm dần",
+      "sorted_brand": "Thương hiệu",
+      "sorted_category": "Loại sản phẩm"
+    }
+  }
+}

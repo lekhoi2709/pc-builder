@@ -71,7 +71,7 @@ export async function getUserLocationFromIP(): Promise<string> {
 
     return getUserLocaleFromBrowser();
   } catch (error) {
-    console.error('Error detecting user location:', error);
+    console.warn('Error detecting user location:', error);
     return getUserLocaleFromBrowser();
   }
 }

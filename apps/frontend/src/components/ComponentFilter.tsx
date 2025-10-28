@@ -5,13 +5,14 @@ import { useQuery } from '@tanstack/react-query';
 import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import type { ComponentResponse } from '../types/components';
 
 import SideBarLayout from '../layouts/SideBarLayout';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { ActiveFilters } from './ActiveFilters';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from 'react-i18next';
 
 const ComponentFilters = memo(
   ({
@@ -21,16 +22,36 @@ const ComponentFilters = memo(
     data?: ComponentResponse;
     isSideBarOpen: boolean;
   }) => {
-    const { filters, toggleBrandFilter, toggleCategoryFilter } =
-      useComponentStore();
+    const {
+      filters,
+      toggleBrandFilter,
+      toggleCategoryFilter,
+      setCategories,
+      setBrands,
+    } = useComponentStore();
     const { lang } = useParams();
     const isMobile = useMediaQuery('(max-width: 1280px)');
+    const { t } = useTranslation('component');
 
     const filterQuery = useQuery({
       queryKey: ['available-filters', lang],
       queryFn: () => GetAvailableFilters(lang || 'vn'),
+      placeholderData: previousData => previousData,
       refetchOnWindowFocus: false,
     });
+
+    useEffect(() => {
+      if (filterQuery.status === 'success') {
+        setCategories(filterQuery.data.categories);
+        setBrands(filterQuery.data.brands);
+      }
+    }, [
+      filterQuery.data?.brands,
+      filterQuery.data?.categories,
+      filterQuery.status,
+      setBrands,
+      setCategories,
+    ]);
 
     const isCategorySelected = (categoryId: string) => {
       return filters.category_id?.includes(categoryId) || false;
@@ -46,13 +67,13 @@ const ComponentFilters = memo(
         <SideBarLayout
           props={{
             isSideBarOpen: isSideBarOpen,
-            title: 'Filters',
+            title: t('filter.title'),
             titleIcon: (
               <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
             ),
           }}
         >
-          <p className="text-lg text-red-500">Error loading filters</p>
+          <p className="text-lg text-red-500">Loading filters</p>
           <p className="text-sm text-red-500">{filterQuery.error?.message}</p>
         </SideBarLayout>
       );
@@ -64,7 +85,7 @@ const ComponentFilters = memo(
           className:
             'border-secondary-300 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400',
           isSideBarOpen: isSideBarOpen,
-          title: 'Filters',
+          title: t('filter.title'),
           titleIcon: (
             <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
           ),
@@ -73,7 +94,7 @@ const ComponentFilters = memo(
         <SearchComponentBar />
         <section className="text-primary-900 dark:text-primary-50">
           {isMobile && <ActiveFilters isHavingSort={false} />}
-          <h3 className="mb-2 text-lg font-semibold">Categories</h3>
+          <h3 className="mb-2 text-lg font-semibold">{t('filter.category')}</h3>
           <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.categories.map(category => {
@@ -101,7 +122,7 @@ const ComponentFilters = memo(
           </div>
         </section>
         <section className="text-primary-900 dark:text-primary-50">
-          <h3 className="mb-2 text-lg font-semibold">Brands</h3>
+          <h3 className="mb-2 text-lg font-semibold">{t('filter.brand')}</h3>
           <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.brands.map(brand => {
@@ -138,7 +159,9 @@ const ComponentFilters = memo(
           </div>
         </section>
         <section className="w-full">
-          <h3 className="mb-2 text-lg font-semibold">Price</h3>
+          <h3 className="mb-2 text-lg font-semibold">
+            {t('filter.price.title')}
+          </h3>
           <PriceRangeSlider
             min={data.summary.price_range.min_price || 0}
             max={data.summary.price_range.max_price || 1000}

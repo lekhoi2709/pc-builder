@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
 import { useComponentStore } from '../stores/componentStore';
 import type { ComponentFilter } from '../types/components';
+import { useTranslation } from 'react-i18next';
 
 interface PriceRangeSliderProps {
   min?: number;
@@ -36,6 +37,7 @@ const PriceRangeSlider = memo(
     const [maxInputValue, setMaxInputValue] = useState(String(max));
     const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null);
     const { filters, setFilters } = useComponentStore();
+    const { t } = useTranslation('component');
 
     // Sync slider state with store filters
     useEffect(() => {
@@ -382,7 +384,7 @@ const PriceRangeSlider = memo(
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          Apply Price
+          {t('filter.action.price')}
         </button>
       </div>
     );
