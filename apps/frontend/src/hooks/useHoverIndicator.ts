@@ -45,8 +45,9 @@ export function useHoverIndicator({
 
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
+  const isInitialized = useRef(false);
 
-  const updateIndicator = (index: number | null): void => {
+  const updateIndicator = (index: number | null, instant = false): void => {
     if (index !== null && itemRefs.current[index]) {
       const item = itemRefs.current[index];
       const nav = navRef.current;
@@ -55,10 +56,22 @@ export function useHoverIndicator({
         const navRect = nav.getBoundingClientRect();
         const itemRect = item.getBoundingClientRect();
 
-        width.set(itemRect.width + widthAdjustInPixel);
-        height.set(itemRect.height);
-        left.set(itemRect.left - navRect.left - rightAdjustInPixel);
-        opacity.set(1);
+        const newWidth = itemRect.width + widthAdjustInPixel;
+        const newHeight = itemRect.height;
+        const newLeft = itemRect.left - navRect.left - rightAdjustInPixel;
+
+        if (instant || !isInitialized.current) {
+          width.set(newWidth);
+          height.set(newHeight);
+          left.set(newLeft);
+          opacity.set(1);
+          isInitialized.current = true;
+        } else {
+          width.set(newWidth);
+          height.set(newHeight);
+          left.set(newLeft);
+          opacity.set(1);
+        }
       }
     } else {
       opacity.set(0);
@@ -66,7 +79,12 @@ export function useHoverIndicator({
   };
 
   useEffect(() => {
-    updateIndicator(activeIndex);
+    // Use setTimeout to ensure DOM is ready
+    const timer = setTimeout(() => {
+      updateIndicator(activeIndex, true);
+    }, 0);
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex, widthAdjustInPixel, rightAdjustInPixel]);
 

@@ -72,7 +72,7 @@ const StickyNavbar = ({
   return (
     <motion.header
       className={twMerge(
-        'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen border-1 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full px-4 font-bold shadow-md backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
+        'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen border-1 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full px-4 font-bold shadow-md backdrop-blur-xl transition-colors duration-300 ease-in-out xl:flex',
         className
       )}
       variants={navbarVariants}
@@ -93,7 +93,7 @@ const StickyNavbar = ({
         className="relative flex h-fit transform gap-20 bg-transparent py-2"
       >
         <motion.div
-          className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs rounded-4xl pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform"
+          className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs rounded-4xl outline-secondary-500 dark:outline-secondary-300 pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform outline-[0.5px] dark:outline-1"
           style={{
             width,
             height,

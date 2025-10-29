@@ -39,12 +39,12 @@ export const ComponentCard = ({
     };
   };
 
-  const boxShadow = useMotionTemplate`${shadowX}px ${shadowY}px 0px 0px rgba(59, 130, 246, ${shadowOpacity})`;
+  const boxShadow = useMotionTemplate`${shadowX}px ${shadowY}px 0px 0px oklch(0.48 0.11 202 / ${shadowOpacity})`;
 
   return (
     <motion.div
       ref={setRef}
-      className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 dark:hover:bg-secondary-600/50 hover:bg-secondary-500/30 border-1 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl p-4 backdrop-blur-sm hover:cursor-pointer"
+      className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 border-1 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl p-4 backdrop-blur-xl hover:cursor-pointer"
       style={{
         x: translateX,
         y: translateY,

@@ -187,7 +187,7 @@ function FilterChip({
   return (
     <button
       className={twMerge(
-        'bg-accent-200/50 dark:bg-accent-400/80 hover:bg-accent-300/50 dark:hover:bg-accent-400 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px] hover:shadow-blue-500 active:-translate-y-0.5 active:translate-x-0.5 active:shadow-[-2px_2px] disabled:cursor-not-allowed disabled:opacity-50 dark:hover:shadow-gray-400',
+        'bg-accent-200/50 dark:bg-accent-400/80 hover:bg-accent-300/50 dark:hover:bg-accent-400 hover:shadow-accent-500 dark:hover:shadow-primary-200 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px] active:-translate-y-0.5 active:translate-x-0.5 active:shadow-[-2px_2px] disabled:cursor-not-allowed disabled:opacity-50',
         isSelected &&
           'dark:outline-primary-100 outline outline-dashed xl:outline-double'
       )}
