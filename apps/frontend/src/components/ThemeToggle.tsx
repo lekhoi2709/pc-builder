@@ -1,10 +1,11 @@
+import { motion } from 'framer-motion';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { useTheme, type Theme } from '../hooks/useTheme';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 const ThemeToggle = ({ className }: { className?: string }) => {
-  const { toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
   const themeIcons = [
     {
@@ -17,16 +18,15 @@ const ThemeToggle = ({ className }: { className?: string }) => {
     },
   ];
 
-  const activeIndex = themeIcons.findIndex(
-    val =>
-      val.name ==
-      ((localStorage.getItem('theme') as Theme) ?? ('Light' as Theme))
-  );
+  const activeIndex = themeIcons.findIndex(val => val.name === theme);
 
   const {
     navRef,
     itemRefs,
-    indicatorStyle,
+    width,
+    height,
+    left,
+    opacity,
     handleMouseEnter,
     handleMouseLeave,
   } = useHoverIndicator({
@@ -41,10 +41,13 @@ const ThemeToggle = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <div
-        className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs duration-400 pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 rounded-[5rem] transition-all ease-in-out"
+      <motion.div
+        className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 rounded-[5rem]"
         style={{
-          ...indicatorStyle,
+          width,
+          height,
+          left,
+          opacity,
         }}
       />
       {themeIcons.map((item, index: number) => (

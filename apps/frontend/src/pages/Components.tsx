@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
-import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 import { useComponentStore } from '../stores/componentStore';
 import { memo, useEffect, useState } from 'react';
 import React from 'react';
-import { ActiveFilters } from '../components/ActiveFilters';
+import ActiveFilters from '../components/ActiveFilters';
 import { useParams } from 'react-router';
 import ComponentFilter from '../components/ComponentFilter';
 import type { ComponentResponse, PaginationMeta } from '../types/components';
@@ -15,6 +14,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { Trans, useTranslation } from 'react-i18next';
+import { ArrowIcon } from '../components/Icons/ArrowIcon';
 
 export default function Components() {
   const { lang } = useParams();
@@ -247,7 +247,7 @@ const ComponentPageLayout = memo(
               onClick={toggleFilter}
               className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 w-full cursor-pointer self-end rounded px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
             >
-              Filters
+              {t('filter.title')}
             </button>
             <ActiveFilters />
           </div>
@@ -283,7 +283,7 @@ const ComponentPageLayout = memo(
                     disabled={pagination.current_page <= 1}
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
-                    <ArrowBigLeftIcon className="inline stroke-[1.5]" />
+                    <ArrowIcon className="text-secondary-400 inline -rotate-45 stroke-[1.5]" />
                   </button>
                   <Pagination
                     totalPages={props.data.pagination.total_pages!}
@@ -307,7 +307,7 @@ const ComponentPageLayout = memo(
                     }
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
-                    <ArrowBigRightIcon className="inline stroke-[1.5]" />
+                    <ArrowIcon className="rotate-135 text-secondary-400 inline stroke-[1.5]" />
                   </button>
                 </div>
               </div>

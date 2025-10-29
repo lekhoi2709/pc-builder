@@ -7,10 +7,10 @@ import {
 import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
-import { memo, type MouseEventHandler } from 'react';
 import type { ComponentFilter } from '../types/components';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { XIcon } from './Icons/XIcon';
 
 const langToCurrency: Record<string, string> = {
   vn: 'VND',
@@ -22,163 +22,35 @@ const langToLocale: Record<string, string> = {
   en: 'en-US',
 };
 
-export const ActiveFilters = memo(
-  ({ isHavingSort = true }: { isHavingSort?: boolean }) => {
-    const { activeFilters, removeFilter, clearFilter, categories, brands } =
-      useComponentStore();
-    const { lang } = useParams();
-    const { t } = useTranslation('component');
-    const currency = langToCurrency[lang || 'vn'] || 'VND';
+export default function ActiveFilters({
+  isHavingSort = true,
+}: {
+  isHavingSort?: boolean;
+}) {
+  const { activeFilters, removeFilter, clearFilter, categories, brands } =
+    useComponentStore();
+  const { lang } = useParams();
+  const { t } = useTranslation('component');
+  const currency = langToCurrency[lang || 'vn'] || 'VND';
 
-    const priceFormatter = (
-      value: number,
-      locale: string,
-      style: 'decimal' | 'currency' | 'percent' | 'unit' = 'currency'
-    ) => {
-      const formatter = new Intl.NumberFormat(locale, {
-        style: style,
-        currency,
-      });
-      return formatter.format(value);
-    };
+  const priceFormatter = (
+    value: number,
+    locale: string,
+    style: 'decimal' | 'currency' | 'percent' | 'unit' = 'currency'
+  ) => {
+    const formatter = new Intl.NumberFormat(locale, {
+      style: style,
+      currency,
+    });
+    return formatter.format(value);
+  };
 
-    if (activeFilters.length === 0)
-      return (
-        isHavingSort && (
-          <div className="font-saira flex w-full justify-end">
-            <div className="flex items-center gap-2 self-end">
-              <SortingIndicator t={t} content={'default'} />
-              <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
-              <SortingIndicator
-                t={t}
-                content="price"
-                sort_by="price"
-                IconUp={ArrowUp01Icon}
-                IconDown={ArrowDown01Icon}
-              />
-            </div>
-          </div>
-        )
-      );
-
-    const activeFilterStringFormatted = ({
-      isSortingFilter = false,
-      str,
-    }: {
-      isSortingFilter?: boolean;
-      str: string;
-    }): string => {
-      const strArr = str.split('_');
-      if (strArr[1] === 'id' || !strArr[1]) {
-        return strArr[0];
-      } else if (strArr[0] === 'storage') {
-        return strArr[1];
-      } else if (strArr[0] === 'min' || strArr[0] === 'max') {
-        if (!isSortingFilter) {
-          return strArr[0];
-        } else return 'default';
-      }
-      return strArr[0] + ' ' + strArr[1];
-    };
-
-    const getDisplayName = (
-      key: keyof ComponentFilter,
-      value: string
-    ): string => {
-      if (key === 'category_id') {
-        const category = categories.find(c => c.id === value);
-        return category?.display_name || value;
-      }
-      if (key === 'brand_id') {
-        const brand = brands.find(b => b.id === value);
-        return brand?.display_name || value;
-      }
-      return value;
-    };
-
+  if (activeFilters.length === 0)
     return (
-      <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
-        <div className="flex flex-wrap items-center gap-2">
-          {activeFilters.map(({ key, value }) => {
-            if (key === 'max_price' || key === 'min_price') {
-              return (
-                <span
-                  key={key}
-                  className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-                >
-                  <span className="flex flex-wrap gap-1">
-                    <p>
-                      {t('filter.active.active', {
-                        context: activeFilterStringFormatted({
-                          str: String(key),
-                        }),
-                      })}
-                    </p>
-                    <p>
-                      {priceFormatter(
-                        parseInt(value as string),
-                        langToLocale[lang || 'vn'] || 'vi-VN',
-                        'currency'
-                      )}
-                    </p>
-                  </span>
-
-                  <XIcon onClick={() => removeFilter(key)} />
-                </span>
-              );
-            }
-            if (Array.isArray(value)) {
-              return value.map(val => (
-                <span
-                  key={`${key}-${val}`}
-                  className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-                >
-                  <span className="flex flex-wrap gap-1">
-                    <p>
-                      {t('filter.active.active', {
-                        context: activeFilterStringFormatted({
-                          str: String(key),
-                        }),
-                      })}
-                    </p>
-                    <p>{getDisplayName(key, val)}</p>
-                  </span>
-                  <XIcon onClick={() => removeFilter(key, val)} />
-                </span>
-              ));
-            }
-
-            return (
-              <span
-                key={key}
-                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-              >
-                <span className="flex flex-wrap gap-1">
-                  <p className="capitalize">
-                    {activeFilterStringFormatted({ str: String(key) })}:
-                  </p>
-                  <p>{activeFilterStringFormatted({ str: String(value) })}</p>
-                </span>
-                <XIcon onClick={() => removeFilter(key)} />
-              </span>
-            );
-          })}
-          <button
-            onClick={clearFilter}
-            className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
-          >
-            {t('filter.action.clear')}
-          </button>
-        </div>
-        {isHavingSort && (
-          <div className="ml-auto flex items-center gap-2">
-            <SortingIndicator
-              t={t}
-              content={activeFilterStringFormatted({
-                str: String(activeFilters[0].key),
-                isSortingFilter: true,
-              })}
-            />
+      isHavingSort && (
+        <div className="font-saira flex w-full justify-end">
+          <div className="flex items-center gap-2 self-end">
+            <SortingIndicator t={t} content={'default'} />
             <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
             <SortingIndicator
               t={t}
@@ -188,11 +60,141 @@ export const ActiveFilters = memo(
               IconDown={ArrowDown01Icon}
             />
           </div>
-        )}
-      </div>
+        </div>
+      )
     );
-  }
-);
+
+  const activeFilterStringFormatted = ({
+    isSortingFilter = false,
+    str,
+  }: {
+    isSortingFilter?: boolean;
+    str: string;
+  }): string => {
+    const strArr = str.split('_');
+    if (strArr[1] === 'id' || !strArr[1]) {
+      return strArr[0];
+    } else if (strArr[0] === 'storage') {
+      return strArr[1];
+    } else if (strArr[0] === 'min' || strArr[0] === 'max') {
+      if (!isSortingFilter) {
+        return strArr[0];
+      } else return 'default';
+    }
+    return strArr[0] + ' ' + strArr[1];
+  };
+
+  const getDisplayName = (
+    key: keyof ComponentFilter,
+    value: string
+  ): string => {
+    if (key === 'category_id') {
+      const category = categories.find(c => c.id === value);
+      return category?.display_name || value;
+    }
+    if (key === 'brand_id') {
+      const brand = brands.find(b => b.id === value);
+      return brand?.display_name || value;
+    }
+    return value;
+  };
+
+  return (
+    <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
+      <div className="flex flex-wrap items-center gap-2">
+        {activeFilters.map(({ key, value }) => {
+          if (key === 'max_price' || key === 'min_price') {
+            return (
+              <span
+                key={key}
+                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              >
+                <span className="prevent-select flex flex-wrap gap-1">
+                  <p>
+                    {t('filter.active.active', {
+                      context: activeFilterStringFormatted({
+                        str: String(key),
+                      }),
+                    })}
+                  </p>
+                  <p>
+                    {priceFormatter(
+                      parseInt(value as string),
+                      langToLocale[lang || 'vn'] || 'vi-VN',
+                      'currency'
+                    )}
+                  </p>
+                </span>
+
+                <XIcon onClick={() => removeFilter(key)} />
+              </span>
+            );
+          }
+          if (Array.isArray(value)) {
+            return value.map(val => (
+              <span
+                key={`${key}-${val}`}
+                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              >
+                <span className="prevent-select flex flex-wrap gap-1">
+                  <p>
+                    {t('filter.active.active', {
+                      context: activeFilterStringFormatted({
+                        str: String(key),
+                      }),
+                    })}
+                  </p>
+                  <p>{getDisplayName(key, val)}</p>
+                </span>
+                <XIcon onClick={() => removeFilter(key, val)} />
+              </span>
+            ));
+          }
+
+          return (
+            <span
+              key={key}
+              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+            >
+              <span className="prevent-select flex flex-wrap gap-1">
+                <p className="capitalize">
+                  {activeFilterStringFormatted({ str: String(key) })}:
+                </p>
+                <p>{activeFilterStringFormatted({ str: String(value) })}</p>
+              </span>
+              <XIcon onClick={() => removeFilter(key)} />
+            </span>
+          );
+        })}
+        <button
+          onClick={clearFilter}
+          className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
+        >
+          {t('filter.action.clear')}
+        </button>
+      </div>
+      {isHavingSort && (
+        <div className="ml-auto flex items-center gap-2">
+          <SortingIndicator
+            t={t}
+            content={activeFilterStringFormatted({
+              str: String(activeFilters[0].key),
+              isSortingFilter: true,
+            })}
+          />
+          <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+          <SortingIndicator
+            t={t}
+            content="price"
+            sort_by="price"
+            IconUp={ArrowUp01Icon}
+            IconDown={ArrowDown01Icon}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SortingIndicator({
   content = '',
@@ -264,20 +266,5 @@ function SortingIndicator({
         </>
       )}
     </span>
-  );
-}
-
-function XIcon({ onClick }: { onClick?: MouseEventHandler<HTMLElement> }) {
-  return (
-    <i onClick={onClick}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 256 256"
-        className="z-10 ml-2 h-3 w-3 cursor-pointer text-red-500 hover:text-red-700"
-        fill="currentColor"
-      >
-        <path d="M 120 136 L 120 176 L 40 256 L 0 256 L 0 216 L 80 136 Z M 256 216 L 256 256 L 216 256 L 136 176 L 136 136 L 176 136 Z M 120 80 L 120 120 L 80 120 L 0 40 L 0 0 L 40 0 Z M 256 40 L 176 120 L 136 120 L 136 80 L 216 0 L 256 0 Z"></path>
-      </svg>
-    </i>
   );
 }

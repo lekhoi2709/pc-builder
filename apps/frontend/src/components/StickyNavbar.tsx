@@ -40,7 +40,10 @@ const StickyNavbar = ({
   const {
     navRef,
     itemRefs,
-    indicatorStyle,
+    width,
+    height,
+    left,
+    opacity,
     handleMouseEnter,
     handleMouseLeave,
   } = useHoverIndicator({ activeIndex });
@@ -89,12 +92,16 @@ const StickyNavbar = ({
         ref={navRef}
         className="relative flex h-fit transform gap-20 bg-transparent py-2"
       >
-        <div
-          className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs rounded-4xl pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform transition-all duration-500 ease-in-out"
+        <motion.div
+          className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs rounded-4xl pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform"
           style={{
-            ...indicatorStyle,
+            width,
+            height,
+            left,
+            opacity,
           }}
         />
+
         {routes.map((route, index: number) => (
           <NavLink
             ref={(el: HTMLAnchorElement | null) => {
