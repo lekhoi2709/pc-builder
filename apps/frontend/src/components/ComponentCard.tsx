@@ -69,7 +69,7 @@ export const ComponentCard = ({
       <img
         src={component.image_url[0]}
         alt={component.name}
-        className="dark:bg-secondary-700 prevent-select mb-4 h-60 w-full rounded-xl bg-white object-cover"
+        className="dark:bg-secondary-700 prevent-select mb-4 h-60 min-h-60 w-full rounded-xl bg-white object-contain"
         loading="lazy"
         onError={onImageError}
         decoding="async"

@@ -82,7 +82,7 @@ export function useHoverIndicator({
     // Use setTimeout to ensure DOM is ready
     const timer = setTimeout(() => {
       updateIndicator(activeIndex, true);
-    }, 0);
+    }, 100);
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
