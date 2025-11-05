@@ -13,8 +13,8 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-      <SpeedInsights />
       <ReactQueryDevtools initialIsOpen={false} />
+      <SpeedInsights />
     </QueryClientProvider>
   </StrictMode>
 );

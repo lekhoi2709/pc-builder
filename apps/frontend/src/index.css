@@ -33,7 +33,6 @@ body {
   min-height: 100vh !important;
   box-sizing: border-box;
   background-color: var(--color-light);
-  overflow: auto;
   color-scheme: light;
   overflow: hidden;
 
