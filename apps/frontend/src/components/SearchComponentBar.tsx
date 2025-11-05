@@ -13,7 +13,6 @@ export default function SearchComponentBar() {
     setTerm(filters.search ?? '');
   }, [filters.search]);
 
-  // debounce search
   useEffect(() => {
     const debounce = setTimeout(() => {
       setFilters({ search: term || undefined });

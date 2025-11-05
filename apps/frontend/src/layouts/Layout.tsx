@@ -5,7 +5,7 @@ import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
 import NavigationBarMobile from '../components/NavigationBarMobile';
 import { twMerge } from 'tailwind-merge';
 import ProgressBar from '../components/ProgressBar';
-import { Analytics } from '@vercel/analytics/react';
+import Footer from '../components/Footer';
 
 export default function Layout() {
   const location = useLocation();
@@ -54,7 +54,7 @@ export default function Layout() {
       />
       <NavigationBarMobile routes={routes} locationPage={locationPage} />
       <Outlet />
-      <Analytics />
+      <Footer isAtComponentPage={isAtComponentPage} />
     </main>
   );
 }

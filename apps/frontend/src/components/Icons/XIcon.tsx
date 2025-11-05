@@ -53,7 +53,7 @@ export function DeleteIcon({
             fill="url(#6v9xti10gex-1760519092852-1846160_delete-x_existing_0_r54mi3hy9)"
             data-glass="clone"
             filter="url(#6v9xti10gex-1760519092852-1846160_delete-x_filter_13cnna2y9)"
-            clip-path="url(#6v9xti10gex-1760519092852-1846160_delete-x_clipPath_yhp4whtdl)"
+            clipPath="url(#6v9xti10gex-1760519092852-1846160_delete-x_clipPath_yhp4whtdl)"
           ></path>
           <path
             fill-rule="evenodd"
