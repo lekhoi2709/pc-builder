@@ -219,7 +219,7 @@ const ComponentPageLayout = memo(
         className={twMerge(
           'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center overflow-y-auto bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]',
           isSideBarOpen
-            ? 'h-screen overflow-y-hidden xl:h-full xl:overflow-y-auto'
+            ? 'overflow-y-hidden xl:h-full xl:overflow-y-auto'
             : 'overflow-y-auto'
         )}
       >
