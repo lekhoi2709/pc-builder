@@ -14,7 +14,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { Trans, useTranslation } from 'react-i18next';
-import { ArrowIcon } from '../components/Icons/ArrowIcon';
+import { LeftArrowIcon, RightArrowIcon } from '../components/Icons/ArrowIcon';
 
 export default function Components() {
   const { lang } = useParams();
@@ -253,7 +253,7 @@ const ComponentPageLayout = memo(
           </div>
           <section
             className={twMerge(
-              'flex w-full items-center justify-center xl:justify-start',
+              'flex h-full w-full items-center justify-center xl:justify-start',
               isSideBarOpen ? 'xl:justify-start' : ''
             )}
           >
@@ -283,7 +283,7 @@ const ComponentPageLayout = memo(
                     disabled={pagination.current_page <= 1}
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
-                    <ArrowIcon className="text-secondary-400 inline -rotate-45 stroke-[1.5]" />
+                    <LeftArrowIcon className="inline xl:h-6 xl:w-6" />
                   </button>
                   <Pagination
                     totalPages={props.data.pagination.total_pages!}
@@ -307,7 +307,7 @@ const ComponentPageLayout = memo(
                     }
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
-                    <ArrowIcon className="rotate-135 text-secondary-400 inline stroke-[1.5]" />
+                    <RightArrowIcon className="inline xl:h-6 xl:w-6" />
                   </button>
                 </div>
               </div>

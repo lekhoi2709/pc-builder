@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export function ArrowIcon({
+export function RightArrowIcon({
   onClick,
   className,
 }: {
@@ -12,11 +12,82 @@ export function ArrowIcon({
     <i onClick={onClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 256 256"
-        className={twMerge('h-3 w-3', className)}
-        fill="currentColor"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        className={twMerge('h-5 w-5', className)}
       >
-        <path d="M 0 256 L 0 128 L 128 128 Z M 128 256 L 128 128 L 256 128 Z M 0 128 L 0 0 L 128 0 Z M 128 128 L 128 0 L 256 0 Z"></path>
+        <path
+          d="M14.43 5.92969L20.5 11.9997L14.43 18.0697"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M11.01 12H20.33"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M3.5 12H6.97"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </i>
+  );
+}
+
+export function LeftArrowIcon({
+  onClick,
+  className,
+}: {
+  onClick?: MouseEventHandler<HTMLElement>;
+  className?: string;
+}) {
+  return (
+    <i onClick={onClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        className={twMerge('h-5 w-5', className)}
+      >
+        <path
+          d="M9.57 5.92969L3.5 11.9997L9.57 18.0697"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M12.82 12H3.5"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M20.33 12H16.85"
+          stroke="oklch(0.49 0.11 235)"
+          stroke-width="1.5"
+          stroke-miterlimit="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
     </i>
   );

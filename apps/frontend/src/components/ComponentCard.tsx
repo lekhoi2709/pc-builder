@@ -10,7 +10,7 @@ export const ComponentCard = ({
   ref,
 }: {
   component: Component;
-  ref: Ref<HTMLDivElement>;
+  ref?: Ref<HTMLDivElement>;
 }) => {
   const { lang } = useParams();
   const { price } = getLocalizedPrice(component.price, lang || 'vn');

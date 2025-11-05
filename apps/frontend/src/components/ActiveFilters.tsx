@@ -107,24 +107,20 @@ export default function ActiveFilters({
             return (
               <span
                 key={key}
-                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+                className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex !w-fit cursor-pointer items-center justify-between break-keep rounded px-2 py-1"
               >
-                <span className="prevent-select flex flex-wrap gap-1">
-                  <p>
-                    {t('filter.active.active', {
-                      context: activeFilterStringFormatted({
-                        str: String(key),
-                      }),
-                    })}
-                  </p>
-                  <p>
-                    {priceFormatter(
-                      parseInt(value as string),
-                      langToLocale[lang || 'vn'] || 'vi-VN',
-                      'currency'
-                    )}
-                  </p>
-                </span>
+                <p>
+                  {t('filter.active.active', {
+                    context: activeFilterStringFormatted({
+                      str: String(key),
+                    }),
+                  })}
+                  {priceFormatter(
+                    parseInt(value as string),
+                    langToLocale[lang || 'vn'] || 'vi-VN',
+                    'currency'
+                  )}
+                </p>
 
                 <XIcon onClick={() => removeFilter(key)} />
               </span>
@@ -134,18 +130,16 @@ export default function ActiveFilters({
             return value.map(val => (
               <span
                 key={`${key}-${val}`}
-                className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+                className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
               >
-                <span className="prevent-select flex flex-wrap gap-1">
-                  <p>
-                    {t('filter.active.active', {
-                      context: activeFilterStringFormatted({
-                        str: String(key),
-                      }),
-                    })}
-                  </p>
-                  <p>{getDisplayName(key, val)}</p>
-                </span>
+                <p>
+                  {t('filter.active.active', {
+                    context: activeFilterStringFormatted({
+                      str: String(key),
+                    }),
+                  })}
+                  {getDisplayName(key, val)}
+                </p>
                 <XIcon onClick={() => removeFilter(key, val)} />
               </span>
             ));
@@ -154,14 +148,12 @@ export default function ActiveFilters({
           return (
             <span
               key={key}
-              className="bg-accent-200 dark:bg-accent-400/80 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
             >
-              <span className="prevent-select flex flex-wrap gap-1">
-                <p className="capitalize">
-                  {activeFilterStringFormatted({ str: String(key) })}:
-                </p>
-                <p>{activeFilterStringFormatted({ str: String(value) })}</p>
-              </span>
+              <p className="capitalize">
+                {activeFilterStringFormatted({ str: String(key) })}:
+                {activeFilterStringFormatted({ str: String(value) })}
+              </p>
               <XIcon onClick={() => removeFilter(key)} />
             </span>
           );
