@@ -15,6 +15,7 @@ import SideBarButton from '../components/SideBarButton';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { Trans, useTranslation } from 'react-i18next';
 import { LeftArrowIcon, RightArrowIcon } from '../components/Icons/ArrowIcon';
+import { CardSkeleton } from '../components/Skeleton';
 
 export default function Components() {
   const { lang } = useParams();
@@ -56,12 +57,9 @@ export default function Components() {
           listVariants: listVariants,
         }}
       >
-        <div className="flex items-center justify-center">
-          <div className="text-center">
-            <div className="border-primary-500 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
-            <p className="mt-4 text-lg">Loading components...</p>
-          </div>
-        </div>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <CardSkeleton key={i} />
+        ))}
       </ComponentPageLayout>
     );
   }

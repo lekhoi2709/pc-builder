@@ -14,6 +14,7 @@ import ActiveFilters from './ActiveFilters';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { ListFilterSkeleton } from './Skeleton';
 
 const ComponentFilters = memo(
   ({
@@ -74,8 +75,7 @@ const ComponentFilters = memo(
             ),
           }}
         >
-          <p className="text-lg text-red-500">Loading filters</p>
-          <p className="text-sm text-red-500">{filterQuery.error?.message}</p>
+          <ListFilterSkeleton />
         </SideBarLayout>
       );
     }

@@ -24,21 +24,21 @@ export function HideSidebarIcon({
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
           <path
             d="M14.9702 9.43945L12.4102 11.9995L14.9702 14.5595"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
           <path
             d="M2 13V15C2 20 4 22 9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
         </g>
         <defs>
@@ -74,21 +74,21 @@ export function ShowSidebarIcon({
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
           <path
             d="M14.9702 2V22"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
           <path
             d="M7.97021 9.43945L10.5302 11.9995L7.97021 14.5595"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="stroke-secondary-500 dark:stroke-secondary-400"
+            className="stroke-primary-600 dark:stroke-primary-100"
           />
         </g>
         <defs>
