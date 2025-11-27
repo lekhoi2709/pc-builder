@@ -67,16 +67,16 @@ export default function Footer({
       width: 'var(--sidebar-width)',
       transition: {
         type: 'spring',
-        stiffness: 400,
-        damping: 50,
+        stiffness: 300,
+        damping: 30,
       },
     },
     noSidebar: {
       width: 'var(--sidebar-width)',
       transition: {
         type: 'spring',
-        stiffness: 400,
-        damping: 50,
+        stiffness: 300,
+        damping: 30,
       },
     },
   };
@@ -85,7 +85,7 @@ export default function Footer({
     <motion.footer
       className={twMerge(
         'bg-secondary-500/20 dark:bg-secondary-600/20 border-secondary-300 dark:border-secondary-500 rounded-t-2xl shadow-md backdrop-blur-sm',
-        isSideBarOpen
+        isSideBarOpen && isAtComponentPage
           ? '!mx-auto [--sidebar-width:95%] xl:!mx-[22.2%_0%] xl:[--sidebar-width:77%]'
           : '!mx-auto [--sidebar-width:95%] xl:[--margin-to:1rem] xl:[--sidebar-width:98%]',
         className
