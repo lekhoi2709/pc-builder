@@ -83,8 +83,6 @@ const ComponentFilters = memo(
     return (
       <SideBarLayout
         props={{
-          className:
-            'border-secondary-300 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400',
           isSideBarOpen: isSideBarOpen,
           title: t('filter.title'),
           titleIcon: (

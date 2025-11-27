@@ -55,7 +55,7 @@ const SideBarLayout = ({
       ) : undefined}
       <motion.aside
         className={twMerge(
-          'font-saira scrollbar-hidden xl:border-1 border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 z-60 fixed left-0 top-0 flex h-full max-h-dvh w-[65%] flex-col gap-4 overflow-y-auto p-4 px-8 shadow-md backdrop-blur-xl transition-colors duration-300 ease-in-out xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:w-[20%] xl:min-w-[15rem] xl:rounded-[36px] xl:px-6 xl:backdrop-blur-sm',
+          'border-secondary-300 dark:border-secondary-500 xl:bg-secondary-500/20 bg-secondary-200/20 dark:bg-secondary-600/50 xl:dark:bg-secondary-600/20 hover:border-secondary-400 font-saira scrollbar-hidden xl:border-1 text-primary-600 dark:text-primary-100 z-60 fixed left-0 top-0 flex h-full max-h-dvh w-[65%] flex-col gap-4 overflow-y-auto p-4 px-8 shadow-md backdrop-blur-3xl transition-colors duration-300 ease-in-out xl:left-4 xl:top-4 xl:h-[calc(100vh-2rem)] xl:w-[20%] xl:min-w-[15rem] xl:rounded-[36px] xl:px-6',
           '[--sidebar-move-from:-100%] [--sidebar-move-to:0%] [--sidebar-opacity-from:0] [--sidebar-opacity-to:1]',
           props.className
         )}

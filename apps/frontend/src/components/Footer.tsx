@@ -87,7 +87,7 @@ export default function Footer({
         'bg-secondary-500/20 dark:bg-secondary-600/20 border-secondary-300 dark:border-secondary-500 rounded-t-2xl shadow-md backdrop-blur-sm',
         isSideBarOpen && isAtComponentPage
           ? '!mx-auto [--sidebar-width:95%] xl:!mx-[22.2%_0%] xl:[--sidebar-width:77%]'
-          : '!mx-auto [--sidebar-width:95%] xl:[--margin-to:1rem] xl:[--sidebar-width:98%]',
+          : '!mx-auto [--sidebar-width:95%] xl:[--sidebar-width:98%]',
         className
       )}
       variants={footerVariants}
