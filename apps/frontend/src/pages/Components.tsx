@@ -179,7 +179,7 @@ const renderPageNumbers = (
           setPagination({ ...pagination, current_page: page as number })
         }
         className={twMerge(
-          'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
+          'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
           pagination.current_page === page
             ? 'bg-accent-200 dark:bg-accent-400/80 hover:bg-accent-200 hover:dark:bg-accent-400/80 hover:border-transparent'
             : 'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20'
@@ -243,7 +243,7 @@ const ComponentPageLayout = memo(
           <div className="flex flex-col gap-4">
             <button
               onClick={toggleFilter}
-              className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 w-full cursor-pointer self-end rounded px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
+              className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 w-full cursor-pointer self-end rounded border px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
             >
               {t('filter.title')}
             </button>
@@ -279,7 +279,7 @@ const ComponentPageLayout = memo(
                       })
                     }
                     disabled={pagination.current_page <= 1}
-                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
+                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
                     <LeftArrowIcon className="inline xl:h-6 xl:w-6" />
                   </button>
@@ -303,7 +303,7 @@ const ComponentPageLayout = memo(
                       pagination.current_page >=
                       props.data.pagination.total_pages!
                     }
-                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 cursor-pointer rounded px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
+                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
                   >
                     <RightArrowIcon className="inline xl:h-6 xl:w-6" />
                   </button>

@@ -142,7 +142,7 @@ const ComponentFilters = memo(
                           <img
                             src={brand.logo_url}
                             alt=""
-                            className="h-full w-[50px] object-contain"
+                            className="w-12.5 h-full object-contain"
                             loading="lazy"
                             decoding="async"
                           />

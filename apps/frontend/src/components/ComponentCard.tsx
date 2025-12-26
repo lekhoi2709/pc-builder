@@ -44,7 +44,7 @@ export const ComponentCard = ({
   return (
     <motion.div
       ref={setRef}
-      className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 border-1 flex h-[24rem] w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl p-4 backdrop-blur-xl hover:cursor-pointer"
+      className="border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 bg-secondary-500/20 dark:bg-secondary-600/20 flex h-96 w-[18rem] max-w-[18rem] flex-col justify-between rounded-2xl border p-4 backdrop-blur-xl hover:cursor-pointer"
       style={{
         x: translateX,
         y: translateY,

@@ -107,7 +107,7 @@ export default function ActiveFilters({
             return (
               <span
                 key={key}
-                className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex !w-fit cursor-pointer items-center justify-between break-keep rounded px-2 py-1"
+                className="bg-accent-200 dark:bg-accent-400/80 prevent-select w-fit! line-clamp-1 flex cursor-pointer items-center justify-between break-keep rounded px-2 py-1"
               >
                 <p>
                   {t('filter.active.active', {
@@ -160,7 +160,7 @@ export default function ActiveFilters({
         })}
         <button
           onClick={clearFilter}
-          className="border-1 cursor-pointer rounded border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
+          className="cursor-pointer rounded border border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
         >
           {t('filter.action.clear')}
         </button>
@@ -219,7 +219,7 @@ function SortingIndicator({
   return (
     <span
       className={twMerge(
-        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 border-1 flex cursor-pointer items-center gap-1 rounded border-transparent p-2 transition-colors duration-300 ease-in-out',
+        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 flex cursor-pointer items-center gap-1 rounded border border-transparent p-2 transition-colors duration-300 ease-in-out',
         isActive &&
           'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20',
         containerCN

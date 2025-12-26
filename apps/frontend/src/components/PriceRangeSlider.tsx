@@ -338,7 +338,7 @@ const PriceRangeSlider = memo(
                   'decimal'
                 )}
                 onChange={e => handleInputChange('min', e.target.value)}
-                className="border-light-elevated dark:border-dark-elevated border-1 bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
+                className="border-light-elevated dark:border-dark-elevated bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md border py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
                 min={min}
                 max={maxValue - step}
                 placeholder={String(min)}
@@ -362,7 +362,7 @@ const PriceRangeSlider = memo(
                   'decimal'
                 )}
                 onChange={e => handleInputChange('max', e.target.value)}
-                className="border-light-elevated dark:border-dark-elevated border-1 bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
+                className="border-light-elevated dark:border-dark-elevated bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md border py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
                 min={min}
                 max={max}
                 placeholder={String(max)}

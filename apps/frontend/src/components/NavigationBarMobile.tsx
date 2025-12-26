@@ -51,13 +51,13 @@ export default function NavigationBarMobile({
               >
                 <div
                   className={twMerge(
-                    'h-full w-[2px] bg-transparent',
+                    'h-full w-0.5 bg-transparent',
                     isAtPage &&
                       'bg-accent-400 dark:bg-accent-300 group-hover/navlink:bg-primary-600 dark:group-hover/navlink:bg-primary-100 transition-colors ease-in-out'
                   )}
                 />
                 {route.icon}
-                <p className="pt-[2px] font-semibold uppercase">{route.name}</p>
+                <p className="pt-0.5 font-semibold uppercase">{route.name}</p>
               </NavLink>
             );
           })}

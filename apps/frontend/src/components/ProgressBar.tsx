@@ -36,7 +36,7 @@ export default function ProgressBar() {
   if (!visible) return null;
 
   return (
-    <div className="fixed left-0 top-0 z-[9999] h-[4px] w-full rounded-2xl bg-transparent">
+    <div className="z-9999 fixed left-0 top-0 h-1 w-full rounded-2xl bg-transparent">
       <div
         className="bg-accent-300 dark:bg-accent-200 h-full transition-[width] duration-200 ease-out"
         style={{ width: `${progress}%` }}

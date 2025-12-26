@@ -37,7 +37,7 @@ const ThemeToggle = ({ className }: { className?: string }) => {
     <nav
       ref={navRef}
       className={twMerge(
-        '!bg-accent-200/20 dark:!bg-accent-400/20 rounded-4xl relative flex p-1 xl:backdrop-blur-sm',
+        'bg-accent-200/20! dark:bg-accent-400/20! rounded-4xl relative flex p-1 xl:backdrop-blur-sm',
         className
       )}
     >
@@ -67,7 +67,7 @@ const ThemeToggle = ({ className }: { className?: string }) => {
             className={twMerge(
               'dark:text-primary-100 text-primary-600 transition-colors duration-300 ease-in-out',
               activeIndex == index
-                ? '!text-amber-600 dark:!text-amber-400/70'
+                ? 'text-amber-600! dark:text-amber-400/70!'
                 : ''
             )}
           >

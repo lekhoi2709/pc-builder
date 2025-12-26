@@ -8,10 +8,10 @@ import { useTranslation } from 'react-i18next';
 
 const StickyNavbar = ({
   className,
-  isAtComponentPage,
+  isAtComponentPage = false,
 }: {
   className?: string;
-  isAtComponentPage: boolean;
+  isAtComponentPage?: boolean;
 }) => {
   const location = useLocation();
   const routes = [
@@ -72,7 +72,7 @@ const StickyNavbar = ({
   return (
     <motion.header
       className={twMerge(
-        'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen border-1 bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full px-4 font-bold shadow-md backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
+        'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full border px-4 font-bold shadow-md backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
         className
       )}
       variants={navbarVariants}
