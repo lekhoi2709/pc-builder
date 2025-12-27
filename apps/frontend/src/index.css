@@ -105,10 +105,10 @@ body {
   --color-success-500: var(--color-aquamarine-500);
   --color-success-600: var(--color-aquamarine-600);
 
-  --color-dark: oklch(0.2694 0.0104 242.08);
-  --color-dark-elevated: oklch(0.3006 0.01 229.23);
+  --color-dark: oklch(20.034% 0.02596 263.736);
+  --color-dark-elevated: oklch(24.327% 0.02474 263.967);
 
-  --color-light: oklch(0.9911 0 0);
+  --color-light: oklch(97.371% 0.00276 285.752);
   --color-light-elevated: oklch(0.9761 0 0);
 
   /* font */

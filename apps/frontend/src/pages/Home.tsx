@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 import SideBarButton from '../components/SideBarButton';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import HeroSection from '../components/Home/HeroSection';
 
 export default function Home() {
   const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
@@ -27,9 +28,11 @@ export default function Home() {
         <SideBarButton
           isSideBarOpen={isSideBarOpen}
           toggleSidebar={toggleSidebar}
+          isNavbar={true}
         />
       </section>
-      <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 p-8 xl:pt-28">
+      <HeroSection />
+      <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 p-8">
         <h1 className="mb-4 text-center text-3xl font-bold xl:text-4xl">
           Welcome to the Home Page
         </h1>
