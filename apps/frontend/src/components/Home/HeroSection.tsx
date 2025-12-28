@@ -9,8 +9,8 @@ export default function HeroSection({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-        <div className="flex flex-col gap-8 lg:col-span-5">
+      <div className="xl:grid-cols-15 grid grid-cols-1 items-center gap-12 lg:grid-cols-12 xl:px-4">
+        <div className="flex flex-col gap-8 lg:col-span-5 xl:col-span-7">
           <div className="flex flex-col gap-4">
             <h1 className="text-5xl font-semibold leading-[1.1] tracking-tighter md:text-6xl lg:text-7xl dark:text-white">
               Precision.
@@ -33,7 +33,7 @@ export default function HeroSection({ className }: { className?: string }) {
             </button>
           </div>
         </div>
-        <div className="group relative lg:col-span-7">
+        <div className="group relative lg:col-span-7 xl:col-span-8">
           <div className="bg-primary/20 pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full blur-[100px]"></div>
           <div className="aspect-4/3 relative w-full overflow-hidden rounded-xl border border-[#232f48]/50 shadow-2xl">
             <img

@@ -3,12 +3,14 @@ import { initReactI18next } from 'react-i18next';
 
 import enCommon from '../en/common.json';
 import enComponent from '../en/component.json';
+import enHome from '../en/home.json';
 import vnCommon from '../vn/common.json';
 import vnComponent from '../vn/component.json';
+import vnHome from '../vn/home.json';
 
 const resources = {
-  en: { common: enCommon, component: enComponent },
-  vn: { common: vnCommon, component: vnComponent },
+  en: { common: enCommon, component: enComponent, home: enHome },
+  vn: { common: vnCommon, component: vnComponent, home: vnHome },
 };
 
 i18n.use(initReactI18next).init({

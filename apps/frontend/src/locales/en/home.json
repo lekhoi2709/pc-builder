@@ -1,0 +1,23 @@
+{
+  "page": {
+    "search_placeholder": "Search components, or enter a spec (e.g. 'i9-13900K, 64GB RAM')...",
+    "stats": [
+      { "value": 500, "suffix": "+", "label": "Premium Components" },
+      {
+        "value": 24,
+        "suffix": "h",
+        "label": "Expert Support"
+      },
+      {
+        "value": 3,
+        "suffix": "yr",
+        "label": "Warranty Standard"
+      },
+      {
+        "value": 100,
+        "suffix": "%",
+        "label": "Quality Assurance"
+      }
+    ]
+  }
+}
