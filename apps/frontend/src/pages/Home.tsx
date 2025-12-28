@@ -7,6 +7,7 @@ import HeroSection from '../components/Home/HeroSection';
 import SearchComponentBar from '../components/SearchComponentBar';
 import { useTranslation } from 'react-i18next';
 import AnimatedCounter from '../components/Home/AnimatedCounter';
+import { BadgeCheckIcon, CpuIcon, PuzzleIcon } from 'lucide-react';
 
 export default function Home() {
   const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
@@ -49,14 +50,11 @@ export default function Home() {
   return (
     <main
       className={twMerge(
-        'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex h-full min-h-screen w-screen flex-col items-center bg-transparent p-8',
-        isSideBarOpen
-          ? 'h-screen overflow-y-hidden xl:h-full xl:overflow-y-auto'
-          : 'overflow-y-auto'
+        'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex h-full min-h-screen w-screen flex-col items-center bg-transparent p-8 md:px-16'
       )}
     >
       <section className="flex w-full items-center justify-between xl:hidden">
-        <span className="ml-2 flex items-center gap-2">
+        <span className="flex items-center gap-2">
           <img
             src={'/logo/pc-builder-logo-transparent.png'}
             className="prevent-select w-10 object-contain"
@@ -72,14 +70,14 @@ export default function Home() {
         />
       </section>
       <HeroSection />
-      <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 lg:p-8 xl:px-12">
+      <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 lg:py-8">
         <SearchComponentBar
           translation_page="home"
           placeholder="page.search_placeholder"
           inputClassName="py-6 rounded-md bg-gray-200 text-ellipsis"
         />
       </section>
-      <section className="grid w-full grid-cols-2 gap-6 py-8 text-center md:grid-cols-4 md:p-8 md:text-left xl:px-12">
+      <section className="grid w-full grid-cols-2 gap-6 py-8 text-center md:grid-cols-4 md:text-left">
         {Array.isArray(stats) &&
           stats.map(item => (
             <div
@@ -98,6 +96,69 @@ export default function Home() {
             </div>
           ))}
       </section>
+      <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
+      <WorkflowSection />
     </main>
+  );
+}
+
+function WorkflowSection() {
+  return (
+    <section className="font-saira border-b border-gray-200 py-12 md:py-20 dark:border-gray-800">
+      <div className="mb-10 text-center md:mb-16">
+        <h2 className="text-dark dark:text-light mb-4 text-3xl font-bold tracking-tight md:text-4xl">
+          The Workflow
+        </h2>
+        <p className="mx-auto max-w-2xl px-4 text-gray-500 dark:text-gray-400">
+          From concept to creation, our process ensures your build meets the
+          highest standards of engineering.
+        </p>
+      </div>
+      <div className="relative mx-auto grid max-w-5xl grid-cols-1 gap-10 px-4 md:grid-cols-3 md:gap-8 md:px-0">
+        <div className="bg-linear-to-r via-accent-400 dark:via-accent-100 absolute left-[16%] right-[16%] top-12 z-0 hidden h-px from-transparent to-transparent md:block"></div>
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
+            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
+              <CpuIcon className="dark:text-accent-100 text-accent-400" />
+            </span>
+          </div>
+          <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
+            Specification
+          </h3>
+          <p className="max-w-xs text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+            Select components from our curated gallery. Our system validates
+            compatibility in real-time.
+          </p>
+        </div>
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
+            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
+              <PuzzleIcon className="dark:text-accent-100 text-accent-400" />
+            </span>
+          </div>
+          <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
+            Assembly
+          </h3>
+          <p className="max-w-xs text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+            Certified technicians assemble your rig with white-glove precision
+            and cable management.
+          </p>
+        </div>
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
+            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
+              <BadgeCheckIcon className="dark:text-accent-100 text-accent-400" />
+            </span>
+          </div>
+          <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
+            Stress Testing
+          </h3>
+          <p className="max-w-xs text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+            Every system undergoes a 24-hour burn-in process to guarantee
+            stability under load.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }

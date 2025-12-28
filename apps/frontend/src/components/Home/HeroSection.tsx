@@ -5,7 +5,7 @@ export default function HeroSection({ className }: { className?: string }) {
   return (
     <section
       className={twMerge(
-        'overflow-x-hidden py-12 lg:py-20 xl:px-8 xl:pt-40',
+        'z-0 w-full overflow-hidden py-12 lg:py-20 xl:py-8 xl:pt-40',
         className
       )}
     >
