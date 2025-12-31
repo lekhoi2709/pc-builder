@@ -69,6 +69,22 @@ function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
 const API_VERSION = 'v1';
 const API_BASE = import.meta.env.VITE_API_URL + API_VERSION;
 
+export async function GetHealth() {
+  const response = await fetch(API_BASE + '/health', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! status: ' + response.status);
+  }
+
+  const json = await response.json();
+  return json;
+}
+
 export async function GetCategories(): Promise<Category[]> {
   const response = await fetch(API_BASE + '/categories', {
     method: 'GET',

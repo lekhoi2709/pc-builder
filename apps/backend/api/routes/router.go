@@ -27,6 +27,10 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 	api := router.Group("/api/v1")
 
 	// Public routes
+	api.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	auth := api.Group("/auth")
 	auth.POST("/register", controller.Register)
 	auth.POST("/login", controller.Login)

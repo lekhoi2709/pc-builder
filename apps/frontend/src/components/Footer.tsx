@@ -1,8 +1,19 @@
 import { Link } from 'react-router';
-import { Mail, Github, Heart } from 'lucide-react';
+import { Mail, Github } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
 import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { useQuery } from '@tanstack/react-query';
+import { GetHealth } from '../services/api';
+import { useEffect, useState } from 'react';
+
+const ServerStatus = {
+  OPERATIONAL: 'operational',
+  CHECKING: 'checking',
+  DOWN: 'down',
+} as const;
+
+type ServerStatus = (typeof ServerStatus)[keyof typeof ServerStatus];
 
 export default function Footer({
   className,
@@ -13,6 +24,25 @@ export default function Footer({
 }) {
   const currentYear = new Date().getFullYear();
   const { isSideBarOpen } = useExclusivePanel();
+
+  const healthQuery = useQuery({
+    queryKey: ['health'],
+    queryFn: () => GetHealth(),
+  });
+
+  const [serverStatus, setServerStatus] = useState<ServerStatus>(
+    ServerStatus.DOWN
+  );
+
+  useEffect(() => {
+    if (healthQuery.isLoading) {
+      setServerStatus(ServerStatus.CHECKING);
+    } else if (healthQuery.isSuccess) {
+      setServerStatus(ServerStatus.OPERATIONAL);
+    } else if (healthQuery.isError) {
+      setServerStatus(ServerStatus.DOWN);
+    }
+  }, [healthQuery.isLoading, healthQuery.isSuccess, healthQuery.isError]);
 
   const footerSections = [
     {
@@ -177,17 +207,27 @@ export default function Footer({
           <p className="text-primary-600 dark:text-primary-100 text-center md:text-left">
             © {currentYear} PC Builder. All rights reserved.
           </p>
-          <p className="text-primary-600 dark:text-primary-100 flex items-center gap-1 text-center">
-            Made with <Heart className="h-4 w-4 fill-red-500 text-red-500" /> by{' '}
-            <a
-              href="https://github.com/lekhoi2709"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent-400 dark:hover:text-accent-300 font-semibold transition-colors duration-200"
-            >
-              Le Dinh Khoi
-            </a>
-          </p>
+          <div className="text-primary-600 dark:text-primary-100 font-saira font-stretch-extra-expanded flex items-center gap-2 text-center text-[12px] font-extralight uppercase tracking-[0.08rem]">
+            <p>Server Status:</p>
+            {serverStatus === ServerStatus.OPERATIONAL && (
+              <span className="flex items-center gap-2">
+                <p>Operational</p>
+                <div className="h-3 w-3 rounded-full bg-green-500" />
+              </span>
+            )}
+            {serverStatus === ServerStatus.CHECKING && (
+              <span className="flex items-center gap-2">
+                <p>Checking</p>
+                <div className="h-3 w-3 rounded-full bg-yellow-500" />
+              </span>
+            )}
+            {serverStatus === ServerStatus.DOWN && (
+              <span className="flex items-center gap-2">
+                <p>Down</p>
+                <div className="h-3 w-3 rounded-full bg-red-500" />
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </motion.footer>
