@@ -1,4 +1,13 @@
-import { ArrowRightIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  ArrowRightIcon,
+  CpuIcon,
+  GpuIcon,
+  MemoryStickIcon,
+  ThermometerIcon,
+} from 'lucide-react';
+import type { ReactNode } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export default function GallerySection() {
   return (
@@ -22,7 +31,7 @@ export default function GallerySection() {
         </div>
       </div>
       <div className="grid w-full auto-rows-[300px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <figure className="bg-linear-to-br relative col-span-1 row-span-1 flex w-full items-center justify-center overflow-hidden rounded-xl from-gray-600 via-gray-800 to-black md:col-span-2 md:row-span-2">
+        <figure className="bg-linear-to-br relative col-span-1 row-span-1 flex w-full items-center justify-center overflow-hidden rounded-xl border border-slate-300 from-gray-600 via-gray-800 to-black md:col-span-2 md:row-span-2 dark:border-slate-800">
           <img
             src="/home/mainboard.png"
             alt="Motherboard"
@@ -45,59 +54,102 @@ export default function GallerySection() {
             </button>
           </div>
         </figure>
-        <figure className="bg-linear-to-b relative flex items-center justify-center overflow-hidden rounded-xl from-gray-700 to-gray-900">
-          <div className="bg-linear-to-t absolute inset-0 z-10 from-[#111722] to-transparent"></div>
-          <div className="absolute bottom-0 left-0 z-10 p-6">
-            <p className="text-lg font-bold text-white">GPU Powerhouses</p>
-            <p className="mt-1 text-xs text-gray-400">RTX 5090</p>
-          </div>
-          <img
-            src="/home/gpu.png"
-            alt="Motherboard"
-            className="rounded-xl object-cover object-center drop-shadow-2xl"
-          />
-        </figure>
-        <figure className="bg-dark-elevated relative overflow-hidden rounded-xl">
-          <div className="bg-linear-to-t absolute inset-0 z-10 from-[#111722] to-transparent"></div>
-          <div className="absolute bottom-0 left-0 z-10 p-6">
-            <p className="text-lg font-bold text-white">Thermal Solutions</p>
-            <p className="mt-1 text-xs text-gray-400">
-              Custom loops &amp; AIOs
-            </p>
-          </div>
-          <img
-            src="/home/aio.png"
-            alt="Motherboard"
-            className="rounded-xl object-cover object-center drop-shadow-2xl"
-          />
-        </figure>
-        <figure className="relative overflow-hidden rounded-xl bg-transparent">
-          <div className="bg-linear-to-t absolute inset-0 z-10 from-[#111722] to-transparent"></div>
-          <div className="absolute bottom-0 left-0 z-10 p-6">
-            <p className="text-lg font-bold text-white">Processors</p>
-            <p className="mt-1 text-xs text-gray-400">
-              Intel Core i9 &amp; AMD Ryzen 9 series available for pre-order.
-            </p>
-          </div>
-          <img
-            src="/home/cpu.jpg"
-            alt="CPU"
-            className="h-full rounded-xl object-cover object-center drop-shadow-2xl"
-          />
-        </figure>
-        <figure className="bg-linear-to-br relative overflow-hidden rounded-xl from-gray-600 via-gray-800 to-black">
-          <div className="bg-linear-to-t absolute inset-0 z-10 from-[#111722] to-transparent"></div>
-          <div className="absolute bottom-0 left-0 z-10 p-6">
-            <p className="text-lg font-bold text-white">Memory &amp; Storage</p>
-            <p className="mt-1 text-xs text-gray-400">DDR5 High Speed Kits</p>
-          </div>
-          <img
-            src="/home/ram.webp"
-            alt="Motherboard"
-            className="h-full w-full rounded-xl object-cover object-center drop-shadow-2xl"
-          />
-        </figure>
+        <ImageCard
+          title="GPU Powerhouses"
+          desc="RTX 5090."
+          src="/home/gpu.png"
+          alt="gpu"
+          icon={<GpuIcon className="h-auto w-8 stroke-2 text-blue-700" />}
+        />
+        <ImageCard
+          title="Thermal Solutions"
+          desc="Custom loops &amp; AIOs."
+          src="/home/aio.png"
+          alt="aio"
+          icon={
+            <ThermometerIcon className="h-auto w-8 stroke-2 text-blue-700" />
+          }
+        />
+        <ImageCard
+          title="Processors"
+          desc="Intel Core i9 &amp; AMD Ryzen 9 series available for pre-order."
+          src="/home/cpu.jpg"
+          alt="cpu"
+          icon={<CpuIcon className="h-auto w-8 stroke-2 text-blue-700" />}
+        />
+        <ImageCard
+          title="Memory &amp; Storage"
+          desc="DDR5 High Speed Kits."
+          src="/home/ram.webp"
+          alt="ram"
+          icon={
+            <MemoryStickIcon className="h-auto w-8 stroke-2 text-blue-700" />
+          }
+        />
       </div>
     </section>
+  );
+}
+
+type ImageCardProps = {
+  className?: string;
+  imgClassName?: string;
+  title: string;
+  desc: string;
+  src: string;
+  alt: string;
+  icon: ReactNode;
+};
+
+function ImageCard(props: ImageCardProps) {
+  return (
+    <motion.figure
+      className={twMerge(
+        'bg-linear-to-br relative cursor-pointer overflow-hidden rounded-xl border border-slate-300 from-gray-600 via-gray-800 to-black dark:border-slate-800',
+        props.className
+      )}
+      initial="initial"
+      whileHover="hover"
+    >
+      <div className="bg-linear-to-t absolute inset-0 z-10 rounded-xl from-[#111722] to-transparent"></div>
+      <div className="absolute bottom-0 left-0 z-10 p-6">
+        <p className="text-lg font-bold text-white">{props.title}</p>
+        <p className="mt-1 text-xs text-gray-400">{props.desc}</p>
+      </div>
+      <img
+        src={props.src}
+        alt={props.alt}
+        className={twMerge(
+          'h-full w-full rounded-xl object-cover object-center drop-shadow-2xl',
+          props.imgClassName
+        )}
+      />
+      <motion.div
+        className="bg-zinc-200/98 dark:bg-[#151c2a]/98 absolute inset-0 z-20 m-0 flex h-full w-full flex-col justify-between p-8"
+        variants={{
+          initial: { y: '100%' },
+          hover: {
+            y: 0,
+            transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+          },
+        }}
+      >
+        <div className="flex flex-col gap-6">
+          {props.icon}
+          <div>
+            <h2 className="mb-2 text-lg font-bold text-black dark:text-white">
+              {props.title}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {props.desc}
+            </p>
+          </div>
+        </div>
+        <span className="flex w-full items-center justify-between text-gray-400 dark:text-gray-600">
+          <p className="text-sm uppercase">Updated today</p>
+          <ArrowRightIcon className="w-4" />
+        </span>
+      </motion.div>
+    </motion.figure>
   );
 }
