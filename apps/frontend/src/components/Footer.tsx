@@ -28,6 +28,8 @@ export default function Footer({
   const healthQuery = useQuery({
     queryKey: ['health'],
     queryFn: () => GetHealth(),
+    placeholderData: previousData => previousData,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const [serverStatus, setServerStatus] = useState<ServerStatus>(
