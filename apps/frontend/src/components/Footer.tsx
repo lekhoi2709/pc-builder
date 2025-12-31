@@ -205,7 +205,7 @@ export default function Footer({
           </div>
         </div>
 
-        <div className="border-secondary-300 dark:border-secondary-500 mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 text-sm md:flex-row">
+        <div className="border-secondary-300 dark:border-secondary-500 mt-8 flex flex-col-reverse items-center justify-between gap-4 border-t pt-8 text-sm md:flex-row">
           <p className="text-primary-600 dark:text-primary-100 text-center md:text-left">
             © {currentYear} PC Builder. All rights reserved.
           </p>
