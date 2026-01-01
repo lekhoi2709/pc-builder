@@ -16,10 +16,13 @@ import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { Trans, useTranslation } from 'react-i18next';
 import { LeftArrowIcon, RightArrowIcon } from '../components/Icons/ArrowIcon';
 import { CardSkeleton } from '../components/Skeleton';
+import { useURLSync } from '../hooks/useURLSync';
 
 export default function Components() {
   const { lang } = useParams();
   const { filters, pagination } = useComponentStore();
+
+  useURLSync();
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination, lang],
