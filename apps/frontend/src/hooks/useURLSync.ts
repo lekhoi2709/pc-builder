@@ -8,13 +8,12 @@ export function useURLSync() {
 
   useEffect(() => {
     initializeFromURL(searchParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initializeFromURL, searchParams]);
 
   useEffect(() => {
     const params = new URLSearchParams();
 
-    if (pagination.current_page > 1) {
+    if (pagination.current_page >= 1) {
       params.set('page', pagination.current_page.toString());
     }
     if (pagination.page_size && pagination.page_size !== 12) {
