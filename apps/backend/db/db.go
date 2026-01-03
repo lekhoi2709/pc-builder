@@ -31,7 +31,10 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	)
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt:            true,
+		SkipDefaultTransaction: true,
+	})
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
 	}
@@ -57,9 +60,10 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	}
 
 	// Configure connection pool
-	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetConnMaxIdleTime(10 * time.Minute)
 
 	err = createIndexes(DB)
 	if err != nil {

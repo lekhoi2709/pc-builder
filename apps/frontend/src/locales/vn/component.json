@@ -15,7 +15,8 @@
       "active_brand": "Hãng: ",
       "active_category": "Loại: ",
       "active_min": "Giá thấp nhất: ",
-      "active_max": "Giá cao nhất: "
+      "active_max": "Giá cao nhất: ",
+      "active_search": "Tìm kiếm: "
     },
     "action": {
       "search": "Tìm kiếm...",

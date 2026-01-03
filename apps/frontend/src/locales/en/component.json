@@ -15,7 +15,8 @@
       "active_brand": "Brand: ",
       "active_category": "Category: ",
       "active_min": "Min Price: ",
-      "active_max": "Max Price: "
+      "active_max": "Max Price: ",
+      "active_search": "Search: "
     },
     "action": {
       "search": "Search...",

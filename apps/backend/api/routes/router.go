@@ -32,11 +32,15 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 	})
 
 	auth := api.Group("/auth")
-	auth.POST("/register", controller.Register)
-	auth.POST("/login", controller.Login)
+	auth.Use(middlewares.AuthRateLimitMiddleware())
+	{
+		auth.POST("/register", controller.Register)
+		auth.POST("/login", controller.Login)
+	}
 
 	// Public component routes
 	components := api.Group("/components")
+	components.Use(middlewares.ValidateQueryParams())
 	{
 		components.GET("/all", componentController.GetAllComponents)
 		components.GET("/:id", componentController.GetComponentByID)
@@ -63,6 +67,7 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 
 		// Admin component management
 		adminComponents := admin.Group("/components")
+		adminComponents.Use(middlewares.ValidateComponentInput())
 		{
 			adminComponents.POST("", componentController.CreateComponent)
 			adminComponents.POST("/bulk", componentController.BulkCreateComponents)
@@ -72,6 +77,7 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 
 		// Admin category management
 		adminCategories := admin.Group("/categories")
+		adminCategories.Use(middlewares.ValidateComponentInput())
 		{
 			adminCategories.POST("", componentController.CreateCategory)
 			adminCategories.PATCH("/:id", componentController.UpdateCategory)
@@ -79,6 +85,7 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 
 		// Admin brand management
 		adminBrands := admin.Group("/brands")
+		adminBrands.Use(middlewares.ValidateComponentInput())
 		{
 			adminBrands.POST("", componentController.CreateBrand)
 			adminBrands.PATCH("/:id", componentController.UpdateBrand)
@@ -96,6 +103,7 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 	vendor.Use(middlewares.JWTMiddleware(), middlewares.RequireRole(RoleVendor))
 	{
 		vendorComponents := vendor.Group("/components")
+		vendorComponents.Use(middlewares.ValidateComponentInput())
 		{
 			vendorComponents.POST("", componentController.CreateComponent)
 			vendorComponents.POST("/bulk", componentController.BulkCreateComponents)

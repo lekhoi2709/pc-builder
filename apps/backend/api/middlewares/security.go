@@ -109,3 +109,33 @@ func SetupTrustedProxies(router *gin.Engine) {
 
 	router.SetTrustedProxies(trustedProxies)
 }
+
+func AuthRateLimitMiddleware() gin.HandlerFunc {
+	clientRequests := make(map[string][]time.Time)
+
+	return func(c *gin.Context) {
+		clientIP := c.ClientIP()
+		now := time.Now()
+
+		if requests, exists := clientRequests[clientIP]; exists {
+			validRequests := []time.Time{}
+			for _, requestTime := range requests {
+				if now.Sub(requestTime) < time.Minute {
+					validRequests = append(validRequests, requestTime)
+				}
+			}
+			clientRequests[clientIP] = validRequests
+		}
+
+		if len(clientRequests[clientIP]) >= 5 {
+			c.JSON(429, gin.H{
+				"error": "Too many authentication attempts, please try again later.",
+			})
+			c.Abort()
+			return
+		}
+
+		clientRequests[clientIP] = append(clientRequests[clientIP], now)
+		c.Next()
+	}
+}
