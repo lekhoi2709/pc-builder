@@ -5,6 +5,7 @@ import (
 	"pc-builder/backend/api/middlewares"
 	"pc-builder/backend/db"
 	"pc-builder/backend/services"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +29,37 @@ func RegisterRoutes(router *gin.Engine, cloudinaryService *services.CloudinarySe
 
 	// Public routes
 	api.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
+		sqlDB, err := db.DB.DB()
+		if err != nil {
+			c.JSON(503, gin.H{
+				"status": "unhealthy",
+				"error":  "database connection error",
+			})
+			return
+		}
+
+		// Ping database
+		if err := sqlDB.Ping(); err != nil {
+			c.JSON(503, gin.H{
+				"status": "unhealthy",
+				"error":  "database ping failed",
+			})
+			return
+		}
+
+		// Get database stats
+		stats := sqlDB.Stats()
+
+		c.JSON(200, gin.H{
+			"status": "healthy",
+			"database": gin.H{
+				"status":           "connected",
+				"open_connections": stats.OpenConnections,
+				"in_use":           stats.InUse,
+				"idle":             stats.Idle,
+			},
+			"timestamp": time.Now().Format(time.RFC3339),
+		})
 	})
 
 	auth := api.Group("/auth")

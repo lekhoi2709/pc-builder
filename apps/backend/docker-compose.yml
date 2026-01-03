@@ -7,9 +7,25 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      - db:
+          condition: service_healthy
     networks:
       - pc_builder_network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/api/v1/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   db:
     image: postgres:16
     container_name: pc_builder_db
@@ -23,6 +39,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - pc_builder_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
