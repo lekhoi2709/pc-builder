@@ -21,10 +21,17 @@ export default function Components() {
   const { lang } = useParams();
   const { filters, pagination } = useFiltersFromURL();
   const queryClient = useQueryClient();
+  const { pageSize } = useResponsivePagination();
 
   const componentQuery = useQuery({
-    queryKey: ['components', filters, pagination, lang],
-    queryFn: () => GetComponents(filters, pagination, lang),
+    queryKey: [
+      'components',
+      filters,
+      { ...pagination, page_size: pageSize },
+      lang,
+    ],
+    queryFn: () =>
+      GetComponents(filters, { ...pagination, page_size: pageSize }, lang),
     refetchOnWindowFocus: false,
     placeholderData: previousData => previousData,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -122,30 +129,30 @@ export default function Components() {
   );
 }
 
-const useResponsivePagination = (
-  setPagination: (p: Partial<PaginationMeta>) => void
-) => {
-  const [delta, setDelta] = useState(1);
+const useResponsivePagination = () => {
+  const [delta, setDelta] = useState(3);
+  const [pageSize, setPageSize] = useState(12);
 
   useEffect(() => {
     const update = () => {
       if (window.innerWidth < 768) {
         setDelta(0);
-        setPagination({ page_size: 4 });
+        setPageSize(4);
       } else if (window.innerWidth < 1024) {
         setDelta(1);
-        setPagination({ page_size: 6 });
+        setPageSize(6);
       } else {
         setDelta(3);
-        setPagination({ page_size: 12 });
+        setPageSize(12);
       }
     };
+
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
-  }, [setPagination]);
+  }, []);
 
-  return delta;
+  return { delta, pageSize };
 };
 
 type PaginationProps = {
@@ -194,7 +201,7 @@ const renderPageNumbers = (
         key={page}
         onClick={() => {
           setPagination({ current_page: page as number });
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.scrollTo(0, 0);
         }}
         className={twMerge(
           'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
@@ -223,7 +230,7 @@ const ComponentPageLayout = memo(
     children: React.ReactNode;
   }) => {
     const { pagination, setPagination } = useFiltersFromURL();
-    const delta = useResponsivePagination(setPagination);
+    const { delta } = useResponsivePagination();
     const { isSideBarOpen, isFilterOpen, toggleSidebar, toggleFilter } =
       useUIStore();
     const { t } = useTranslation('component');
@@ -295,7 +302,7 @@ const ComponentPageLayout = memo(
                         ...pagination,
                         current_page: Math.max(1, pagination.current_page - 1),
                       });
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      window.scrollTo(0, 0);
                     }}
                     disabled={pagination.current_page <= 1}
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
@@ -304,7 +311,7 @@ const ComponentPageLayout = memo(
                   </button>
                   <Pagination
                     totalPages={props.data.pagination.total_pages!}
-                    currentPage={props.data.pagination.current_page}
+                    currentPage={pagination.current_page}
                     delta={delta}
                     setPagination={setPagination}
                   />
@@ -317,7 +324,7 @@ const ComponentPageLayout = memo(
                           pagination.current_page + 1
                         ),
                       });
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      window.scrollTo(0, 0);
                     }}
                     disabled={
                       pagination.current_page >=

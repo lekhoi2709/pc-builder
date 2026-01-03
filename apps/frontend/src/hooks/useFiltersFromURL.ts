@@ -29,7 +29,6 @@ export function useFiltersFromURL() {
   const pagination = useMemo((): PaginationMeta => {
     return {
       current_page: parseInt(searchParams.get('page') || '1'),
-      page_size: parseInt(searchParams.get('page_size') || '12'),
     };
   }, [searchParams]);
 
@@ -89,10 +88,6 @@ export function useFiltersFromURL() {
             prev.set('currency', newFilters.currency);
           }
 
-          if (!('current_page' in newFilters)) {
-            prev.set('page', '1');
-          }
-
           return prev;
         },
         { replace: true }
@@ -108,9 +103,7 @@ export function useFiltersFromURL() {
           if (newPagination.current_page) {
             prev.set('page', newPagination.current_page.toString());
           }
-          if (newPagination.page_size) {
-            prev.set('page_size', newPagination.page_size.toString());
-          }
+
           return prev;
         },
         { replace: true }
