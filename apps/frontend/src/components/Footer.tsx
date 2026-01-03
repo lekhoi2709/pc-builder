@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import { Mail, Github } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
@@ -143,16 +143,16 @@ export default function Footer({
             </p>
             <div className="mt-6 flex gap-4">
               {socialLinks.map(social => (
-                <a
+                <NavLink
                   key={social.name}
-                  href={social.href}
+                  to={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-600 hover:text-accent-400 dark:text-primary-100 dark:hover:text-accent-300 transition-colors duration-200"
                   aria-label={social.name}
                 >
                   {social.icon}
-                </a>
+                </NavLink>
               ))}
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 import { ArrowRight } from 'lucide-react';
+import { NavLink } from 'react-router';
 
 export default function HeroSection({ className }: { className?: string }) {
   return (
@@ -28,9 +29,12 @@ export default function HeroSection({ className }: { className?: string }) {
             <button className="bg-primary bg-accent-400 hover:bg-accent-500 flex h-12 cursor-pointer items-center justify-center rounded-lg px-8 text-sm font-bold tracking-wide text-white shadow-[0_0_20px_rgba(17,82,212,0.3)] transition-all">
               Enter the Studio
             </button>
-            <button className="bg-dark-elevated flex h-12 cursor-pointer items-center justify-center rounded-lg px-8 text-sm font-bold tracking-wide text-white transition-all">
+            <NavLink
+              to="/components"
+              className="bg-dark-elevated flex h-12 cursor-pointer items-center justify-center rounded-lg px-8 text-sm font-bold tracking-wide text-white transition-all"
+            >
               View Gallery
-            </button>
+            </NavLink>
           </div>
         </div>
         <div className="group relative lg:col-span-7 xl:col-span-8">

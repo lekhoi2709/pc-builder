@@ -17,6 +17,15 @@ interface UIStore {
   closeAll: () => void;
 }
 
+const applyTheme = (theme: Theme) => {
+  const isDark =
+    theme === 'Dark' ||
+    (theme === 'System' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  document.documentElement.classList.toggle('dark', isDark);
+};
+
 export const useUIStore = create<UIStore>()(
   persist(
     set => ({
@@ -27,12 +36,7 @@ export const useUIStore = create<UIStore>()(
 
       setTheme: theme => {
         set({ theme });
-        document.documentElement.classList.toggle(
-          'dark',
-          theme === 'Dark' ||
-            (theme === 'System' &&
-              window.matchMedia('(prefers-color-scheme: dark)').matches)
-        );
+        applyTheme(theme);
       },
 
       toggleSidebar: () =>
@@ -65,6 +69,23 @@ export const useUIStore = create<UIStore>()(
     {
       name: 'ui-storage',
       partialize: state => ({ theme: state.theme }),
+      onRehydrateStorage: () => state => {
+        if (state) {
+          applyTheme(state.theme);
+        }
+      },
     }
   )
 );
+
+const initialTheme = localStorage.getItem('ui-storage');
+if (initialTheme) {
+  try {
+    const parsed = JSON.parse(initialTheme);
+    if (parsed.state?.theme) {
+      applyTheme(parsed.state.theme);
+    }
+  } catch (e) {
+    console.error('Failed to parse theme from localStorage:', e);
+  }
+}

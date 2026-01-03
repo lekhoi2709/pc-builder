@@ -379,7 +379,6 @@ const PriceRangeSlider = memo(
               min_price: minValue,
               max_price: maxValue,
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
           {t('filter.action.price')}

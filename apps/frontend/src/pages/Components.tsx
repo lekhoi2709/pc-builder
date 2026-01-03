@@ -201,7 +201,6 @@ const renderPageNumbers = (
         key={page}
         onClick={() => {
           setPagination({ current_page: page as number });
-          window.scrollTo(0, 0);
         }}
         className={twMerge(
           'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
@@ -302,7 +301,6 @@ const ComponentPageLayout = memo(
                         ...pagination,
                         current_page: Math.max(1, pagination.current_page - 1),
                       });
-                      window.scrollTo(0, 0);
                     }}
                     disabled={pagination.current_page <= 1}
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
@@ -324,7 +322,6 @@ const ComponentPageLayout = memo(
                           pagination.current_page + 1
                         ),
                       });
-                      window.scrollTo(0, 0);
                     }}
                     disabled={
                       pagination.current_page >=

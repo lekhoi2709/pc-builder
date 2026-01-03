@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router';
+import { Outlet, ScrollRestoration, useLocation } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
 import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
 import NavigationBarMobile from '../components/NavigationBarMobile';
@@ -55,6 +55,7 @@ export default function Layout() {
       <NavigationBarMobile routes={routes} locationPage={locationPage} />
       <Outlet />
       <Footer isAtComponentPage={isAtComponentPage} />
+      <ScrollRestoration />
     </main>
   );
 }

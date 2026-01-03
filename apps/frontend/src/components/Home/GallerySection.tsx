@@ -7,6 +7,7 @@ import {
   ThermometerIcon,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { NavLink } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 
 export default function GallerySection() {
@@ -21,13 +22,13 @@ export default function GallerySection() {
             Curated hardware treated as modern art objects. Select your palette
             from the world's finest manufacturers.
           </p>
-          <a
-            href="#"
-            className="text-accent-400 dark:text-accent-300 flex items-center gap-2 text-base md:text-sm"
+          <NavLink
+            to="/components"
+            className="text-accent-400 dark:text-accent-300 flex items-center gap-2 text-base underline-offset-4 hover:underline hover:delay-75 md:text-sm"
           >
             <p>View full catalog</p>
             <ArrowRightIcon className="w-4 stroke-1" />
-          </a>
+          </NavLink>
         </div>
       </div>
       <div className="grid w-full auto-rows-[300px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -49,9 +50,15 @@ export default function GallerySection() {
               The foundation of extreme performance. Explore E-ATX boards with
               reinforced PCIe slots and premium VRM cooling.
             </p>
-            <button className="decoration-primary hover:text-primary text-sm font-bold text-white underline underline-offset-4 transition-colors">
+            <NavLink
+              to={{
+                pathname: 'components',
+                search: '?category_id=mainboard',
+              }}
+              className="decoration-primary hover:text-primary text-sm font-bold text-white underline underline-offset-4 transition-colors"
+            >
               Explore Motherboards
-            </button>
+            </NavLink>
           </div>
         </figure>
         <ImageCard
