@@ -1,15 +1,15 @@
 import { twMerge } from 'tailwind-merge';
 import SideBarButton from '../components/SideBarButton';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import HeroSection from '../components/Home/HeroSection';
 import SearchComponentBar from '../components/SearchComponentBar';
 import { useTranslation } from 'react-i18next';
 import AnimatedCounter from '../components/Home/AnimatedCounter';
 import WorkflowSection from '../components/Home/WorkflowSection';
 import GallerySection from '../components/Home/GallerySection';
+import { useUIStore } from '../stores/uiStore';
 
 export default function Home() {
-  const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
+  const { isSideBarOpen, toggleSidebar } = useUIStore();
   const { t } = useTranslation('home');
   const stats = t('page.stats', { returnObjects: true });
 

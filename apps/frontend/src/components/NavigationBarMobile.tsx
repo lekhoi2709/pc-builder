@@ -3,7 +3,7 @@ import SideBarLayout from '../layouts/SideBarLayout';
 import { twMerge } from 'tailwind-merge';
 import type { JSX } from 'react';
 import ThemeToggle from './ThemeToggle';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { useUIStore } from '../stores/uiStore';
 
 export default function NavigationBarMobile({
   routes,
@@ -18,7 +18,7 @@ export default function NavigationBarMobile({
   locationPage?: string;
   className?: string;
 }) {
-  const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
+  const { isSideBarOpen, toggleSidebar } = useUIStore();
   return (
     <SideBarLayout
       props={{

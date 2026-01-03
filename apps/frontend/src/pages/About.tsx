@@ -1,9 +1,9 @@
 import { twMerge } from 'tailwind-merge';
 import SideBarButton from '../components/SideBarButton';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { useUIStore } from '../stores/uiStore';
 
 export default function About() {
-  const { isSideBarOpen, toggleSidebar } = useExclusivePanel();
+  const { isSideBarOpen, toggleSidebar } = useUIStore();
 
   return (
     <main

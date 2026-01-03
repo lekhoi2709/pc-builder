@@ -2,10 +2,10 @@ import { Link } from 'react-router';
 import { Mail, Github } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { useQuery } from '@tanstack/react-query';
 import { GetHealth } from '../services/api';
 import { useEffect, useState } from 'react';
+import { useUIStore } from '../stores/uiStore';
 
 const ServerStatus = {
   OPERATIONAL: 'operational',
@@ -23,7 +23,7 @@ export default function Footer({
   isAtComponentPage: boolean;
 }) {
   const currentYear = new Date().getFullYear();
-  const { isSideBarOpen } = useExclusivePanel();
+  const { isSideBarOpen } = useUIStore();
 
   const healthQuery = useQuery({
     queryKey: ['health'],

@@ -4,13 +4,14 @@ import {
   ArrowUp01Icon,
   ArrowDown01Icon,
 } from 'lucide-react';
-import { useComponentStore } from '../stores/componentStore';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
-import type { ComponentFilter } from '../types/components';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { XIcon } from './Icons/XIcon';
+import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
+import { useComponentStore } from '../stores/componentStore';
+import { useMemo } from 'react';
 
 const langToCurrency: Record<string, string> = {
   vn: 'VND',
@@ -27,11 +28,55 @@ export default function ActiveFilters({
 }: {
   isHavingSort?: boolean;
 }) {
-  const { activeFilters, removeFilter, clearFilter, categories, brands } =
-    useComponentStore();
+  const { filters, clearFilters, removeFilter } = useFiltersFromURL();
+  const { categories, brands } = useComponentStore();
   const { lang } = useParams();
   const { t } = useTranslation('component');
   const currency = langToCurrency[lang || 'vn'] || 'VND';
+
+  const activeFilters = useMemo(() => {
+    const active: Array<{
+      key: string;
+      value: string | number;
+      display?: string;
+    }> = [];
+
+    if (filters.category_id && filters.category_id.length > 0) {
+      filters.category_id.forEach(id => {
+        const category = categories.find(c => c.id === id);
+        active.push({
+          key: 'category_id',
+          value: id,
+          display: category?.display_name || id,
+        });
+      });
+    }
+
+    if (filters.brand_id && filters.brand_id.length > 0) {
+      filters.brand_id.forEach(id => {
+        const brand = brands.find(b => b.id === id);
+        active.push({
+          key: 'brand_id',
+          value: id,
+          display: brand?.display_name || id,
+        });
+      });
+    }
+
+    if (filters.min_price) {
+      active.push({ key: 'min_price', value: filters.min_price });
+    }
+
+    if (filters.max_price) {
+      active.push({ key: 'max_price', value: filters.max_price });
+    }
+
+    if (filters.search) {
+      active.push({ key: 'search', value: filters.search });
+    }
+
+    return active;
+  }, [filters, categories, brands]);
 
   const priceFormatter = (
     value: number,
@@ -84,65 +129,29 @@ export default function ActiveFilters({
     return strArr[0] + ' ' + strArr[1];
   };
 
-  const getDisplayName = (
-    key: keyof ComponentFilter,
-    value: string
-  ): string => {
-    if (key === 'category_id') {
-      const category = categories.find(c => c.id === value);
-      return category?.display_name || value;
-    }
-    if (key === 'brand_id') {
-      const brand = brands.find(b => b.id === value);
-      return brand?.display_name || value;
-    }
-    return value;
-  };
-
   return (
     <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
       <div className="flex flex-wrap items-center gap-2">
-        {activeFilters.map(({ key, value }) => {
-          if (key === 'max_price' || key === 'min_price') {
+        {activeFilters.map((filter, index) => {
+          const key = `${filter.key}-${filter.value}-${index}`;
+
+          if (filter.key === 'min_price' || filter.key === 'max_price') {
             return (
               <span
                 key={key}
                 className="bg-accent-200 dark:bg-accent-400/80 prevent-select w-fit! line-clamp-1 flex cursor-pointer items-center justify-between break-keep rounded px-2 py-1"
               >
                 <p>
-                  {t('filter.active.active', {
-                    context: activeFilterStringFormatted({
-                      str: String(key),
-                    }),
-                  })}
+                  {t(`filter.active.active_${filter.key.split('_')[0]}`)}
                   {priceFormatter(
-                    parseInt(value as string),
+                    parseInt(filter.value as string),
                     langToLocale[lang || 'vn'] || 'vi-VN',
                     'currency'
                   )}
                 </p>
-
-                <XIcon onClick={() => removeFilter(key)} />
+                <XIcon onClick={() => removeFilter(filter.key)} />
               </span>
             );
-          }
-          if (Array.isArray(value)) {
-            return value.map(val => (
-              <span
-                key={`${key}-${val}`}
-                className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
-              >
-                <p>
-                  {t('filter.active.active', {
-                    context: activeFilterStringFormatted({
-                      str: String(key),
-                    }),
-                  })}
-                  {getDisplayName(key, val)}
-                </p>
-                <XIcon onClick={() => removeFilter(key, val)} />
-              </span>
-            ));
           }
 
           return (
@@ -151,16 +160,18 @@ export default function ActiveFilters({
               className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
             >
               <p className="capitalize">
-                {activeFilterStringFormatted({ str: String(key) })}:
-                {activeFilterStringFormatted({ str: String(value) })}
+                {t(`filter.active.active_${filter.key.replace('_id', '')}`)}
+                {filter.display || filter.value}
               </p>
-              <XIcon onClick={() => removeFilter(key)} />
+              <XIcon
+                onClick={() => removeFilter(filter.key, String(filter.value))}
+              />
             </span>
           );
         })}
         <button
-          onClick={clearFilter}
-          className="cursor-pointer rounded border border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
+          className="cursor-pointer rounded border border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-400/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
+          onClick={clearFilters}
         >
           {t('filter.action.clear')}
         </button>
@@ -211,7 +222,7 @@ function SortingIndicator({
     | 'category';
   t: TFunction<'component', undefined>;
 }) {
-  const { filters, setFilters } = useComponentStore();
+  const { filters, setFilters } = useFiltersFromURL();
   const isActive = filters.sort_by === sort_by;
   const showIcon = isActive;
   const isAscending = filters.sort_order === 'asc';

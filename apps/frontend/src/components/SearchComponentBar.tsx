@@ -1,9 +1,9 @@
 import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useComponentStore } from '../stores/componentStore';
 import { useTranslation } from 'react-i18next';
 import { DeleteIcon } from './Icons/XIcon';
 import { twMerge } from 'tailwind-merge';
+import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 
 export default function SearchComponentBar({
   className,
@@ -16,7 +16,7 @@ export default function SearchComponentBar({
   placeholder?: string;
   translation_page?: string;
 }) {
-  const { filters, setFilters } = useComponentStore();
+  const { filters, setFilters } = useFiltersFromURL();
   const [term, setTerm] = useState(filters.search ?? '');
   const { t } = useTranslation(translation_page);
 

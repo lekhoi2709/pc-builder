@@ -135,7 +135,7 @@ export async function GetAllComponents(): Promise<Component[]> {
 
 export async function GetComponents(
   filters: ComponentFilter = {},
-  pagination: PaginationMeta = { current_page: 1, page_size: 12 },
+  pagination: PaginationMeta,
   lang: string = 'vn'
 ): Promise<ComponentResponse> {
   if (lang && !filters.currency) {

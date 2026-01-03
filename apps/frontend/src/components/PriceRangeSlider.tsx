@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
-import { useComponentStore } from '../stores/componentStore';
 import type { ComponentFilter } from '../types/components';
 import { useTranslation } from 'react-i18next';
+import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 
 interface PriceRangeSliderProps {
   min?: number;
@@ -36,7 +36,7 @@ const PriceRangeSlider = memo(
     const [minInputValue, setMinInputValue] = useState(String(min));
     const [maxInputValue, setMaxInputValue] = useState(String(max));
     const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null);
-    const { filters, setFilters } = useComponentStore();
+    const { filters, setFilters } = useFiltersFromURL();
     const { t } = useTranslation('component');
 
     // Sync slider state with store filters
@@ -44,14 +44,12 @@ const PriceRangeSlider = memo(
       const storeMinPrice = filters.min_price;
       const storeMaxPrice = filters.max_price;
 
-      // Reset to min/max if filters are cleared
       if (storeMinPrice === undefined && storeMaxPrice === undefined) {
         setMinValue(min);
         setMaxValue(max);
         setMinInputValue(String(min));
         setMaxInputValue(String(max));
       } else {
-        // Update slider to match store values if they exist
         if (storeMinPrice !== undefined && storeMinPrice !== minValue) {
           setMinValue(storeMinPrice);
           setMinInputValue(String(storeMinPrice));

@@ -3,8 +3,8 @@ import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { motion, type Variants } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { useTranslation } from 'react-i18next';
+import { useUIStore } from '../stores/uiStore';
 
 const StickyNavbar = ({
   className,
@@ -30,7 +30,7 @@ const StickyNavbar = ({
   ];
 
   const { lang } = useParams();
-  const { isSideBarOpen } = useExclusivePanel();
+  const { isSideBarOpen } = useUIStore();
   const { t } = useTranslation('common');
 
   const activeIndex = routes.findIndex(

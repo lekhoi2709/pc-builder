@@ -15,6 +15,7 @@ import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ListFilterSkeleton } from './Skeleton';
+import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 
 const ComponentFilters = memo(
   ({
@@ -24,13 +25,9 @@ const ComponentFilters = memo(
     data?: ComponentResponse;
     isSideBarOpen: boolean;
   }) => {
-    const {
-      filters,
-      toggleBrandFilter,
-      toggleCategoryFilter,
-      setCategories,
-      setBrands,
-    } = useComponentStore();
+    const { filters, toggleBrandFilter, toggleCategoryFilter } =
+      useFiltersFromURL();
+    const { setCategories, setBrands } = useComponentStore();
     const { lang } = useParams();
     const isMobile = useMediaQuery('(max-width: 1280px)');
     const { t } = useTranslation('component');
@@ -40,6 +37,7 @@ const ComponentFilters = memo(
       queryFn: () => GetAvailableFilters(lang || 'vn'),
       placeholderData: previousData => previousData,
       refetchOnWindowFocus: false,
+      staleTime: Infinity,
     });
 
     useEffect(() => {

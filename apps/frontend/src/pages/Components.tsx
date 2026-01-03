@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
-import { useComponentStore } from '../stores/componentStore';
 import { memo, useEffect, useState } from 'react';
 import React from 'react';
 import ActiveFilters from '../components/ActiveFilters';
@@ -12,17 +11,16 @@ import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
 import { Trans, useTranslation } from 'react-i18next';
 import { LeftArrowIcon, RightArrowIcon } from '../components/Icons/ArrowIcon';
 import { CardSkeleton } from '../components/Skeleton';
-import { useURLSync } from '../hooks/useURLSync';
+import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
+import { useUIStore } from '../stores/uiStore';
 
 export default function Components() {
   const { lang } = useParams();
-  const { filters, pagination } = useComponentStore();
-
-  useURLSync();
+  const { filters, pagination } = useFiltersFromURL();
+  const queryClient = useQueryClient();
 
   const componentQuery = useQuery({
     queryKey: ['components', filters, pagination, lang],
@@ -31,6 +29,29 @@ export default function Components() {
     placeholderData: previousData => previousData,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  useEffect(() => {
+    if (componentQuery.data?.pagination) {
+      const { current_page, total_pages } = componentQuery.data.pagination;
+
+      if (current_page < total_pages!) {
+        queryClient.prefetchQuery({
+          queryKey: [
+            'components',
+            filters,
+            { ...pagination, current_page: current_page + 1 },
+            lang,
+          ],
+          queryFn: () =>
+            GetComponents(
+              filters,
+              { ...pagination, current_page: current_page + 1 },
+              lang
+            ),
+        });
+      }
+    }
+  }, [componentQuery.data, filters, pagination, lang, queryClient]);
 
   const listVariants: Variants = {
     collapse: {
@@ -110,13 +131,13 @@ const useResponsivePagination = (
     const update = () => {
       if (window.innerWidth < 768) {
         setDelta(0);
-        setPagination({ page_size: 4, current_page: 1 });
+        setPagination({ page_size: 4 });
       } else if (window.innerWidth < 1024) {
         setDelta(1);
-        setPagination({ page_size: 6, current_page: 1 });
+        setPagination({ page_size: 6 });
       } else {
         setDelta(3);
-        setPagination({ page_size: 12, current_page: 1 });
+        setPagination({ page_size: 12 });
       }
     };
     update();
@@ -138,12 +159,7 @@ const Pagination = React.memo(
   ({ totalPages, currentPage, delta, setPagination }: PaginationProps) => {
     return (
       <div className="flex gap-1">
-        {renderPageNumbers(
-          totalPages,
-          { current_page: currentPage },
-          setPagination,
-          delta
-        )}
+        {renderPageNumbers(totalPages, currentPage, setPagination, delta)}
       </div>
     );
   }
@@ -151,12 +167,10 @@ const Pagination = React.memo(
 
 const renderPageNumbers = (
   totalPages: number,
-  pagination: PaginationMeta,
+  currentPage: number,
   setPagination: (pagination: Partial<PaginationMeta>) => void,
   delta: number = 2
 ) => {
-  const currentPage = pagination.current_page;
-
   const startPage = Math.max(2, currentPage - delta);
   const endPage = Math.min(totalPages - 1, currentPage + delta);
 
@@ -179,12 +193,12 @@ const renderPageNumbers = (
       <button
         key={page}
         onClick={() => {
-          setPagination({ ...pagination, current_page: page as number });
-          window.scrollTo(0, 0);
+          setPagination({ current_page: page as number });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={twMerge(
           'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
-          pagination.current_page === page
+          currentPage === page
             ? 'bg-accent-200 dark:bg-accent-400/80 hover:bg-accent-200 hover:dark:bg-accent-400/80 hover:border-transparent'
             : 'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20'
         )}
@@ -208,10 +222,10 @@ const ComponentPageLayout = memo(
     props: ComponentPageLayoutProps;
     children: React.ReactNode;
   }) => {
-    const { pagination, setPagination } = useComponentStore();
+    const { pagination, setPagination } = useFiltersFromURL();
     const delta = useResponsivePagination(setPagination);
     const { isSideBarOpen, isFilterOpen, toggleSidebar, toggleFilter } =
-      useExclusivePanel();
+      useUIStore();
     const { t } = useTranslation('component');
 
     const isDesktop = useMediaQuery('(min-width: 1280px)');
@@ -281,7 +295,7 @@ const ComponentPageLayout = memo(
                         ...pagination,
                         current_page: Math.max(1, pagination.current_page - 1),
                       });
-                      window.scrollTo(0, 0);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={pagination.current_page <= 1}
                     className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
@@ -303,7 +317,7 @@ const ComponentPageLayout = memo(
                           pagination.current_page + 1
                         ),
                       });
-                      window.scrollTo(0, 0);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={
                       pagination.current_page >=

@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
-import { useTheme, type Theme } from '../hooks/useTheme';
+import { type Theme } from '../hooks/useTheme';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import { useUIStore } from '../stores/uiStore';
 
 const ThemeToggle = ({ className }: { className?: string }) => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useUIStore();
 
   const themeIcons = [
     {
@@ -61,7 +62,7 @@ const ThemeToggle = ({ className }: { className?: string }) => {
           )}
           onMouseEnter={() => handleMouseEnter(index)}
           onMouseLeave={handleMouseLeave}
-          onClick={() => toggleTheme(item.name)}
+          onClick={() => setTheme(item.name)}
         >
           <i
             className={twMerge(

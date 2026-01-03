@@ -1,7 +1,7 @@
 import { motion, type Variants } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useExclusivePanel } from '../stores/exclusivePanelStore';
+import { useUIStore } from '../stores/uiStore';
 
 type SideBarLayoutProps = {
   className?: string;
@@ -18,7 +18,7 @@ const SideBarLayout = ({
   props: SideBarLayoutProps;
 }) => {
   const { isSideBarOpen } = props;
-  const { isFilterOpen, closeAll } = useExclusivePanel();
+  const { isFilterOpen, closeAll } = useUIStore();
   const listVariants: Variants = {
     collapse: {
       x: 'var(--sidebar-move-from)',
