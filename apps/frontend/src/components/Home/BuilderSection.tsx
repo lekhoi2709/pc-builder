@@ -4,14 +4,7 @@ export default function BuilderSection() {
   return (
     <section className="lg:px-30 py-12">
       <div className="dark:bg-[#151c2a]/98 relative overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-800">
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              'linear-gradient(#232f48 1px, transparent 1px), linear-gradient(90deg, #232f48 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        ></div>
+        <div className="bg-size-[40px_40px] absolute inset-0 w-full bg-[linear-gradient(#232f48_1px,transparent_1px),linear-gradient(90deg,#232f48_1px,transparent_1px)] opacity-10 dark:bg-[linear-gradient(#cad5e2_1px,transparent_1px),linear-gradient(90deg,#cad5e2_1px,transparent_1px)]"></div>
         <div className="relative z-10 grid grid-cols-1 items-center gap-10 p-8 md:grid-cols-2 md:p-16">
           <div className="order-2 md:order-1">
             <div className="mb-6 flex items-center gap-4">
@@ -51,7 +44,7 @@ export default function BuilderSection() {
             </button>
           </div>
           <div className="order-1 flex justify-center md:order-2">
-            <div className="border-accent-400 dark:border-accent-500 relative flex aspect-square w-full max-w-md items-center justify-center rounded-full border bg-transparent p-8 backdrop-blur-sm">
+            <div className="border-accent-400 dark:border-accent-500 relative flex aspect-square w-full max-w-md items-center justify-center rounded-full border bg-transparent backdrop-blur-sm md:p-8">
               <svg
                 className="absolute inset-0 h-full w-full animate-[spin_10s_linear_infinite]"
                 viewBox="0 0 200 200"
