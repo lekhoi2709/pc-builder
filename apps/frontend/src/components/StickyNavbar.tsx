@@ -1,40 +1,32 @@
-import { NavLink, useLocation, useParams } from 'react-router';
+import { NavLink, useLocation } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { motion, type Variants } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../stores/uiStore';
+import type { JSX } from 'react';
 
 const StickyNavbar = ({
   className,
   isAtComponentPage = false,
+  routes,
 }: {
   className?: string;
   isAtComponentPage?: boolean;
+  routes: {
+    path: string;
+    icon: JSX.Element;
+    name: string;
+    t: string;
+  }[];
 }) => {
   const location = useLocation();
-  const routes = [
-    {
-      path: '/',
-      name: 'nav.home',
-    },
-    {
-      path: '/components',
-      name: 'nav.component',
-    },
-    {
-      path: '/about',
-      name: 'nav.about',
-    },
-  ];
-
-  const { lang } = useParams();
   const { isSideBarOpen } = useUIStore();
   const { t } = useTranslation('common');
 
   const activeIndex = routes.findIndex(
-    val => val.path == location.pathname.replace(`/${lang}`, '')
+    val => val.path == '/' + location.pathname.split('/')[2]
   );
 
   const {
@@ -114,7 +106,7 @@ const StickyNavbar = ({
             onMouseLeave={handleMouseLeave}
           >
             <p className="font-semibold uppercase transition-all duration-500 ease-in-out group-hover/navlink:scale-110">
-              {t(route.name)}
+              {t(route.t)}
             </p>
           </NavLink>
         ))}

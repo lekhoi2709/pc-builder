@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
 
-function SkeletonBox({ className = '' }) {
+export function SkeletonBox({ className = '' }) {
   return (
     <motion.div
-      className={`dark:bg-accent-100/50 bg-accent-400/20 rounded ${className}`}
+      className={twMerge(
+        'dark:bg-accent-100/50 bg-accent-400/20 rounded',
+        className
+      )}
       animate={{
         opacity: [0.5, 1, 0.5],
       }}
@@ -16,13 +20,16 @@ function SkeletonBox({ className = '' }) {
   );
 }
 
-function SkeletonText({ lines = 1, className = '' }) {
+export function SkeletonText({ lines = 1, className = '', boxClassName = '' }) {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={twMerge('space-y-2', className)}>
       {Array.from({ length: lines }).map((_, i) => (
         <SkeletonBox
           key={i}
-          className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
+          className={twMerge(
+            `h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`,
+            boxClassName
+          )}
         />
       ))}
     </div>

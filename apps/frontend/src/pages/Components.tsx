@@ -217,7 +217,7 @@ const renderPageNumbers = (
 
 type ComponentPageLayoutProps = {
   data?: ComponentResponse;
-  listVariants: Variants;
+  listVariants?: Variants;
 };
 
 const ComponentPageLayout = memo(

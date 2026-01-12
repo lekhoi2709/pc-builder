@@ -6,6 +6,7 @@ import type {
   Component,
   ComponentFilter,
   ComponentResponse,
+  ComponentWithRelations,
   PaginationMeta,
 } from '../types/components';
 
@@ -165,7 +166,9 @@ export async function GetComponents(
   return json.response as ComponentResponse;
 }
 
-export async function GetComponentById(id: string): Promise<Component> {
+export async function GetComponentById(
+  id: string
+): Promise<ComponentWithRelations> {
   const response = await fetch(`${API_BASE}/components/${id}`, {
     method: 'GET',
     headers: {

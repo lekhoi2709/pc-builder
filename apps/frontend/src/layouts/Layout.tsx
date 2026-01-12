@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { Outlet, ScrollRestoration, useLocation } from 'react-router';
+import {
+  Outlet,
+  ScrollRestoration,
+  useLocation,
+  useParams,
+} from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
 import { BookIcon, ComponentIcon, HouseIcon } from 'lucide-react';
 import NavigationBarMobile from '../components/NavigationBarMobile';
@@ -9,25 +14,29 @@ import Footer from '../components/Footer';
 
 export default function Layout() {
   const location = useLocation();
-  const isAtComponentPage = location.pathname.includes('/component');
-
   const locationPath = location.pathname.split('/')[2];
+  const { lang } = useParams();
+  const isAtComponentPage =
+    location.pathname.replace(`/${lang}`, '') === '/components';
 
   const routes = [
     {
       path: '/',
       icon: <HouseIcon className="inline-block h-5 w-5" />,
       name: 'Home',
+      t: 'nav.home',
     },
     {
       path: '/components',
       icon: <ComponentIcon className="inline-block h-5 w-5" />,
       name: 'Components',
+      t: 'nav.components',
     },
     {
       path: '/about',
       icon: <BookIcon className="inline-block h-5 w-5" />,
       name: 'About',
+      t: 'nav.about',
     },
   ];
 
@@ -51,6 +60,7 @@ export default function Layout() {
       <StickyNavbar
         className="fixed right-4 top-4 z-50 hidden h-fit xl:flex"
         isAtComponentPage={isAtComponentPage}
+        routes={routes}
       />
       <NavigationBarMobile routes={routes} locationPage={locationPage} />
       <Outlet />

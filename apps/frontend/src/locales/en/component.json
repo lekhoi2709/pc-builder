@@ -1,6 +1,8 @@
 {
   "page": {
-    "title": "Components"
+    "title": "Components",
+    "in_stock": "In stock",
+    "out_of_stock": "Out of stock"
   },
   "filter": {
     "title": "Filters",

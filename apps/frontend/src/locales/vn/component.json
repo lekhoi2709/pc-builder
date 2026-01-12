@@ -1,6 +1,8 @@
 {
   "page": {
-    "title": "Sản phẩm"
+    "title": "Sản phẩm",
+    "in_stock": "Còn hàng",
+    "out_of_stock": "Hết hàng"
   },
   "filter": {
     "title": "Bộ lọc",
