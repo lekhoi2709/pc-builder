@@ -5,6 +5,8 @@ import getUserLocationFromIP from './utils/getUserLocale';
 import About from './pages/About';
 import Layout from './layouts/Layout';
 import i18n from './locales/i18n/config';
+import { ComponentDetails } from './pages/ComponentDetails';
+import NotFound from './pages/NotFound';
 
 async function redirectToLocale() {
   try {
@@ -31,8 +33,8 @@ function redirectToLocalizedPath(path: string) {
 const router = createBrowserRouter([
   {
     path: '*',
-    Component: () => <div>404 Not Found</div>,
-    errorElement: <div>Page not found</div>,
+    Component: Layout,
+    children: [{ path: '*', Component: NotFound }],
   },
   // Root redirect to localized home
   {
@@ -61,6 +63,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
       { path: 'components', Component: Components },
+      { path: 'components/:componentId', Component: ComponentDetails },
       { path: 'about', Component: About },
     ],
   },
