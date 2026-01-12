@@ -8,6 +8,7 @@ import WorkflowSection from '../components/Home/WorkflowSection';
 import GallerySection from '../components/Home/GallerySection';
 import { useUIStore } from '../stores/uiStore';
 import BuilderSection from '../components/Home/BuilderSection';
+import CommunitySection from '../components/Home/CommunitySection';
 
 export default function Home() {
   const { isSideBarOpen, toggleSidebar } = useUIStore();
@@ -68,6 +69,8 @@ export default function Home() {
       <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
       <GallerySection />
       <BuilderSection />
+      <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
+      <CommunitySection />
     </main>
   );
 }
