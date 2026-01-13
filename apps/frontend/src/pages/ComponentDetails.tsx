@@ -170,7 +170,7 @@ function Layout(props: LayoutProps) {
                 {price}
               </p>
               <span>
-                {props.data.is_active ? (
+                {props.data.in_stock ? (
                   <div className="flex items-center gap-2">
                     <CheckCircle2Icon className="h-5 w-5 fill-green-400/20 text-green-600 dark:fill-green-400 dark:text-green-900" />
                     <p className="text-green-600 dark:text-green-400">

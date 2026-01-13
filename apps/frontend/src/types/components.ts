@@ -31,6 +31,7 @@ export interface Component {
   price: PriceItem[];
   image_url: string[];
   is_active: boolean;
+  in_stock: boolean;
   created_at: string;
   updated_at: string;
 }

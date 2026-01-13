@@ -1,9 +1,10 @@
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import SideBarLayout from '../layouts/SideBarLayout';
 import { twMerge } from 'tailwind-merge';
 import type { JSX } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { useUIStore } from '../stores/uiStore';
+import { UserCircle2Icon } from 'lucide-react';
 
 export default function NavigationBarMobile({
   routes,
@@ -62,7 +63,15 @@ export default function NavigationBarMobile({
             );
           })}
         </nav>
-        <ThemeToggle className="bg-accent-200/20 dark:bg-accent-400/20 w-fit self-start" />
+        <span className="flex items-center justify-between">
+          <ThemeToggle className="bg-accent-200/20 dark:bg-accent-400/20 w-fit self-start" />
+          <Link
+            to="/auth/signup"
+            className="dark:text-primary-100 text-primary-600 bg-accent-200/20 dark:bg-accent-400/20 backdrop-blur-xs hover:bg-accent-200/50 dark:hover:bg-accent-400/50 cursor-pointer rounded-full p-4"
+          >
+            <UserCircle2Icon className="text-accent-500 dark:text-accent-400" />
+          </Link>
+        </span>
       </div>
     </SideBarLayout>
   );

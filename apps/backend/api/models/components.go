@@ -41,6 +41,7 @@ type Component struct {
 	Price      json.RawMessage `json:"price" gorm:"type:jsonb;default:'[]'"`
 	ImageURL   json.RawMessage `json:"image_url" gorm:"type:jsonb;default:'[]'"`
 	IsActive   bool            `json:"is_active" gorm:"default:true"`
+	InStock    bool            `json:"in_stock" gorm:"default:true"`
 	CreatedAt  time.Time       `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt  time.Time       `json:"updated_at" gorm:"autoUpdateTime"`
 

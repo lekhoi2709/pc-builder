@@ -199,6 +199,7 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 		ImageURL   models.ImageURL                 `json:"image_url"`
 		Specs      map[string]interface{}          `json:"specs"`
 		IsActive   *bool                           `json:"is_active"`
+		InStock    *bool                           `json:"in_stock"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -228,6 +229,9 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 		}
 		if request.IsActive != nil {
 			updates["is_active"] = *request.IsActive
+		}
+		if request.InStock != nil {
+			updates["in_stock"] = *request.InStock
 		}
 
 		if len(request.Price) > 0 {

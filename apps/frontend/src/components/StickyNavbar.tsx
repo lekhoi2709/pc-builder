@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router';
+import { Link, NavLink, useLocation } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 import { useHoverIndicator } from '../hooks/useHoverIndicator';
 import { motion, type Variants } from 'framer-motion';
@@ -6,6 +6,7 @@ import ThemeToggle from './ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../stores/uiStore';
 import type { JSX } from 'react';
+import { UserCircle2Icon } from 'lucide-react';
 
 const StickyNavbar = ({
   className,
@@ -111,7 +112,15 @@ const StickyNavbar = ({
           </NavLink>
         ))}
       </nav>
-      <ThemeToggle />
+      <div className="flex items-center gap-2">
+        <Link
+          to="/auth/signup"
+          className="dark:text-primary-100 text-primary-600 bg-accent-200/20 dark:bg-accent-400/20 backdrop-blur-xs hover:bg-accent-200/50 dark:hover:bg-accent-400/50 cursor-pointer rounded-full p-4"
+        >
+          <UserCircle2Icon className="text-accent-500 dark:text-accent-400" />
+        </Link>
+        <ThemeToggle />
+      </div>
     </motion.header>
   );
 };
