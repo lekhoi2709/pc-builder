@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.18.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint frontend
+        run: pnpm --filter frontend lint
+
+      - name: Check frontend types
+        run: pnpm check-types
+
+      - name: Build frontend
+        run: pnpm build
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: apps/backend/go.mod
+
+      - name: Check backend
+        working-directory: apps/backend
+        run: |
+          go test ./...
+          go build ./...

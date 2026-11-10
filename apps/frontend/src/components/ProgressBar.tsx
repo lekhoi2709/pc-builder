@@ -5,33 +5,28 @@ import { useNavigation } from 'react-router';
 export default function ProgressBar() {
   const navigation = useNavigation();
   const isFetching = useIsFetching();
+  const isBusy = navigation.state === 'loading' || isFetching > 0;
   const [progress, setProgress] = useState(0);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (navigation.state === 'loading' || isFetching > 0) {
-      setVisible(true);
-      setProgress(30);
+    if (!isBusy) return;
 
-      const timer = setInterval(() => {
-        setProgress(old => {
-          // slowly increase progress but never hit 100% until done
-          if (old < 90) return old + Math.random() * 10;
-          return old;
-        });
-      }, 200);
+    const timer = setInterval(() => {
+      setProgress(current => Math.min(90, current + Math.random() * 10));
+    }, 200);
 
-      return () => clearInterval(timer);
-    } else if (navigation.state === 'idle') {
-      // finish the bar smoothly
-      setProgress(100);
-      const doneTimer = setTimeout(() => {
-        setVisible(false);
-        setProgress(0);
-      }, 400);
-      return () => clearTimeout(doneTimer);
-    }
-  }, [navigation.state, isFetching]);
+    return () => clearInterval(timer);
+  }, [isBusy]);
+
+  useEffect(() => {
+    if (isBusy || progress === 0) return;
+
+    const timer = setTimeout(() => setProgress(0), 400);
+    return () => clearTimeout(timer);
+  }, [isBusy, progress]);
+
+  const visible = isBusy || progress > 0;
+  const displayedProgress = isBusy ? Math.max(progress, 30) : 100;
 
   if (!visible) return null;
 
@@ -39,7 +34,7 @@ export default function ProgressBar() {
     <div className="z-9999 fixed left-0 top-0 h-1 w-full rounded-2xl bg-transparent">
       <div
         className="bg-accent-300 dark:bg-accent-200 h-full transition-[width] duration-200 ease-out"
-        style={{ width: `${progress}%` }}
+        style={{ width: `${displayedProgress}%` }}
       />
     </div>
   );

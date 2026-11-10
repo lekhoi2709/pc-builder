@@ -5,31 +5,51 @@ import { DeleteIcon } from './Icons/XIcon';
 import { twMerge } from 'tailwind-merge';
 import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 
-export default function SearchComponentBar({
-  className,
-  inputClassName,
-  placeholder = 'filter.action.search',
-  translation_page = 'component',
-}: {
+type SearchComponentBarProps = {
   className?: string;
   inputClassName?: string;
   placeholder?: string;
   translation_page?: string;
-}) {
+};
+
+type SearchInputProps = SearchComponentBarProps & {
+  initialTerm: string;
+  setFilters: ReturnType<typeof useFiltersFromURL>['setFilters'];
+};
+
+export default function SearchComponentBar(props: SearchComponentBarProps) {
   const { filters, setFilters } = useFiltersFromURL();
-  const [term, setTerm] = useState(filters.search ?? '');
+  const initialTerm = filters.search ?? '';
+
+  return (
+    <SearchInput
+      key={initialTerm}
+      {...props}
+      initialTerm={initialTerm}
+      setFilters={setFilters}
+    />
+  );
+}
+
+function SearchInput({
+  className,
+  inputClassName,
+  placeholder = 'filter.action.search',
+  translation_page = 'component',
+  initialTerm,
+  setFilters,
+}: SearchInputProps) {
+  const [term, setTerm] = useState(initialTerm);
   const { t } = useTranslation(translation_page);
 
   useEffect(() => {
-    setTerm(filters.search ?? '');
-  }, [filters.search]);
+    if (term === initialTerm) return;
 
-  useEffect(() => {
-    const debounce = setTimeout(() => {
+    const debounce = window.setTimeout(() => {
       setFilters({ search: term || undefined });
     }, 400);
-    return () => clearTimeout(debounce);
-  }, [term, setFilters]);
+    return () => window.clearTimeout(debounce);
+  }, [initialTerm, setFilters, term]);
 
   const clearSearch = () => {
     setTerm('');
