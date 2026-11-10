@@ -1,27 +1,30 @@
 import { useEffect, useState } from 'react';
+import { useMediaQuery } from './useMediaQuery';
 
 export type Theme = 'Light' | 'Dark' | 'System';
 
+function readStoredTheme(): Theme {
+  const storedTheme = localStorage.getItem('theme');
+  return storedTheme === 'Light' ||
+    storedTheme === 'Dark' ||
+    storedTheme === 'System'
+    ? storedTheme
+    : 'System';
+}
+
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>('Light');
+  const [theme, setTheme] = useState<Theme>(readStoredTheme);
+  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+  const isDark = theme === 'Dark' || (theme === 'System' && prefersDark);
 
   const toggleTheme = (theme: Theme) => {
     setTheme(theme);
-    document.documentElement.classList.toggle('dark', theme === 'Dark');
     localStorage.setItem('theme', theme);
   };
 
   useEffect(() => {
-    const storedTheme: Theme =
-      (localStorage.getItem('theme') as Theme) || 'System';
-    setTheme(storedTheme);
-    document.documentElement.classList.toggle(
-      'dark',
-      storedTheme === 'Dark' ||
-        (!('theme' in localStorage) &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches)
-    );
-  }, [theme]);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   return {
     toggleTheme,

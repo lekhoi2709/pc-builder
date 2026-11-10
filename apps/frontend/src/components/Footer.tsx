@@ -1,10 +1,9 @@
 import { Link, NavLink } from 'react-router';
-import { Mail, Github } from 'lucide-react';
+import { Mail, UserSearchIcon } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { motion, type Variants } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { GetHealth } from '../services/api';
-import { useEffect, useState } from 'react';
 import { useUIStore } from '../stores/uiStore';
 
 const ServerStatus = {
@@ -32,19 +31,11 @@ export default function Footer({
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const [serverStatus, setServerStatus] = useState<ServerStatus>(
-    ServerStatus.DOWN
-  );
-
-  useEffect(() => {
-    if (healthQuery.isLoading) {
-      setServerStatus(ServerStatus.CHECKING);
-    } else if (healthQuery.isSuccess) {
-      setServerStatus(ServerStatus.OPERATIONAL);
-    } else if (healthQuery.isError) {
-      setServerStatus(ServerStatus.DOWN);
-    }
-  }, [healthQuery.isLoading, healthQuery.isSuccess, healthQuery.isError]);
+  const serverStatus: ServerStatus = healthQuery.isLoading
+    ? ServerStatus.CHECKING
+    : healthQuery.isSuccess
+      ? ServerStatus.OPERATIONAL
+      : ServerStatus.DOWN;
 
   const footerSections = [
     {
@@ -85,7 +76,7 @@ export default function Footer({
     {
       name: 'GitHub',
       href: 'https://github.com/lekhoi2709/pc-builder',
-      icon: <Github className="h-5 w-5" />,
+      icon: <UserSearchIcon className="h-5 w-5" />,
     },
     {
       name: 'Email',
