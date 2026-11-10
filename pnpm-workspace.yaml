@@ -2,8 +2,6 @@ packages:
   - apps/*
   - packages/*
 
-ignoredBuiltDependencies:
-  - '@vercel/speed-insights'
-
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  "@vercel/speed-insights": false
+  esbuild: true
