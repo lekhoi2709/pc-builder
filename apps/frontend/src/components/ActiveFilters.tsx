@@ -93,10 +93,10 @@ export default function ActiveFilters({
   if (activeFilters.length === 0)
     return (
       isHavingSort && (
-        <div className="font-saira flex w-full justify-end">
+        <div className="flex w-full justify-end">
           <div className="flex items-center gap-2 self-end">
             <SortingIndicator t={t} content={'default'} />
-            <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+            <div className="h-5 w-fit border-l border-[#aab6a6] dark:border-[#506353]" />
             <SortingIndicator
               t={t}
               content="price"
@@ -130,7 +130,7 @@ export default function ActiveFilters({
   };
 
   return (
-    <div className="font-saira mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
+    <div className="mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
       <div className="flex flex-wrap items-center gap-2">
         {activeFilters.map((filter, index) => {
           const key = `${filter.key}-${filter.value}-${index}`;
@@ -139,7 +139,7 @@ export default function ActiveFilters({
             return (
               <span
                 key={key}
-                className="bg-accent-200 dark:bg-accent-400/80 prevent-select w-fit! line-clamp-1 flex cursor-pointer items-center justify-between break-keep rounded px-2 py-1"
+                className="inline-flex min-h-8 w-fit items-center gap-2 border border-[#bdc9b5] bg-[#e5f3c9] px-2.5 py-1 text-xs text-[#263b16] dark:border-[#526354] dark:bg-[#314437] dark:text-[#edf3e7]"
               >
                 <p>
                   {t(`filter.active.active_${filter.key.split('_')[0]}`)}
@@ -149,7 +149,7 @@ export default function ActiveFilters({
                     'currency'
                   )}
                 </p>
-                <XIcon onClick={() => removeFilter(filter.key)} />
+                <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key)}><XIcon className="m-0 h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
               </span>
             );
           }
@@ -157,20 +157,18 @@ export default function ActiveFilters({
           return (
             <span
               key={key}
-              className="bg-accent-200 dark:bg-accent-400/80 prevent-select line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1"
+              className="inline-flex min-h-8 w-fit items-center gap-2 border border-[#bdc9b5] bg-[#e5f3c9] px-2.5 py-1 text-xs text-[#263b16] dark:border-[#526354] dark:bg-[#314437] dark:text-[#edf3e7]"
             >
               <p className="capitalize">
                 {t(`filter.active.active_${filter.key.replace('_id', '')}`)}
                 {filter.display || filter.value}
               </p>
-              <XIcon
-                onClick={() => removeFilter(filter.key, String(filter.value))}
-              />
+              <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key, String(filter.value))}><XIcon className="m-0 h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
             </span>
           );
         })}
         <button
-          className="cursor-pointer rounded border border-red-200/50 bg-red-200/50 px-4 py-2 text-xs text-red-600 transition-colors duration-300 ease-in-out hover:border-red-400 hover:bg-red-300/50 hover:underline xl:ml-2 xl:border-0 xl:bg-transparent xl:p-0 xl:hover:bg-transparent dark:border-red-500 dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-400/50 xl:dark:bg-transparent xl:dark:hover:bg-transparent"
+          className="min-h-11 cursor-pointer px-3 py-1 text-xs text-[#8d3e35] transition-colors hover:bg-[#f8eeec] hover:underline dark:text-[#f2bdb4] dark:hover:bg-[#4a3833]"
           onClick={clearFilters}
         >
           {t('filter.action.clear')}
@@ -185,7 +183,7 @@ export default function ActiveFilters({
               isSortingFilter: true,
             })}
           />
-          <div className="border-primary-950 dark:border-primary-50 h-5 w-fit border-l" />
+      <div className="h-5 w-fit border-l border-[#aab6a6] dark:border-[#506353]" />
           <SortingIndicator
             t={t}
             content="price"
@@ -228,11 +226,13 @@ function SortingIndicator({
   const isAscending = filters.sort_order === 'asc';
 
   return (
-    <span
+    <button
+      type="button"
+      aria-pressed={isActive}
       className={twMerge(
-        'hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 flex cursor-pointer items-center gap-1 rounded border border-transparent p-2 transition-colors duration-300 ease-in-out',
+        'flex min-h-11 cursor-pointer items-center gap-1 border border-transparent px-3 py-2 text-xs text-[#536056] transition-colors hover:border-[#658338] hover:bg-white dark:text-[#b5c5b6] dark:hover:border-[#d1ff52] dark:hover:bg-[#314437]',
         isActive &&
-          'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20',
+          'border-[#8da881] bg-[#e5f3c9] text-[#3d5b10] dark:border-[#d1ff52] dark:bg-[#314437] dark:text-[#d1ff52]',
         containerCN
       )}
       onClick={() => {
@@ -268,6 +268,6 @@ function SortingIndicator({
           )}
         </>
       )}
-    </span>
+    </button>
   );
 }

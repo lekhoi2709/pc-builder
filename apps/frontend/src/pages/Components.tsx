@@ -8,17 +8,18 @@ import { useParams } from 'react-router';
 import ComponentFilter from '../components/ComponentFilter';
 import type { ComponentResponse, PaginationMeta } from '../types/components';
 import { twMerge } from 'tailwind-merge';
-import { motion, type Variants } from 'framer-motion';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
-import { Trans, useTranslation } from 'react-i18next';
-import { LeftArrowIcon, RightArrowIcon } from '../components/Icons/ArrowIcon';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft, ArrowRight, SlidersHorizontal } from 'lucide-react';
 import { CardSkeleton } from '../components/Skeleton';
 import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 import { useUIStore } from '../stores/uiStore';
+import SearchComponentBar from '../components/SearchComponentBar';
 
 export default function Components() {
   const { lang } = useParams();
+  const { t } = useTranslation('component');
   const { filters, pagination } = useFiltersFromURL();
   const queryClient = useQueryClient();
   const { pageSize } = useResponsivePagination();
@@ -60,32 +61,11 @@ export default function Components() {
     }
   }, [componentQuery.data, filters, pagination, lang, queryClient]);
 
-  const listVariants: Variants = {
-    collapse: {
-      paddingLeft: 'var(--padding-left-from)',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-    expand: {
-      paddingLeft: 'var(--padding-left-to)',
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-  };
-
   if (componentQuery.isLoading && !componentQuery.data) {
     return (
       <ComponentPageLayout
         props={{
           data: undefined,
-          listVariants: listVariants,
         }}
       >
         {Array.from({ length: 6 }).map((_, i) => (
@@ -100,12 +80,11 @@ export default function Components() {
       <ComponentPageLayout
         props={{
           data: undefined,
-          listVariants: listVariants,
         }}
       >
-        <div className="z-0 flex h-full w-full flex-col gap-4 p-8 text-center text-red-500">
-          <p className="text-lg">Error loading components</p>
-          <p className="text-sm">{componentQuery.error?.message}</p>
+        <div className="z-0 col-span-full flex min-h-80 w-full flex-col items-center justify-center gap-4 border border-[#cfaaa4] bg-[#fff9f5] p-8 text-center text-[#94483f] dark:bg-[#302722] dark:text-[#f2bdb4]">
+          <p className="text-lg font-medium">{t('page.load_error')}</p>
+          <button type="button" onClick={() => componentQuery.refetch()} className="mt-2 min-h-11 bg-[#111c1a] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a] dark:hover:bg-[#e1ff91]">{t('page.retry')}</button>
         </div>
       </ComponentPageLayout>
     );
@@ -117,14 +96,13 @@ export default function Components() {
     <ComponentPageLayout
       props={{
         data: data,
-        listVariants: listVariants,
       }}
     >
-      {data && data.components
+      {data && data.components.length
         ? data.components.map(component => (
             <ComponentCard key={component.id} component={component} />
           ))
-        : 'No Component Found'}
+        : <p className="col-span-full border border-dashed border-[#aab6a6] bg-white p-10 text-center text-sm text-[#536056] dark:border-[#506353] dark:bg-[#243229] dark:text-[#b5c5b6]">{t('page.empty')}</p>}
     </ComponentPageLayout>
   );
 }
@@ -192,7 +170,7 @@ const renderPageNumbers = (
     page === '...' ? (
       <span
         key={`ellipsis-${idx}`}
-        className="text-primary-600 dark:text-primary-100 px-2"
+        className="px-2 text-[#718188]"
       >
         ...
       </span>
@@ -203,10 +181,10 @@ const renderPageNumbers = (
           setPagination({ current_page: page as number });
         }}
         className={twMerge(
-          'text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border border-transparent px-4 py-2 transition-all duration-300 ease-in-out hover:scale-105',
+          'min-h-11 min-w-11 cursor-pointer border px-4 py-2 font-mono text-sm transition-colors hover:border-[#111c1a] hover:bg-[#e1f2b5] dark:hover:border-[#d1ff52] dark:hover:bg-[#314437]',
           currentPage === page
-            ? 'bg-accent-200 dark:bg-accent-400/80 hover:bg-accent-200 hover:dark:bg-accent-400/80 hover:border-transparent'
-            : 'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20'
+            ? 'border-[#111c1a] bg-[#111c1a] text-[#d1ff52] dark:border-[#d1ff52] dark:bg-[#314437]'
+            : 'border-[#bac6b5] bg-transparent text-[#111c1a] dark:border-[#506353] dark:text-[#edf3e7]'
         )}
       >
         {page}
@@ -217,7 +195,6 @@ const renderPageNumbers = (
 
 type ComponentPageLayoutProps = {
   data?: ComponentResponse;
-  listVariants?: Variants;
 };
 
 const ComponentPageLayout = memo(
@@ -238,62 +215,73 @@ const ComponentPageLayout = memo(
 
     return (
       <main
-        className={twMerge(
-          'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex min-h-screen w-screen flex-col items-center overflow-y-auto bg-transparent [--padding-left-from:2rem] [--padding-left-to:2rem] md:block xl:[--padding-left-to:22.5%]',
-          isSideBarOpen
-            ? 'overflow-y-hidden xl:h-full xl:overflow-y-auto'
-            : 'overflow-y-auto'
-        )}
+        id="top"
+        className="z-0 min-h-screen w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]"
       >
         <ComponentFilter
           data={props.data}
           isSideBarOpen={isDesktop ? isSideBarOpen : isFilterOpen}
         />
-        <motion.div
+        <div
           className={twMerge(
-            'z-0 flex h-full min-h-screen w-screen flex-col gap-4 p-8 xl:pt-28'
+            'z-0 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-7 px-5 pb-16 pt-28 sm:px-8 xl:pt-16 xl:transition-[padding] xl:duration-300 xl:ease-out motion-reduce:transition-none',
+            isDesktop && isSideBarOpen && 'xl:pl-[22.5%]'
           )}
-          variants={props.listVariants}
-          animate={isSideBarOpen ? 'expand' : 'collapse'}
-          initial="collapse"
         >
-          <span className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">{t('page.title')}</h1>
-            <SideBarButton
-              isSideBarOpen={isSideBarOpen}
-              toggleSidebar={toggleSidebar}
-            />
-          </span>
+          <header className="flex flex-col gap-6 border-b border-[#aab6a6] pb-9 dark:border-[#506353] sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-5 font-mono text-[11px] uppercase tracking-[.22em] text-[#658338] dark:text-[#d1ff52]">01 / {t('page.eyebrow')}</p>
+              <h1 className="font-display text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">{t('page.title')}</h1>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-[#536056] dark:text-[#b5c5b6] sm:text-base">{t('page.description')}</p>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="hidden font-mono text-xs text-[#536056] dark:text-[#b5c5b6] sm:inline">
+                {props.data?.summary.total_components ?? '—'} {t('page.count_label')}
+              </span>
+              <SideBarButton
+                isSideBarOpen={isSideBarOpen}
+                toggleSidebar={toggleSidebar}
+                disabled={!props.data}
+                className="hidden border-[#111c1a] bg-[#d1ff52] text-[#111c1a] xl:flex"
+              />
+            </div>
+          </header>
           <div className="flex flex-col gap-4">
+            <div className="max-w-2xl">
+              <SearchComponentBar
+                className="border border-[#aab6a6] bg-white dark:border-[#506353] dark:bg-[#243229] dark:text-[#edf3e7]"
+                inputClassName="h-14 rounded-none border-0 bg-transparent px-4 text-sm dark:text-[#edf3e7] dark:placeholder:text-[#aabdaf]"
+              />
+            </div>
             <button
               onClick={toggleFilter}
-              className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 w-full cursor-pointer self-end rounded border px-4 py-2 transition-colors duration-300 ease-in-out xl:hidden"
+              type="button"
+              aria-expanded={isFilterOpen}
+              aria-controls="filter-panel"
+              disabled={!props.data}
+              className="inline-flex h-11 w-fit cursor-pointer items-center gap-2 self-end border border-[#111c1a] bg-[#d1ff52] px-5 text-sm font-semibold text-[#111c1a] transition-colors hover:bg-[#e1ff91] disabled:cursor-not-allowed disabled:opacity-45 xl:hidden"
             >
-              {t('filter.title')}
+              <SlidersHorizontal className="h-4 w-4" strokeWidth={1.8} />{t('filter.title')}
             </button>
-            <ActiveFilters />
+            {props.data ? <ActiveFilters /> : null}
           </div>
-          <section
-            className={twMerge(
-              'flex h-full w-full items-center justify-center xl:justify-start',
-              isSideBarOpen ? 'xl:justify-start' : ''
-            )}
-          >
-            <div className="flex w-full flex-wrap justify-center gap-8 xl:justify-start">
+          <section className="w-full" aria-labelledby="component-results-title">
+            <div className="mb-4 flex items-baseline justify-between gap-3">
+              <h2 id="component-results-title" className="font-mono text-[11px] uppercase tracking-[.2em] text-[#536056] dark:text-[#b5c5b6]">{t('page.results_title')}</h2>
+              <span className="font-mono text-xs text-[#536056] dark:text-[#b5c5b6] sm:hidden">
+                {props.data?.summary.total_components ?? '—'} {t('page.count_label')}
+              </span>
+            </div>
+            <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {children}
             </div>
           </section>
           <section className="mt-auto w-full self-center">
             {props.data && props.data.pagination && (
               <div className="w-full">
-                <Trans
-                  t={t}
-                  i18nKey={'action.pagination.page'}
-                  className="text-sm text-gray-500"
-                >
-                  Page {{ page: props.data.pagination.current_page }} of{' '}
-                  {{ total: props.data.pagination.total_pages }}
-                </Trans>
+                <p className="text-sm text-[#536056] dark:text-[#b5c5b6]">
+                  {t('action.pagination.page')} {props.data.pagination.current_page} {t('action.pagination.of')} {props.data.pagination.total_pages}
+                </p>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <button
                     onClick={() => {
@@ -303,9 +291,10 @@ const ComponentPageLayout = memo(
                       });
                     }}
                     disabled={pagination.current_page <= 1}
-                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
+                    aria-label={t('action.pagination.previous')}
+                    className="h-11 w-11 cursor-pointer border border-[#bac6b5] bg-white text-[#111c1a] transition-colors hover:border-[#658338] hover:bg-[#e1f2b5] disabled:cursor-not-allowed disabled:opacity-40 dark:border-[#506353] dark:bg-[#243229] dark:text-[#edf3e7] dark:hover:border-[#d1ff52] dark:hover:bg-[#314437]"
                   >
-                    <LeftArrowIcon className="inline xl:h-6 xl:w-6" />
+                    <ArrowLeft className="mx-auto h-4 w-4" strokeWidth={1.8} />
                   </button>
                   <Pagination
                     totalPages={props.data.pagination.total_pages!}
@@ -327,15 +316,16 @@ const ComponentPageLayout = memo(
                       pagination.current_page >=
                       props.data.pagination.total_pages!
                     }
-                    className="border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded border px-4 py-2 transition-colors duration-300 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-transparent"
+                    aria-label={t('action.pagination.next')}
+                    className="h-11 w-11 cursor-pointer border border-[#bac6b5] bg-white text-[#111c1a] transition-colors hover:border-[#658338] hover:bg-[#e1f2b5] disabled:cursor-not-allowed disabled:opacity-40 dark:border-[#506353] dark:bg-[#243229] dark:text-[#edf3e7] dark:hover:border-[#d1ff52] dark:hover:bg-[#314437]"
                   >
-                    <RightArrowIcon className="inline xl:h-6 xl:w-6" />
+                    <ArrowRight className="mx-auto h-4 w-4" strokeWidth={1.8} />
                   </button>
                 </div>
               </div>
             )}
           </section>
-        </motion.div>
+        </div>
       </main>
     );
   }

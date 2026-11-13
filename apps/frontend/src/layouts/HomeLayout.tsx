@@ -3,8 +3,8 @@ import StickyNavbar from '../components/StickyNavbar';
 
 export default function HomeLayout() {
   return (
-    <main className="max-w-screen dark:bg-light-dark dark:text-primary-50 text-primary-900 relative h-full min-h-screen w-screen bg-transparent transition-colors duration-500 ease-in-out">
-      <StickyNavbar className="fixed right-4 top-4 z-50 hidden h-fit xl:flex" />
+    <main className="relative min-h-screen w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]">
+      <StickyNavbar className="sticky top-0 hidden xl:block" />
       <Outlet />
     </main>
   );

@@ -1,6 +1,21 @@
 {
   "page": {
-    "title": "Sản phẩm",
+    "title": "Linh kiện PC",
+    "meta_title": "Duyệt danh mục linh kiện PC | PC Builder",
+    "meta_description": "Duyệt linh kiện PC và thu hẹp danh sách theo loại, thương hiệu, giá và thông số hiện có.",
+    "eyebrow": "Danh mục linh kiện PC",
+    "description": "Duyệt linh kiện và thu hẹp danh sách bằng các bộ lọc hiện có trong danh mục.",
+    "count_label": "linh kiện đang hiển thị",
+    "results_title": "Duyệt danh mục",
+    "empty": "Không có linh kiện phù hợp với bộ lọc này. Hãy thử thay đổi hoặc xóa bộ lọc.",
+    "load_error": "Không thể tải danh mục linh kiện.",
+    "retry": "Thử tải lại",
+    "detail_load_error": "Không thể tải thông tin linh kiện này.",
+    "detail_eyebrow": "Thông tin linh kiện",
+    "back_to_catalog": "Quay lại danh mục",
+    "specifications": "Thông số kỹ thuật",
+    "images": "Ảnh sản phẩm",
+    "image": "Ảnh",
     "in_stock": "Còn hàng",
     "out_of_stock": "Hết hàng"
   },
@@ -22,13 +37,18 @@
     },
     "action": {
       "search": "Tìm kiếm...",
+      "clear_search": "Xóa từ khóa tìm kiếm",
       "price": "Áp dụng giá mới",
-      "clear": "Xóa hết"
+      "clear": "Xóa hết",
+      "remove": "Xóa bộ lọc"
     }
   },
   "action": {
     "pagination": {
-      "page": "Trang {{page}} trên {{total}}"
+      "page": "Trang",
+      "of": "trên",
+      "previous": "Trang trước",
+      "next": "Trang tiếp theo"
     },
     "sorting": {
       "sorted_default": "Tên sản phẩm",

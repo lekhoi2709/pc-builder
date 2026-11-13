@@ -1,23 +1,29 @@
 {
   "page": {
-    "search_placeholder": "Tìm kiếm sản phẩm, hoặc cấu hình (Ví dụ: 'i9-13900K, 64GB RAM')...",
-    "stats": [
-      { "value": 500, "suffix": "+", "label": "Premium Components" },
-      {
-        "value": 24,
-        "suffix": "h",
-        "label": "Expert Support"
-      },
-      {
-        "value": 3,
-        "suffix": "yr",
-        "label": "Warranty Standard"
-      },
-      {
-        "value": 100,
-        "suffix": "%",
-        "label": "Quality Assurance"
-      }
-    ]
+    "meta_title": "Danh mục linh kiện PC cho bộ máy tiếp theo | PC Builder",
+    "meta_description": "Tìm linh kiện PC và thu hẹp danh mục theo loại, thương hiệu, giá và thông số hiện có.",
+    "eyebrow": "Chọn linh kiện PC dễ dàng hơn",
+    "headline": "Chọn đúng linh kiện cho bộ PC của bạn",
+    "desc": "Duyệt danh mục linh kiện, xem giá đang được liệt kê và mở thông tin sản phẩm trước khi quyết định mua.",
+    "search_placeholder": "Tìm linh kiện theo tên…",
+    "search_label": "Bạn đang tìm linh kiện nào?",
+    "search_action": "Tìm trong danh mục",
+    "primary_btn": "Duyệt linh kiện",
+    "fact": "Lọc theo loại, thương hiệu, giá và thông số.",
+    "preview_title": "Danh mục linh kiện",
+    "preview_label": "Giao diện danh mục",
+    "preview_unavailable": "Hiện chưa thể tải danh mục.",
+    "preview_image_alt": "Bộ PC với các linh kiện phát sáng",
+    "preview_empty": "Chưa có linh kiện được liệt kê.",
+    "section_eyebrow": "Từ tìm kiếm đến thông tin sản phẩm",
+    "section_title": "Dễ dàng chọn ra những linh kiện cần xem.",
+    "section_desc": "Bắt đầu với loại linh kiện bạn cần, thu hẹp kết quả bằng bộ lọc hiện có, rồi mở sản phẩm để xem thông tin đang được liệt kê.",
+    "steps": [
+      { "title": "Tìm trong danh mục", "desc": "Tìm linh kiện theo tên hoặc từ khóa bạn đã biết." },
+      { "title": "Thu hẹp kết quả", "desc": "Dùng bộ lọc loại linh kiện, thương hiệu, giá và thông số được hỗ trợ." },
+      { "title": "Xem thông tin sản phẩm", "desc": "Mở trang linh kiện để xem thông tin và thông số được liệt kê." }
+    ],
+    "close_eyebrow": "Bắt đầu từ linh kiện",
+    "close_title": "Bộ PC tiếp theo bắt đầu từ danh sách linh kiện phù hợp."
   }
 }

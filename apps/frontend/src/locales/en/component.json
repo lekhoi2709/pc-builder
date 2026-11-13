@@ -1,6 +1,21 @@
 {
   "page": {
     "title": "Components",
+    "meta_title": "Browse PC components | PC Builder",
+    "meta_description": "Browse PC components and narrow the list using category, brand, price, and available specifications.",
+    "eyebrow": "PC parts catalog",
+    "description": "Browse components and narrow the list using the filters available in the catalog.",
+    "count_label": "listed components",
+    "results_title": "Browse the catalog",
+    "empty": "No components match these filters. Try changing or clearing a filter.",
+    "load_error": "The component catalog could not be loaded.",
+    "retry": "Try again",
+    "detail_load_error": "This component could not be loaded.",
+    "detail_eyebrow": "Component details",
+    "back_to_catalog": "Back to catalog",
+    "specifications": "Specifications",
+    "images": "Product images",
+    "image": "Image",
     "in_stock": "In stock",
     "out_of_stock": "Out of stock"
   },
@@ -22,13 +37,18 @@
     },
     "action": {
       "search": "Search...",
+      "clear_search": "Clear search",
       "price": "Apply Price",
-      "clear": "Clear All"
+      "clear": "Clear All",
+      "remove": "Remove filter"
     }
   },
   "action": {
     "pagination": {
-      "page": "Page {{page}} of {{total}}"
+      "page": "Page",
+      "of": "of",
+      "previous": "Previous page",
+      "next": "Next page"
     },
     "sorting": {
       "sorted_default": "Default Sorting",

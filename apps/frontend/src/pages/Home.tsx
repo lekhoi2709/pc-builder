@@ -1,76 +1,67 @@
-import { twMerge } from 'tailwind-merge';
-import SideBarButton from '../components/SideBarButton';
-import HeroSection from '../components/Home/HeroSection';
-import SearchComponentBar from '../components/SearchComponentBar';
+import { ArrowUpRight, SearchIcon, SlidersHorizontalIcon, ScanSearchIcon } from 'lucide-react';
+import { NavLink, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import AnimatedCounter from '../components/Home/AnimatedCounter';
-import WorkflowSection from '../components/Home/WorkflowSection';
-import GallerySection from '../components/Home/GallerySection';
-import { useUIStore } from '../stores/uiStore';
-import BuilderSection from '../components/Home/BuilderSection';
-import CommunitySection from '../components/Home/CommunitySection';
+import HeroSection from '../components/Home/HeroSection';
+
+const steps = [SearchIcon, SlidersHorizontalIcon, ScanSearchIcon];
 
 export default function Home() {
-  const { isSideBarOpen, toggleSidebar } = useUIStore();
+  const { lang = 'vn' } = useParams();
   const { t } = useTranslation('home');
-  const stats = t('page.stats', { returnObjects: true });
 
   return (
-    <main
-      className={twMerge(
-        'font-saira max-w-screen text-primary-600 dark:text-primary-100 z-0 flex h-full min-h-screen w-screen flex-col items-center bg-transparent p-8 md:px-16'
-      )}
-    >
-      <section className="flex w-full items-center justify-between xl:hidden">
-        <span className="flex items-center gap-2">
-          <img
-            src={'/logo/pc-builder-logo-transparent.png'}
-            className="prevent-select w-10 object-contain"
-            loading="lazy"
-            alt="PC Builder"
-          />
-          <p className="font-saira text-accent-400">PC Builder</p>
-        </span>
-        <SideBarButton
-          isSideBarOpen={isSideBarOpen}
-          toggleSidebar={toggleSidebar}
-          isNavbar={true}
-        />
-      </section>
+    <main id="top" className="w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]">
       <HeroSection />
-      <section className="z-0 flex w-full flex-1 flex-col items-center justify-center gap-4 lg:py-8">
-        <SearchComponentBar
-          translation_page="home"
-          placeholder="page.search_placeholder"
-          inputClassName="py-6 rounded-md bg-gray-200 text-ellipsis"
-        />
-      </section>
-      <section className="grid w-full grid-cols-2 gap-6 py-8 text-center md:grid-cols-4 md:text-left">
-        {Array.isArray(stats) &&
-          stats.map(item => (
-            <div
-              key={item.label}
-              className="flex flex-col items-center md:items-start"
-            >
-              <AnimatedCounter
-                value={item.value}
-                suffix={item.suffix}
-                damping={30}
-                className="text-dark text-2xl will-change-transform lg:text-4xl dark:text-white"
-              />
-              <p className="text-gray-400 lg:text-lg dark:text-gray-500">
-                {item.label}
-              </p>
+
+      <section
+        className="px-5 py-24 md:px-10 lg:px-16 lg:py-32"
+        data-moment="iris-opens"
+        data-moment-opts='{"from":"base"}'
+      >
+        <div className="mx-auto max-w-[1600px]">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-6">
+              <p className="mb-5 font-mono text-[11px] uppercase tracking-[.2em] text-[#5e8121] dark:text-[#d1ff52]">02 / {t('page.section_eyebrow')}</p>
+              <h2 className="max-w-2xl font-display text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl">
+                {t('page.section_title')}
+              </h2>
             </div>
-          ))}
+            <p className="max-w-xl text-base leading-8 text-[#536056] dark:text-[#b5c5b6] lg:col-span-5 lg:col-start-8">
+              {t('page.section_desc')}
+            </p>
+          </div>
+
+          <div className="mt-20 grid border-t border-[#a9b5a4] dark:border-[#506353] md:grid-cols-3">
+            {steps.map((Icon, index) => (
+              <article key={index} className="group min-h-72 border-b border-[#a9b5a4] px-1 py-7 dark:border-[#506353] md:border-b-0 md:border-r md:px-8 first:md:pl-0 last:md:border-r-0">
+                <div className="flex items-start justify-between"><p className="font-mono text-xs text-[#668033] dark:text-[#d1ff52]">0{index + 1}</p><Icon className="h-7 w-7 text-[#658338] dark:text-[#d1ff52]" strokeWidth={1.4} /></div>
+                <h3 className="mt-16 font-display text-2xl font-semibold tracking-[-0.04em]">{t(`page.steps.${index}.title`)}</h3>
+                <p className="mt-4 max-w-sm text-sm leading-7 text-[#536056] dark:text-[#b5c5b6]">
+                  {t(`page.steps.${index}.desc`)}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
-      <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
-      <WorkflowSection />
-      <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
-      <GallerySection />
-      <BuilderSection />
-      <span className="my-8 h-0.5 w-full bg-gray-200 dark:bg-gray-800" />
-      <CommunitySection />
+
+      <section className="flex min-h-[65svh] items-center bg-[#d1ff52] px-5 py-24 text-[#111c1a] md:px-10 lg:px-16">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+          <div>
+            <p className="mb-5 font-mono text-[11px] uppercase tracking-[.2em]">03 / {t('page.close_eyebrow')}</p>
+            <h2 className="max-w-4xl font-display text-4xl font-semibold leading-[1.06] tracking-[-0.065em] sm:text-6xl">
+              {t('page.close_title')}
+            </h2>
+          </div>
+          <NavLink
+            className="group inline-flex h-14 shrink-0 items-center gap-6 bg-[#111c1a] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#34483c]"
+            to={`/${lang}/components`}
+          >
+            {t('page.primary_btn')}
+            <ArrowUpRight className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+          </NavLink>
+        </div>
+      </section>
     </main>
   );
 }

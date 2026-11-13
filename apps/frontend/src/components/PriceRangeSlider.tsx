@@ -75,11 +75,29 @@ const PriceRangeSlider = memo(
     if (currency === 'VND') {
       step = 100000;
     }
+    step = Math.min(step, Math.max(1, max - min));
 
     const sliderRef = useRef<HTMLDivElement>(null);
 
     const getPercentage = (value: number) =>
-      ((value - min) / (max - min)) * 100;
+      max > min ? ((value - min) / (max - min)) * 100 : 0;
+
+    const handleSliderKey = (type: 'min' | 'max') => (event: React.KeyboardEvent) => {
+      const direction = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowDown' ? -1 : 0;
+      if (!direction) return;
+      event.preventDefault();
+      if (type === 'min') {
+        const value = Math.max(min, Math.min(minValue + direction * step, maxValue - step));
+        setMinValue(value);
+        setMinInputValue(String(value));
+        onChange?.(value, maxValue);
+      } else {
+        const value = Math.min(max, Math.max(maxValue + direction * step, minValue + step));
+        setMaxValue(value);
+        setMaxInputValue(String(value));
+        onChange?.(minValue, value);
+      }
+    };
 
     const calculateValueFromPosition = useCallback(
       (clientX: number) => {
@@ -288,11 +306,11 @@ const PriceRangeSlider = memo(
         <div className="relative">
           <div
             ref={sliderRef}
-            className="bg-accent-600/20 dark:bg-accent-400/20 relative h-2 cursor-pointer rounded-full"
+            className="relative h-2 cursor-pointer rounded-full bg-[#d6dfd0] dark:bg-[#526354]"
           >
             {/* Range Track */}
             <div
-              className="bg-accent-200 dark:bg-accent-400/80 absolute h-2 rounded-full"
+              className="absolute h-2 rounded-full bg-[#7caa18]"
               style={{
                 left: `${minPercentage}%`,
                 right: `${100 - maxPercentage}%`,
@@ -301,7 +319,14 @@ const PriceRangeSlider = memo(
 
             {/* Min Handle */}
             <div
-              className={`border-primary-500 absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform cursor-grab rounded-full border-2 bg-white shadow-md transition-shadow hover:shadow-lg ${
+              role="slider"
+              tabIndex={max > min ? 0 : -1}
+              aria-label={t('filter.price.min')}
+              aria-valuemin={min}
+              aria-valuemax={Math.max(min, maxValue - step)}
+              aria-valuenow={minValue}
+              onKeyDown={handleSliderKey('min')}
+              className={`absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform cursor-grab rounded-full border-2 border-[#3d5b10] bg-white shadow-md transition-shadow hover:shadow-lg ${
                 isDragging === 'min' ? 'scale-110 cursor-grabbing' : ''
               }`}
               style={{ left: `${minPercentage}%` }}
@@ -311,7 +336,14 @@ const PriceRangeSlider = memo(
 
             {/* Max Handle */}
             <div
-              className={`border-primary-500 absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform cursor-grab rounded-full border-2 bg-white shadow-md transition-shadow hover:shadow-lg ${
+              role="slider"
+              tabIndex={max > min ? 0 : -1}
+              aria-label={t('filter.price.max')}
+              aria-valuemin={Math.min(max, minValue + step)}
+              aria-valuemax={max}
+              aria-valuenow={maxValue}
+              onKeyDown={handleSliderKey('max')}
+              className={`absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform cursor-grab rounded-full border-2 border-[#3d5b10] bg-white shadow-md transition-shadow hover:shadow-lg ${
                 isDragging === 'max' ? 'scale-110 cursor-grabbing' : ''
               }`}
               style={{ left: `${maxPercentage}%` }}
@@ -325,10 +357,11 @@ const PriceRangeSlider = memo(
         <div className="flex w-full items-center justify-between gap-2">
           <div className="flex-1">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-[#536056] dark:text-[#b5c5b6]">
                 {currencyToSymbol[currency] || currency}
               </span>
               <input
+                aria-label={t('filter.price.min')}
                 type="text"
                 value={priceFormatter(
                   parseInt(minInputValue) || 0,
@@ -336,7 +369,7 @@ const PriceRangeSlider = memo(
                   'decimal'
                 )}
                 onChange={e => handleInputChange('min', e.target.value)}
-                className="border-light-elevated dark:border-dark-elevated bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md border py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
+                className="w-full border border-[#bfcbb8] bg-white py-2 pl-8 pr-3 focus:border-[#658338] focus:outline-none dark:border-[#526354] dark:bg-[#314437] dark:text-[#edf3e7] dark:focus:border-[#d1ff52]"
                 min={min}
                 max={maxValue - step}
                 placeholder={String(min)}
@@ -349,10 +382,11 @@ const PriceRangeSlider = memo(
           <p className="text-2xl">-</p>
           <div className="flex-1">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-[#536056] dark:text-[#b5c5b6]">
                 {currencyToSymbol[currency] || currency}
               </span>
               <input
+                aria-label={t('filter.price.max')}
                 type="text"
                 value={priceFormatter(
                   parseInt(maxInputValue) || 0,
@@ -360,7 +394,7 @@ const PriceRangeSlider = memo(
                   'decimal'
                 )}
                 onChange={e => handleInputChange('max', e.target.value)}
-                className="border-light-elevated dark:border-dark-elevated bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 w-full rounded-md border py-2 pl-8 pr-3 focus:border-transparent focus:outline-none focus:ring-1"
+                className="w-full border border-[#bfcbb8] bg-white py-2 pl-8 pr-3 focus:border-[#658338] focus:outline-none dark:border-[#526354] dark:bg-[#314437] dark:text-[#edf3e7] dark:focus:border-[#d1ff52]"
                 min={min}
                 max={max}
                 placeholder={String(max)}
@@ -372,7 +406,7 @@ const PriceRangeSlider = memo(
           </div>
         </div>
         <button
-          className="bg-accent-200 dark:bg-accent-400/80 dark:hover:bg-accent-400/50 hover:bg-accent-300 border-primary-600/50 dark:border-primary-400/50 dark:bg-primary-800/50 flex w-full cursor-pointer items-center justify-center rounded p-4 py-2 transition-colors duration-300 ease-in-out"
+          className="flex min-h-11 w-full cursor-pointer items-center justify-center bg-[#111c1a] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a] dark:hover:bg-[#e1ff91]"
           onClick={() => {
             setFilters({
               ...(filters as ComponentFilter),

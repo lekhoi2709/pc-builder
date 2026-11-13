@@ -1,12 +1,13 @@
 import { twMerge } from 'tailwind-merge';
-import { HideSidebarIcon, ShowSidebarIcon } from './Icons/SidebarIcon';
-import { MenuIcon } from 'lucide-react';
+import { Menu, SlidersHorizontal } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type SideBarButtonProps = {
   className?: string;
   isSideBarOpen: boolean;
   toggleSidebar: () => void;
   isNavbar?: boolean;
+  disabled?: boolean;
 };
 
 export default function SideBarButton({
@@ -14,21 +15,25 @@ export default function SideBarButton({
   className,
   isSideBarOpen,
   toggleSidebar,
+  disabled = false,
 }: SideBarButtonProps) {
+  const { t } = useTranslation('component');
   return (
     <button
+      type="button"
+      aria-label={isNavbar ? 'Open navigation' : t('filter.title')}
+      aria-expanded={isSideBarOpen}
+      aria-controls={isNavbar ? 'navigation-panel' : 'filter-panel'}
+      disabled={disabled}
       className={twMerge(
-        'border-accent-200/50 dark:border-secondary-500 bg-accent-200/50 dark:bg-secondary-600/20 text-primary-600 dark:text-primary-100 hover:bg-accent-300/50 hover:border-secondary-400 dark:hover:bg-secondary-600/50 cursor-pointer rounded-lg border px-4 py-2 transition-all duration-300 ease-in-out xl:mr-0',
+        'flex min-h-11 cursor-pointer items-center gap-3 border border-[#111c1a] bg-[#d1ff52] px-4 py-2 text-sm font-semibold text-[#111c1a] transition-colors hover:bg-[#e1ff91] disabled:cursor-not-allowed disabled:opacity-45',
         className
       )}
       onClick={toggleSidebar}
     >
-      {!isNavbar && (isSideBarOpen ? <HideSidebarIcon /> : <ShowSidebarIcon />)}
+      {!isNavbar && <><SlidersHorizontal className="h-4 w-4" strokeWidth={1.8} /><span>{t('filter.title')}</span></>}
       {isNavbar && (
-        <MenuIcon
-          strokeWidth={1}
-          className="stroke-primary-600 dark:stroke-primary-100 w-5"
-        />
+        <Menu className="h-5 w-5" strokeWidth={1.8} />
       )}
     </button>
   );

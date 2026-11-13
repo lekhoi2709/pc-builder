@@ -1,128 +1,36 @@
-import { Link, NavLink, useLocation } from 'react-router';
-import { twMerge } from 'tailwind-merge';
-import { useHoverIndicator } from '../hooks/useHoverIndicator';
-import { motion, type Variants } from 'framer-motion';
-import ThemeToggle from './ThemeToggle';
+import { ArrowUpRight } from 'lucide-react';
+import { Link, NavLink, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useUIStore } from '../stores/uiStore';
-import type { JSX } from 'react';
-import { UserCircle2Icon } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
-const StickyNavbar = ({
-  className,
-  isAtComponentPage = false,
-  routes,
-}: {
-  className?: string;
-  isAtComponentPage?: boolean;
-  routes: {
-    path: string;
-    icon: JSX.Element;
-    name: string;
-    t: string;
-  }[];
-}) => {
-  const location = useLocation();
-  const { isSideBarOpen } = useUIStore();
+export default function StickyNavbar({ className = '', visible = true }: { className?: string; visible?: boolean }) {
+  const { lang = 'vn' } = useParams();
   const { t } = useTranslation('common');
 
-  const activeIndex = routes.findIndex(
-    val => val.path == '/' + location.pathname.split('/')[2]
-  );
-
-  const {
-    navRef,
-    itemRefs,
-    width,
-    height,
-    left,
-    opacity,
-    handleMouseEnter,
-    handleMouseLeave,
-  } = useHoverIndicator({ activeIndex });
-
-  const navbarVariants: Variants = {
-    withSidebar: {
-      width: '77%',
-      marginLeft: '0rem',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-    noSidebar: {
-      width: '98%',
-      marginLeft: '4%',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-  };
-
   return (
-    <motion.header
-      className={twMerge(
-        'text-primary-600 dark:text-primary-100 border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 z-50 items-center justify-between rounded-full border px-4 font-bold shadow-md backdrop-blur-sm transition-colors duration-300 ease-in-out xl:flex',
-        className
-      )}
-      variants={navbarVariants}
-      animate={isSideBarOpen && isAtComponentPage ? 'withSidebar' : 'noSidebar'}
-      initial="noSidebar"
-    >
-      <span className="ml-2 flex items-center gap-2">
-        <img
-          src={'/logo/pc-builder-logo-transparent.png'}
-          className="prevent-select w-10 object-contain"
-          loading="lazy"
-          alt="PC Builder"
-        />
-        <p className="font-saira">PC Builder</p>
-      </span>
-      <nav
-        ref={navRef}
-        className="relative flex h-fit transform gap-20 bg-transparent py-2"
-      >
-        <motion.div
-          className="bg-accent-200 dark:bg-accent-400/80 backdrop-blur-xs rounded-4xl outline-accent-200 dark:outline-secondary-300 pointer-events-none absolute inset-0 top-1/2 -translate-y-1/2 transform outline-[0.5px] dark:outline-1"
-          style={{
-            width,
-            height,
-            left,
-            opacity,
-          }}
-        />
-
-        {routes.map((route, index: number) => (
-          <NavLink
-            ref={(el: HTMLAnchorElement | null) => {
-              itemRefs.current[index] = el;
-            }}
-            to={route.path}
-            key={route.path}
-            className={twMerge(`group/navlink z-50 w-fit cursor-pointer p-5`)}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <p className="font-semibold uppercase transition-all duration-500 ease-in-out group-hover/navlink:scale-110">
-              {t(route.t)}
-            </p>
-          </NavLink>
-        ))}
-      </nav>
-      <div className="flex items-center gap-2">
-        <Link
-          to="/auth/signup"
-          className="dark:text-primary-100 text-primary-600 bg-accent-200/20 dark:bg-accent-400/20 backdrop-blur-xs hover:bg-accent-200/50 dark:hover:bg-accent-400/50 cursor-pointer rounded-full p-4"
-        >
-          <UserCircle2Icon className="text-accent-500 dark:text-accent-400" />
+    <header aria-hidden={!visible} inert={!visible} className={`z-50 w-full border-b border-[#c7d1c3] bg-[#f2f3eb]/95 px-6 text-[#111c1a] backdrop-blur-xl transition-transform duration-300 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none dark:border-[#263430] dark:bg-[#111c1a]/95 dark:text-[#f1f4e9] lg:px-10 ${visible ? 'translate-y-0' : '-translate-y-full'} ${className}`}>
+      <div className="mx-auto flex h-[76px] max-w-[1600px] items-center justify-between gap-8">
+        <Link to={`/${lang}/`} className="flex shrink-0 items-center gap-3" aria-label="PC Builder">
+          <span className="grid h-10 w-10 place-items-center bg-[#d1ff52] font-display text-xl font-black tracking-[-0.12em] text-[#111c1a]">PC</span>
+          <span className="font-display text-lg font-bold tracking-[-0.055em]">PC BUILDER<span className="text-[#658338] dark:text-[#d1ff52]">.</span></span>
         </Link>
-        <ThemeToggle />
+        <nav className="flex h-full items-center gap-1" aria-label={t('nav.label')}>
+          {['/', '/components', '/about'].map((path, index) => (
+            <NavLink key={path} to={`/${lang}${path}`} end={path === '/'}
+              className={({ isActive }) => `relative flex h-full items-center px-5 text-sm font-semibold transition-colors after:absolute after:bottom-0 after:left-5 after:right-5 after:h-[3px] after:transition-colors hover:text-[#3d5b10] dark:hover:text-[#d1ff52] ${isActive ? 'text-[#3d5b10] after:bg-[#7caa18] dark:text-[#d1ff52] dark:after:bg-[#d1ff52]' : 'text-[#506050] after:bg-transparent dark:text-[#bac8bf]'}`}>
+              {t(['nav.home', 'nav.components', 'nav.about'][index])}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="flex shrink-0 items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+          <NavLink to={`/${lang}/components`} className="group ml-2 inline-flex h-11 shrink-0 items-center gap-3 bg-[#d1ff52] px-5 text-sm font-bold text-[#111c1a] transition-colors hover:bg-white">
+            {t('nav.cta')} <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </NavLink>
+        </div>
       </div>
-    </motion.header>
+    </header>
   );
-};
-
-export default StickyNavbar;
+}

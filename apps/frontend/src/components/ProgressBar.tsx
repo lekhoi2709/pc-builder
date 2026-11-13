@@ -4,7 +4,7 @@ import { useNavigation } from 'react-router';
 
 export default function ProgressBar() {
   const navigation = useNavigation();
-  const isFetching = useIsFetching();
+  const isFetching = useIsFetching({ predicate: query => query.queryKey[0] !== 'health' });
   const isBusy = navigation.state === 'loading' || isFetching > 0;
   const [progress, setProgress] = useState(0);
 
@@ -33,7 +33,7 @@ export default function ProgressBar() {
   return (
     <div className="z-9999 fixed left-0 top-0 h-1 w-full rounded-2xl bg-transparent">
       <div
-        className="bg-accent-300 dark:bg-accent-200 h-full transition-[width] duration-200 ease-out"
+        className="h-full bg-[#a6d62d] transition-[width] duration-200 ease-out dark:bg-[#d1ff52]"
         style={{ width: `${displayedProgress}%` }}
       />
     </div>

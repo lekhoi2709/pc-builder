@@ -36,7 +36,7 @@ export function useFiltersFromURL() {
     (newFilters: Partial<ComponentFilter>) => {
       setSearchParams(
         prev => {
-          if (newFilters.category_id !== undefined) {
+          if ('category_id' in newFilters) {
             if (newFilters.category_id && newFilters.category_id.length > 0) {
               prev.set('category_id', newFilters.category_id.join(','));
             } else {
@@ -44,7 +44,7 @@ export function useFiltersFromURL() {
             }
           }
 
-          if (newFilters.brand_id !== undefined) {
+          if ('brand_id' in newFilters) {
             if (newFilters.brand_id && newFilters.brand_id.length > 0) {
               prev.set('brand_id', newFilters.brand_id.join(','));
             } else {
@@ -52,7 +52,7 @@ export function useFiltersFromURL() {
             }
           }
 
-          if (newFilters.min_price !== undefined) {
+          if ('min_price' in newFilters) {
             if (newFilters.min_price) {
               prev.set('min_price', newFilters.min_price.toString());
             } else {
@@ -60,7 +60,7 @@ export function useFiltersFromURL() {
             }
           }
 
-          if (newFilters.max_price !== undefined) {
+          if ('max_price' in newFilters) {
             if (newFilters.max_price) {
               prev.set('max_price', newFilters.max_price.toString());
             } else {
@@ -68,7 +68,7 @@ export function useFiltersFromURL() {
             }
           }
 
-          if (newFilters.search !== undefined) {
+          if ('search' in newFilters) {
             if (newFilters.search) {
               prev.set('search', newFilters.search.toString());
             } else {
@@ -88,9 +88,12 @@ export function useFiltersFromURL() {
             prev.set('currency', newFilters.currency);
           }
 
+          if (Object.keys(newFilters).some(key => !['sort_by', 'sort_order', 'currency'].includes(key))) {
+            prev.set('page', '1');
+          }
           return prev;
         },
-        { replace: true }
+        { replace: true, preventScrollReset: true }
       );
     },
     [setSearchParams]
@@ -125,7 +128,7 @@ export function useFiltersFromURL() {
         prev.set('page', '1');
         return prev;
       },
-      { replace: true }
+      { replace: true, preventScrollReset: true }
     );
   }, [setSearchParams]);
 
@@ -148,7 +151,7 @@ export function useFiltersFromURL() {
           prev.set('page', '1');
           return prev;
         },
-        { replace: true }
+        { replace: true, preventScrollReset: true }
       );
     },
     [setSearchParams]
@@ -173,7 +176,7 @@ export function useFiltersFromURL() {
           prev.set('page', '1');
           return prev;
         },
-        { replace: true }
+        { replace: true, preventScrollReset: true }
       );
     },
     [setSearchParams]
@@ -195,12 +198,14 @@ export function useFiltersFromURL() {
             } else {
               prev.delete(key);
             }
+          } else {
+            prev.delete(String(key));
           }
 
           prev.set('page', '1');
           return prev;
         },
-        { replace: true }
+        { replace: true, preventScrollReset: true }
       );
     },
     [setSearchParams]
