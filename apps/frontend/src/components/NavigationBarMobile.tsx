@@ -1,10 +1,11 @@
-import { Link, NavLink } from 'react-router';
+import { NavLink, useParams } from 'react-router';
 import SideBarLayout from '../layouts/SideBarLayout';
 import { twMerge } from 'tailwind-merge';
 import type { JSX } from 'react';
-import ThemeToggle from './ThemeToggle';
 import { useUIStore } from '../stores/uiStore';
-import { UserCircle2Icon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function NavigationBarMobile({
   routes,
@@ -20,16 +21,15 @@ export default function NavigationBarMobile({
   className?: string;
 }) {
   const { isSideBarOpen, toggleSidebar } = useUIStore();
+  const { lang = 'en' } = useParams();
+  const { t } = useTranslation('common');
   return (
     <SideBarLayout
       props={{
         isSideBarOpen: isSideBarOpen!,
-        title: locationPage + ' Page' || routes[0].name || 'Home Page',
+        title: t('nav.label'),
         titleIcon: (
-          <img
-            src="/logo/pc-builder-logo-transparent.png"
-            className="prevent-select w-8 object-contain"
-          />
+          <span className="grid h-9 w-9 place-items-center bg-[#d1ff52] text-sm font-black text-[#111c1a]">PC</span>
         ),
         className: twMerge('xl:hidden', className),
       }}
@@ -41,37 +41,32 @@ export default function NavigationBarMobile({
 
             return (
               <NavLink
-                to={route.path}
+                to={`/${lang}${route.path}`}
                 key={route.path}
                 onClick={toggleSidebar}
                 className={twMerge(
-                  'text-primary-600 dark:text-primary-100 group/navlink hover:bg-accent-200 dark:hover:bg-accent-400/80 transition-color flex items-center gap-4 rounded-lg p-3 px-4 duration-300 ease-in-out',
+                  'group/navlink flex min-h-16 items-center gap-4 border-b border-[#d8ddd2] px-3 text-[#111c1a] transition-colors hover:bg-[#ecf1dc] dark:border-[#435547] dark:text-[#edf3e7] dark:hover:bg-[#314437]',
                   isAtPage &&
-                    'text-accent-400 dark:text-accent-300 hover:text-primary-600 dark:hover:text-primary-100'
+                    'bg-[#ecf1dc] dark:bg-[#314437]'
                 )}
               >
                 <div
                   className={twMerge(
-                    'h-full w-0.5 bg-transparent',
+                    'h-6 w-1 bg-transparent',
                     isAtPage &&
-                      'bg-accent-400 dark:bg-accent-300 group-hover/navlink:bg-primary-600 dark:group-hover/navlink:bg-primary-100 transition-colors ease-in-out'
+                      'bg-[#7caa18]'
                   )}
                 />
                 {route.icon}
-                <p className="pt-0.5 font-semibold uppercase">{route.name}</p>
+                <p className="pt-0.5 font-semibold">{t(route.path === '/' ? 'nav.home' : route.path === '/components' ? 'nav.components' : 'nav.about')}</p>
               </NavLink>
             );
           })}
         </nav>
-        <span className="flex items-center justify-between">
-          <ThemeToggle className="bg-accent-200/20 dark:bg-accent-400/20 w-fit self-start" />
-          <Link
-            to="/auth/signup"
-            className="dark:text-primary-100 text-primary-600 bg-accent-200/20 dark:bg-accent-400/20 backdrop-blur-xs hover:bg-accent-200/50 dark:hover:bg-accent-400/50 cursor-pointer rounded-full p-4"
-          >
-            <UserCircle2Icon className="text-accent-500 dark:text-accent-400" />
-          </Link>
-        </span>
+        <div className="border-t border-[#d8ddd2] pt-5 dark:border-[#435547]">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-[#75847a]">{t('preferences.title')}</p>
+          <div className="flex gap-2"><LanguageSwitcher className="border-[#aab6a6] text-[#3d5b10] dark:border-[#526354] dark:text-[#d1ff52]" /><ThemeToggle className="border-[#aab6a6] text-[#3d5b10] dark:border-[#526354] dark:text-[#d1ff52]" /></div>
+        </div>
       </div>
     </SideBarLayout>
   );

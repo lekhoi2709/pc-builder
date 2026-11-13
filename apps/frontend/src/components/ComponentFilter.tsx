@@ -1,8 +1,7 @@
-import { ListFilterPlusIcon } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import { GetAvailableFilters } from '../services/api';
 import { useComponentStore } from '../stores/componentStore';
 import { useQuery } from '@tanstack/react-query';
-import SearchComponentBar from './SearchComponentBar';
 import PriceRangeSlider from './PriceRangeSlider';
 import { useParams } from 'react-router';
 import { memo, useEffect } from 'react';
@@ -29,7 +28,7 @@ const ComponentFilters = memo(
       useFiltersFromURL();
     const { setCategories, setBrands } = useComponentStore();
     const { lang } = useParams();
-    const isMobile = useMediaQuery('(max-width: 1280px)');
+    const isMobile = useMediaQuery('(max-width: 1279px)');
     const { t } = useTranslation('component');
 
     const filterQuery = useQuery({
@@ -67,13 +66,14 @@ const ComponentFilters = memo(
         <SideBarLayout
           props={{
             isSideBarOpen: isSideBarOpen,
+            isFilter: true,
             title: t('filter.title'),
             titleIcon: (
-              <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
+              <SlidersHorizontal className="h-5 w-5" strokeWidth={1.8} />
             ),
           }}
         >
-          <ListFilterSkeleton />
+          {data && filterQuery.isLoading ? <ListFilterSkeleton /> : <p className="text-sm leading-6 text-[#536056] dark:text-[#b5c5b6]">{t('page.load_error')}</p>}
         </SideBarLayout>
       );
     }
@@ -82,17 +82,17 @@ const ComponentFilters = memo(
       <SideBarLayout
         props={{
           isSideBarOpen: isSideBarOpen,
+          isFilter: true,
           title: t('filter.title'),
           titleIcon: (
-            <ListFilterPlusIcon className="mr-2 inline-block h-5 w-5" />
+            <SlidersHorizontal className="h-5 w-5" strokeWidth={1.8} />
           ),
         }}
       >
-        <SearchComponentBar />
-        <section className="text-primary-900 dark:text-primary-50">
+        <section className="text-[#111c1a] dark:text-[#edf3e7]">
           {isMobile && <ActiveFilters isHavingSort={false} />}
           <h3 className="mb-2 text-lg font-semibold">{t('filter.category')}</h3>
-          <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.categories.map(category => {
                 const categoryCount =
@@ -105,7 +105,7 @@ const ComponentFilters = memo(
                     key={category.id}
                     isSelected={isSelected}
                     onClick={() => toggleCategoryFilter(category.id)}
-                    isDisabled={!isCategoryAvailable}
+                    isDisabled={!isCategoryAvailable && !isSelected}
                   >
                     <span className="flex items-center gap-1">
                       {category.display_name}
@@ -118,9 +118,9 @@ const ComponentFilters = memo(
               })}
           </div>
         </section>
-        <section className="text-primary-900 dark:text-primary-50">
+        <section className="text-[#111c1a] dark:text-[#edf3e7]">
           <h3 className="mb-2 text-lg font-semibold">{t('filter.brand')}</h3>
-          <div className="text-primary-700 dark:text-primary-50 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {filterQuery.data &&
               filterQuery.data.brands.map(brand => {
                 const brandCount =
@@ -128,7 +128,7 @@ const ComponentFilters = memo(
                 const isBrandAvailable = brandCount > 0;
                 const isSelected = isBrandSelected(brand.id);
 
-                if (isBrandAvailable) {
+                if (isBrandAvailable || isSelected) {
                   return (
                     <FilterChip
                       key={brand.id}
@@ -140,7 +140,7 @@ const ComponentFilters = memo(
                           <img
                             src={brand.logo_url}
                             alt=""
-                            className="w-12.5 h-full object-contain"
+                            className="h-7 w-10 object-contain"
                             loading="lazy"
                             decoding="async"
                           />
@@ -184,9 +184,9 @@ function FilterChip({
   return (
     <motion.button
       className={twMerge(
-        'bg-accent-200/50 dark:bg-accent-400/80 hover:bg-accent-300/50 dark:hover:bg-accent-400 hover:shadow-accent-500 dark:hover:shadow-primary-200 line-clamp-1 flex w-fit cursor-pointer items-center justify-between rounded px-2 py-1 backdrop-blur-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px] active:-translate-y-0.5 active:translate-x-0.5 active:shadow-[-2px_2px] disabled:cursor-not-allowed disabled:opacity-50',
+        'line-clamp-1 flex min-h-11 w-fit cursor-pointer items-center justify-between border border-[#bfcbb8] bg-white px-3 py-1.5 text-sm text-[#314033] transition duration-200 hover:border-[#111c1a] hover:bg-[#e1f2b5] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-45 dark:border-[#526354] dark:bg-[#314437] dark:text-[#edf3e7] dark:hover:border-[#d1ff52] dark:hover:bg-[#425942]',
         isSelected &&
-          'dark:outline-primary-100 outline outline-dashed xl:outline-double'
+          'border-[#111c1a] bg-[#d1ff52] text-[#111c1a] dark:border-[#d1ff52] dark:bg-[#d1ff52] dark:text-[#111c1a]'
       )}
       onClick={onClick}
       disabled={isDisabled}

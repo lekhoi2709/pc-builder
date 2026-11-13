@@ -39,13 +39,15 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
 	}
 
-	// Auto migrate your models
+	if err := migrateComponentSpecs(DB); err != nil {
+		log.Fatalf("❌ Component specs migration failed: %v", err)
+	}
+
 	if err := DB.AutoMigrate(
 		&models.Category{},
 		&models.Brand{},
 		&models.Component{},
 		&models.ComponentBrands{},
-		&models.ComponentSpec{},
 		&models.User{},
 	); err != nil {
 
@@ -73,6 +75,56 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	return DB
 }
 
+func migrateComponentSpecs(db *gorm.DB) error {
+	return db.Exec(`
+		DO $$
+		DECLARE
+			legacy_constraint name;
+		BEGIN
+			IF to_regclass('components') IS NULL OR EXISTS (
+				SELECT 1 FROM pg_attribute
+				WHERE attrelid = to_regclass('components')
+				AND attname = 'specs_jsonb' AND NOT attisdropped
+			) THEN
+				RETURN;
+			END IF;
+
+			ALTER TABLE components ADD COLUMN IF NOT EXISTS specs_jsonb jsonb;
+
+			IF to_regclass('component_specs') IS NOT NULL THEN
+				UPDATE components AS component
+				SET specs_jsonb = legacy.specs
+				FROM (
+					SELECT component_id, jsonb_agg(
+						jsonb_build_object(
+							'key', spec_key,
+							'value', spec_value,
+							'is_filterable', is_filterable,
+							'type', spec_type
+						) ORDER BY id
+					) AS specs
+					FROM component_specs
+					GROUP BY component_id
+				) AS legacy
+				WHERE component.id = legacy.component_id AND component.specs_jsonb IS NULL;
+
+				-- Keep the old rows as a snapshot without restricting component deletes.
+				FOR legacy_constraint IN
+					SELECT conname FROM pg_constraint
+					WHERE conrelid = to_regclass('component_specs')
+					AND confrelid = to_regclass('components') AND contype = 'f'
+				LOOP
+					EXECUTE format('ALTER TABLE component_specs DROP CONSTRAINT %I', legacy_constraint);
+				END LOOP;
+			END IF;
+
+			UPDATE components SET specs_jsonb = '[]'::jsonb WHERE specs_jsonb IS NULL;
+			ALTER TABLE components ALTER COLUMN specs_jsonb SET DEFAULT '[]'::jsonb,
+				ALTER COLUMN specs_jsonb SET NOT NULL;
+		END $$;
+	`).Error
+}
+
 func createIndexes(db *gorm.DB) error {
 	log.Println("🔄 Creating database indexes...")
 
@@ -89,11 +141,6 @@ func createIndexes(db *gorm.DB) error {
 		// JSONB indexes for price filtering
 		"CREATE INDEX IF NOT EXISTS idx_components_price_gin ON components USING gin(price)",
 		"CREATE INDEX IF NOT EXISTS idx_components_image_gin ON components USING gin(image_url)",
-
-		// Component specs indexes
-		"CREATE INDEX IF NOT EXISTS idx_component_specs_component_id ON component_specs(component_id)",
-		"CREATE INDEX IF NOT EXISTS idx_component_specs_key_value ON component_specs(spec_key, spec_value)",
-		"CREATE INDEX IF NOT EXISTS idx_component_specs_filterable ON component_specs(spec_key) WHERE is_filterable = true",
 
 		// Full text search index
 		"CREATE INDEX IF NOT EXISTS idx_components_search ON components USING gin(to_tsvector('english', name || ' ' || COALESCE(models, '')))",

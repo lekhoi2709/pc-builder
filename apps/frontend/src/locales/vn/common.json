@@ -1,7 +1,33 @@
 {
   "nav": {
+    "label": "Điều hướng chính",
+    "menu": "Mở trình đơn",
+    "close": "Đóng bảng điều khiển",
+    "show_results": "Xem kết quả",
+    "cta": "Khám phá linh kiện",
     "home": "Trang chủ",
     "components": "Sản phẩm",
     "about": "Về chúng tôi"
+  },
+  "footer": {
+    "label": "Bắt đầu từ đây",
+    "title": "Một bộ PC tốt bắt đầu từ lựa chọn rõ ràng.",
+    "description": "Tìm kiếm và xem thông tin linh kiện để tự tin hơn trước khi quyết định mua.",
+    "navigation": "Liên kết cuối trang",
+    "note": "Một dự án được xây dựng từ đam mê PC.",
+    "status": {
+      "checking": "Đang kiểm tra máy chủ",
+      "online": "Máy chủ đang hoạt động",
+      "unavailable": "Không thể kết nối máy chủ"
+    }
+  },
+  "preferences": {
+    "title": "Giao diện & ngôn ngữ",
+    "light": "Chuyển sang giao diện sáng",
+    "dark": "Chuyển sang giao diện tối",
+    "language": "Chuyển sang {{language}}"
+  },
+  "accessibility": {
+    "skip": "Bỏ qua đến nội dung"
   }
 }

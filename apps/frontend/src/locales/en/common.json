@@ -1,7 +1,33 @@
 {
   "nav": {
+    "label": "Main navigation",
+    "menu": "Open menu",
+    "close": "Close panel",
+    "show_results": "View results",
+    "cta": "Explore components",
     "home": "Home",
     "components": "Components",
     "about": "About"
+  },
+  "footer": {
+    "label": "Start here",
+    "title": "A better PC starts with clearer choices.",
+    "description": "Find components and review product information before you decide what to buy.",
+    "navigation": "Footer links",
+    "note": "A project built from a love of PCs.",
+    "status": {
+      "checking": "Checking server",
+      "online": "Server online",
+      "unavailable": "Cannot reach server"
+    }
+  },
+  "preferences": {
+    "title": "Appearance & language",
+    "light": "Switch to light theme",
+    "dark": "Switch to dark theme",
+    "language": "Switch to {{language}}"
+  },
+  "accessibility": {
+    "skip": "Skip to content"
   }
 }

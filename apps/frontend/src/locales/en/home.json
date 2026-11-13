@@ -1,23 +1,29 @@
 {
   "page": {
-    "search_placeholder": "Search components, or enter a spec (e.g. 'i9-13900K, 64GB RAM')...",
-    "stats": [
-      { "value": 500, "suffix": "+", "label": "Premium Components" },
-      {
-        "value": 24,
-        "suffix": "h",
-        "label": "Expert Support"
-      },
-      {
-        "value": 3,
-        "suffix": "yr",
-        "label": "Warranty Standard"
-      },
-      {
-        "value": 100,
-        "suffix": "%",
-        "label": "Quality Assurance"
-      }
-    ]
+    "meta_title": "PC parts catalog for your next build | PC Builder",
+    "meta_description": "Browse PC components and narrow the catalog by category, brand, price, and available specifications.",
+    "eyebrow": "A clearer way to choose PC parts",
+    "headline": "Find the right parts for your next PC",
+    "desc": "Browse the component catalog, compare listed prices, and open product details before you decide what to buy.",
+    "search_placeholder": "Search components by name…",
+    "search_label": "Which component are you looking for?",
+    "search_action": "Search the catalog",
+    "primary_btn": "Browse components",
+    "fact": "Filter by category, brand, price, and specifications.",
+    "preview_title": "Component catalog",
+    "preview_label": "Catalog view",
+    "preview_unavailable": "The catalog is not available right now.",
+    "preview_image_alt": "A built PC with illuminated components",
+    "preview_empty": "No components are listed yet.",
+    "section_eyebrow": "From search to product details",
+    "section_title": "Make the shortlist easier to build.",
+    "section_desc": "Start with the parts you need, narrow the results using the available filters, then open a product to review its listed information.",
+    "steps": [
+      { "title": "Search the catalog", "desc": "Look up a component by its name or a term you already know." },
+      { "title": "Narrow the results", "desc": "Use category, brand, price, and supported specification filters." },
+      { "title": "Review product details", "desc": "Open a component page to inspect the information and specifications listed there." }
+    ],
+    "close_eyebrow": "Start with the parts",
+    "close_title": "Your next build begins with a better shortlist."
   }
 }

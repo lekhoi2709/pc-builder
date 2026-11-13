@@ -1,231 +1,47 @@
 import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, Cpu } from 'lucide-react';
 import { Link, useParams } from 'react-router';
-import { GetComponentById } from '../services/api';
-import {
-  CheckCircle2Icon,
-  ChevronRightIcon,
-  HeartIcon,
-  PlusCircleIcon,
-} from 'lucide-react';
-import SideBarButton from '../components/SideBarButton';
-import { useUIStore } from '../stores/uiStore';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { GetComponentById } from '../services/api';
 import getLocalizedPrice from '../utils/getLocalizedPrice';
-import type { ComponentWithRelations } from '../types/components';
-import { SkeletonBox, SkeletonText } from '../components/Skeleton';
-import type { TFunction } from 'i18next';
 
 export function ComponentDetails() {
-  const { componentId, lang } = useParams();
-  const { isSideBarOpen, toggleSidebar } = useUIStore();
+  const { componentId, lang = 'vn' } = useParams();
   const { t } = useTranslation('component');
-
-  const componentDetailsQuery = useQuery({
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const query = useQuery({
     queryKey: ['component', componentId],
     queryFn: () => GetComponentById(componentId!),
+    enabled: Boolean(componentId),
     refetchOnWindowFocus: false,
-    placeholderData: previousData => previousData,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
-
-  const data = componentDetailsQuery.data;
-  if (componentDetailsQuery.isLoading) {
-    return (
-      <main className="md:px-22 font-saira z-0 h-full min-h-screen w-screen gap-4 p-8 md:pt-28">
-        <span className="flex items-center justify-between xl:hidden">
-          <h1 className="text-2xl font-semibold">{t('page.title')}</h1>
-          <SideBarButton
-            isSideBarOpen={isSideBarOpen}
-            toggleSidebar={toggleSidebar}
-          />
-        </span>
-        <span className="my-8 flex items-center gap-2 font-bold md:mt-4">
-          <Link
-            to="/components"
-            className="hidden capitalize underline-offset-4 hover:underline md:inline-block"
-          >
-            {t('page.title')}
-          </Link>
-          <ChevronRightIcon className="hidden h-4 w-4 md:inline-block" />
-          <span className="text-accent-400 capitalize">
-            <SkeletonText />
-          </span>
-        </span>
-        <section className="md:grid-cols-14 grid grid-cols-1 items-center gap-8">
-          <div className="md:col-span-6">
-            <SkeletonBox className="border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 col-span-full aspect-square w-full transform rounded-lg border bg-center object-contain" />
-
-            <div className="mt-4 flex gap-4 overflow-x-auto md:grid-cols-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <SkeletonBox
-                  key={i}
-                  className="border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 col-span-1 aspect-square w-[calc(25%-0.75rem)] shrink-0 transform cursor-pointer rounded-lg border bg-cover bg-center p-2 md:w-[calc(33.333%-0.667rem)] xl:w-[calc(20%-0.8rem)]"
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex h-full w-full flex-col gap-8 md:col-span-8">
-            <span className="flex flex-col gap-2">
-              <h1 className="text-2xl font-bold md:text-3xl">
-                <SkeletonText boxClassName="h-8 w-full" />
-              </h1>
-              <span className="flex items-center gap-4">
-                <SkeletonText boxClassName="h-6" />
-                <span>
-                  <SkeletonText />
-                </span>
-              </span>
-            </span>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  if (componentDetailsQuery.isError) {
-    return <div>Error</div>;
-  }
-
-  if (!componentDetailsQuery.data) {
-    return <div>Error</div>;
-  }
+  const component = query.data;
+  const images = component?.image_url ?? [];
+  const price = component ? getLocalizedPrice(component.price, lang).price : '';
 
   return (
-    <Layout
-      data={data!}
-      lang={lang}
-      t={t}
-      isSideBarOpen={isSideBarOpen}
-      toggleSidebar={toggleSidebar}
-    />
-  );
-}
-
-type LayoutProps = {
-  data: ComponentWithRelations;
-  lang?: string;
-  t: TFunction<'component', undefined>;
-  isSideBarOpen: boolean;
-  toggleSidebar: () => void;
-};
-
-function Layout(props: LayoutProps) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const { price } = getLocalizedPrice(
-    (props.data && props.data!.price) || [
-      { currency: 'USD', amount: 0, symbol: '' },
-    ],
-    props.lang || 'vn'
-  );
-
-  return (
-    <main className="md:px-22 font-saira z-0 h-full min-h-screen w-screen gap-4 p-8 md:pt-28">
-      <span className="flex items-center justify-between xl:hidden">
-        <h1 className="text-2xl font-semibold">{props.t('page.title')}</h1>
-        <SideBarButton
-          isSideBarOpen={props.isSideBarOpen}
-          toggleSidebar={props.toggleSidebar}
-        />
-      </span>
-      <span className="my-8 flex items-center gap-2 font-bold md:mt-4">
-        <Link
-          to="/components"
-          className="hidden capitalize underline-offset-4 hover:underline md:inline-block"
-        >
-          {props.t('page.title')}
-        </Link>
-        <ChevronRightIcon className="hidden h-4 w-4 md:inline-block" />
-        <span className="text-accent-400 capitalize">{props.data.name}</span>
-      </span>
-      <section className="md:grid-cols-14 grid grid-cols-1 items-center gap-8">
-        <div className="md:col-span-6">
-          <img
-            src={props.data.image_url[selectedImageIndex]}
-            alt={props.data.name}
-            className="border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 col-span-full aspect-square w-full transform rounded-lg border bg-center object-contain"
-            loading="eager"
-          />
-
-          <div className="mt-4 flex gap-4 overflow-x-auto md:grid-cols-3">
-            {props.data.image_url.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={image + index}
-                onClick={() => setSelectedImageIndex(index)}
-                className="border-secondary-300 dark:border-secondary-500 font-saira max-w-screen bg-secondary-500/20 dark:bg-secondary-600/20 hover:border-secondary-400 col-span-1 aspect-square w-[calc(25%-0.75rem)] shrink-0 transform cursor-pointer rounded-lg border bg-cover bg-center p-2 md:w-[calc(33.333%-0.667rem)] xl:w-[calc(20%-0.8rem)]"
-                loading="lazy"
-              />
-            ))}
+    <main id="top" className="min-h-screen bg-[#f2f3eb] px-5 pb-24 pt-28 text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7] md:px-10 xl:px-16 xl:pt-16">
+      <div className="mx-auto max-w-[1600px]">
+        <Link to={`/${lang}/components`} className="group inline-flex min-h-11 items-center gap-3 font-mono text-xs uppercase tracking-[.15em] text-[#4c681c] hover:underline hover:underline-offset-4"><ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />{t('page.back_to_catalog')}</Link>
+        {query.isLoading && <div className="mt-10 grid animate-pulse gap-10 lg:grid-cols-2"><div className="aspect-square bg-[#e0e6d9] dark:bg-[#2c3a30]" /><div className="space-y-6"><div className="h-4 w-32 bg-[#e0e6d9] dark:bg-[#2c3a30]" /><div className="h-20 w-3/4 bg-[#e0e6d9] dark:bg-[#2c3a30]" /><div className="h-40 bg-[#e0e6d9] dark:bg-[#2c3a30]" /></div></div>}
+        {query.isError && <div className="mt-10 flex min-h-80 flex-col items-center justify-center gap-6 border border-[#c7d1c3] bg-white p-8 text-center dark:border-[#435547] dark:bg-[#243229]"><p>{t('page.detail_load_error')}</p><button type="button" onClick={() => query.refetch()} className="min-h-11 bg-[#111c1a] px-6 text-sm font-semibold text-white hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a]">{t('page.retry')}</button></div>}
+        {component && <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <div className="grid aspect-square place-items-center border border-[#c7d1c3] bg-[#e8ece2] p-8 dark:border-[#435547] dark:bg-[#243229]">{images[selectedImageIndex] ? <img src={images[selectedImageIndex]} alt={component.name} className="h-full w-full object-contain" /> : <Cpu className="h-20 w-20 text-[#879a81]" strokeWidth={1} />}</div>
+            {images.length > 1 && <div className="mt-3 flex flex-wrap gap-3" aria-label={t('page.images')}>
+              {images.map((image, index) => <button key={image + index} type="button" onClick={() => setSelectedImageIndex(index)} aria-label={`${t('page.image')} ${index + 1}`} aria-pressed={selectedImageIndex === index} className={`grid h-20 w-20 place-items-center border bg-white p-2 transition-colors dark:bg-[#243229] ${selectedImageIndex === index ? 'border-[#111c1a] dark:border-[#d1ff52]' : 'border-[#c7d1c3] hover:border-[#658338] dark:border-[#435547]'}`}><img src={image} alt="" className="h-full w-full object-contain" loading="lazy" /></button>)}
+            </div>}
           </div>
-        </div>
-        <div className="flex h-full w-full flex-col gap-8 md:col-span-8">
-          <span className="flex flex-col gap-6">
-            <h1 className="text-2xl font-bold xl:text-4xl">
-              {props.data.name}
-            </h1>
-            <span className="border-secondary-200 dark:border-secondary-500 bg-secondary-300/10 dark:bg-secondary-600/20 hover:border-secondary-400 flex w-full transform flex-col gap-4 rounded-lg border p-4 px-6 transition-colors">
-              <p className="transform text-xl font-bold text-blue-700 xl:text-3xl">
-                {price}
-              </p>
-              <span>
-                {props.data.in_stock ? (
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2Icon className="h-5 w-5 fill-green-400/20 text-green-600 dark:fill-green-400 dark:text-green-900" />
-                    <p className="text-green-600 dark:text-green-400">
-                      {props.t('page.in_stock')}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2Icon className="h-5 w-5 fill-red-400/20 text-red-600 dark:fill-red-400 dark:text-red-900" />
-                    <p className="text-red-600 dark:text-red-400">
-                      {props.t('page.out_of_stock')}
-                    </p>
-                  </div>
-                )}
-              </span>
-              <div className="flex w-full items-center justify-between gap-4">
-                <button className="dark:text-primary-100 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-blue-700 bg-blue-700/20 p-4 text-blue-800 dark:bg-blue-700">
-                  <PlusCircleIcon className="h-5 w-5" />
-                  Add to Build
-                </button>
-                <button className="border-secondary-200 dark:border-secondary-500 bg-secondary-300/10 dark:bg-secondary-600/20 hover:border-secondary-400 flex cursor-pointer items-center justify-center gap-2 rounded-xl border p-4">
-                  <HeartIcon className="text-accent-400 h-6 w-6" />
-                </button>
-              </div>
-            </span>
-            <div>
-              {props.data.specs_map &&
-                Object.keys(props.data.specs_map).length > 0 && (
-                  <>
-                    <h2 className="mb-4 text-xl font-semibold">
-                      Technical Specifications
-                    </h2>
-                    <div className="max-h-75 xl:max-h-100 border-secondary-300 hover:border-secondary-400 dark:border-secondary-500 space-y-2 overflow-y-auto rounded-lg border px-4 pt-3">
-                      {Object.entries(props.data.specs_map).map(
-                        ([key, value]) => (
-                          <div
-                            key={key}
-                            className="border-accent-400/20 flex justify-between border-b p-2 pb-3"
-                          >
-                            <span className="text-accent-500 dark:text-accent-300 font-medium capitalize">
-                              {key.replace(/_/g, ' ')}
-                            </span>
-                            <span className="text-secondary-900 dark:text-secondary-100">
-                              {value}
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </>
-                )}
-            </div>
-          </span>
-        </div>
-      </section>
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[.2em] text-[#658338] dark:text-[#d1ff52]">{t('page.detail_eyebrow')}</p>
+            <h1 className="mt-6 font-display text-[clamp(2.5rem,4.5vw,5.5rem)] font-semibold leading-[1.05] tracking-[-.065em]">{component.name}</h1>
+            <div className="mt-9 flex flex-wrap items-end justify-between gap-4 border-y border-[#aab6a6] py-6 dark:border-[#506353]"><p className="font-mono text-2xl font-semibold text-[#3d5b10] dark:text-[#d1ff52] md:text-3xl">{price}</p><span className={`px-3 py-2 text-xs font-semibold ${component.in_stock ? 'bg-[#dff1bc] text-[#36560c]' : 'bg-[#f2d9d4] text-[#8d3e35]'}`}>{t(component.in_stock ? 'page.in_stock' : 'page.out_of_stock')}</span></div>
+            {component.specs_map && Object.keys(component.specs_map).length > 0 && <section className="mt-12" aria-labelledby="specs-title"><h2 id="specs-title" className="font-display text-2xl font-semibold tracking-[-.04em]">{t('page.specifications')}</h2><dl className="mt-6 border-t border-[#aab6a6] dark:border-[#506353]">{Object.entries(component.specs_map).map(([key, value]) => <div key={key} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-5 border-b border-[#cbd4c6] py-4 text-sm dark:border-[#435547]"><dt className="capitalize text-[#536056] dark:text-[#b5c5b6]">{key.replace(/_/g, ' ')}</dt><dd className="break-words font-medium">{String(value)}</dd></div>)}</dl></section>}
+          </div>
+        </div>}
+      </div>
     </main>
   );
 }

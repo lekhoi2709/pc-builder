@@ -1,228 +1,53 @@
-import { Link, NavLink } from 'react-router';
-import { Mail, UserSearchIcon } from 'lucide-react';
-import { twMerge } from 'tailwind-merge';
-import { motion, type Variants } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
+import { Link, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { GetHealth } from '../services/api';
-import { useUIStore } from '../stores/uiStore';
 
-const ServerStatus = {
-  OPERATIONAL: 'operational',
-  CHECKING: 'checking',
-  DOWN: 'down',
-} as const;
-
-type ServerStatus = (typeof ServerStatus)[keyof typeof ServerStatus];
-
-export default function Footer({
-  className,
-  isAtComponentPage,
-}: {
-  className?: string;
-  isAtComponentPage: boolean;
-}) {
-  const currentYear = new Date().getFullYear();
-  const { isSideBarOpen } = useUIStore();
-
-  const healthQuery = useQuery({
+export default function Footer() {
+  const { lang = 'vn' } = useParams();
+  const { t } = useTranslation('common');
+  const health = useQuery({
     queryKey: ['health'],
-    queryFn: () => GetHealth(),
-    placeholderData: previousData => previousData,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: GetHealth,
+    retry: false,
+    refetchInterval: 60_000,
   });
-
-  const serverStatus: ServerStatus = healthQuery.isLoading
-    ? ServerStatus.CHECKING
-    : healthQuery.isSuccess
-      ? ServerStatus.OPERATIONAL
-      : ServerStatus.DOWN;
-
-  const footerSections = [
-    {
-      title: 'Product',
-      links: [
-        { name: 'Components', path: '/components' },
-        { name: 'Categories', path: '/categories' },
-        { name: 'Brands', path: '/brands' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { name: 'About', path: '/about' },
-        { name: 'Contact', path: '/contact' },
-        { name: 'Blog', path: '/blog' },
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        { name: 'Privacy Policy', path: '/privacy' },
-        { name: 'Terms of Service', path: '/terms' },
-        { name: 'Cookie Policy', path: '/cookies' },
-      ],
-    },
-    {
-      title: 'Support',
-      links: [
-        { name: 'Help Center', path: '/help' },
-        { name: 'FAQ', path: '/faq' },
-        { name: 'Community', path: '/community' },
-      ],
-    },
-  ];
-
-  const socialLinks = [
-    {
-      name: 'GitHub',
-      href: 'https://github.com/lekhoi2709/pc-builder',
-      icon: <UserSearchIcon className="h-5 w-5" />,
-    },
-    {
-      name: 'Email',
-      href: 'mailto:support@pcbuilder.com',
-      icon: <Mail className="h-5 w-5" />,
-    },
-  ];
-
-  const footerVariants: Variants = {
-    withSidebar: {
-      width: 'var(--sidebar-width)',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-    noSidebar: {
-      width: 'var(--sidebar-width)',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-  };
+  const status = health.isPending ? 'checking' : health.isError ? 'unavailable' : 'online';
 
   return (
-    <motion.footer
-      className={twMerge(
-        'bg-secondary-500/20 dark:bg-secondary-600/20 border-secondary-300 dark:border-secondary-500 rounded-t-2xl shadow-md backdrop-blur-sm',
-        isSideBarOpen && isAtComponentPage
-          ? 'mx-auto! xl:mx-[22.2%_0%]! [--sidebar-width:95%] xl:[--sidebar-width:77%]'
-          : 'mx-auto! [--sidebar-width:95%] xl:[--sidebar-width:98%]',
-        className
-      )}
-      variants={footerVariants}
-      animate={isSideBarOpen && isAtComponentPage ? 'withSidebar' : 'noSidebar'}
-      initial="noSidebar"
-    >
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12 xl:grid-cols-5">
-          <div className="col-span-2 md:col-span-4 xl:col-span-1">
-            <Link to="/" className="flex items-center gap-2">
-              <img
-                src="/logo/pc-builder-logo-transparent.png"
-                alt="PC Builder"
-                className="prevent-select h-10 w-10 object-contain"
-              />
-              <span className="text-xl font-bold">PC Builder</span>
-            </Link>
-            <p className="text-primary-600 dark:text-primary-100 mt-4 text-sm">
-              Your ultimate destination for browsing and selecting the perfect
-              PC components.
-            </p>
-            <div className="mt-6 flex gap-4">
-              {socialLinks.map(social => (
-                <NavLink
-                  key={social.name}
-                  to={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-600 hover:text-accent-400 dark:text-primary-100 dark:hover:text-accent-300 transition-colors duration-200"
-                  aria-label={social.name}
-                >
-                  {social.icon}
-                </NavLink>
-              ))}
-            </div>
+    <footer className="bg-[#111c1a] px-5 pb-7 pt-16 text-[#f1f4e9] md:px-10 lg:px-16">
+      <div className="mx-auto max-w-[1600px]">
+        <div className="grid gap-16 border-b border-[#3c4c44] pb-20 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#d1ff52]">PC BUILDER / {t('footer.label')}</p>
+            <h2 className="mt-7 max-w-4xl font-display text-[clamp(3rem,7vw,7rem)] font-semibold leading-[0.97] tracking-[-0.07em]">{t('footer.title')}</h2>
           </div>
-
-          {footerSections.map(section => (
-            <div key={section.title} className="col-span-1">
-              <h3 className="text-primary-900 dark:text-primary-50 mb-4 text-sm font-semibold uppercase">
-                {section.title}
-              </h3>
-              <ul className="space-y-3">
-                {section.links.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.path}
-                      className="text-primary-600 hover:text-accent-400 dark:text-primary-100 dark:hover:text-accent-300 text-sm transition-colors duration-200"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <Link to={`/${lang}/components`} className="group flex h-16 w-fit items-center gap-8 bg-[#d1ff52] px-7 font-bold text-[#111c1a] transition-colors hover:bg-white">
+            {t('nav.cta')} <ArrowUpRight className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+          </Link>
         </div>
-
-        <div className="border-secondary-300 dark:border-secondary-500 mt-12 border-t pt-8">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="text-center md:text-left">
-              <h3 className="text-primary-900 dark:text-primary-50 text-lg font-semibold">
-                Stay Updated
-              </h3>
-              <p className="text-primary-600 dark:text-primary-100 mt-1 text-sm">
-                Subscribe to our newsletter for the latest PC components and
-                deals.
-              </p>
-            </div>
-            <form className="flex w-full max-w-md gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-light-elevated dark:bg-dark-elevated focus:ring-secondary-300 dark:focus:ring-secondary-500 flex-1 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1"
-              />
-              <button
-                type="submit"
-                className="bg-accent-300 hover:bg-accent-400 dark:bg-accent-400 dark:hover:bg-accent-300 rounded-lg px-6 py-2 text-sm font-semibold text-white transition-colors duration-200"
-              >
-                Subscribe
-              </button>
-            </form>
+        <div className="flex flex-col justify-between gap-10 py-10 md:flex-row">
+          <div className="max-w-sm">
+            <Link to={`/${lang}/`} className="font-display text-xl font-bold tracking-[-0.06em]">PC BUILDER<span className="text-[#d1ff52]">.</span></Link>
+            <p className="mt-4 text-sm leading-7 text-[#aab9af]">{t('footer.description')}</p>
           </div>
+          <nav className="flex flex-wrap items-start gap-x-8 gap-y-4 text-sm font-medium" aria-label={t('footer.navigation')}>
+            <Link to={`/${lang}/`} className="hover:text-[#d1ff52]">{t('nav.home')}</Link>
+            <Link to={`/${lang}/components`} className="hover:text-[#d1ff52]">{t('nav.components')}</Link>
+            <Link to={`/${lang}/about`} className="hover:text-[#d1ff52]">{t('nav.about')}</Link>
+            <a href="https://github.com/lekhoi2709/pc-builder" target="_blank" rel="noopener noreferrer" className="inline-flex gap-1 hover:text-[#d1ff52]">GitHub <ArrowUpRight className="h-3 w-3" /></a>
+          </nav>
         </div>
-
-        <div className="border-secondary-300 dark:border-secondary-500 mt-8 flex flex-col-reverse items-center justify-between gap-4 border-t pt-8 text-sm md:flex-row">
-          <p className="text-primary-600 dark:text-primary-100 text-center md:text-left">
-            © {currentYear} PC Builder. All rights reserved.
-          </p>
-          <div className="text-primary-600 dark:text-primary-100 font-saira font-stretch-extra-expanded flex items-center gap-2 text-center text-[12px] font-extralight uppercase tracking-[0.08rem]">
-            <p>Server Status:</p>
-            {serverStatus === ServerStatus.OPERATIONAL && (
-              <span className="flex items-center gap-2">
-                <p>Operational</p>
-                <div className="h-3 w-3 rounded-full bg-green-500" />
-              </span>
-            )}
-            {serverStatus === ServerStatus.CHECKING && (
-              <span className="flex items-center gap-2">
-                <p>Checking</p>
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-              </span>
-            )}
-            {serverStatus === ServerStatus.DOWN && (
-              <span className="flex items-center gap-2">
-                <p>Down</p>
-                <div className="h-3 w-3 rounded-full bg-red-500" />
-              </span>
-            )}
-          </div>
+        <div className="flex flex-wrap justify-between gap-4 border-t border-[#3c4c44] pt-6 font-mono text-xs text-[#889a8d]">
+          <span>© {new Date().getFullYear()} PC BUILDER</span>
+          <span>{t('footer.note')}</span>
+          <span className="inline-flex items-center gap-2 text-[#c1d0c4]" role="status">
+            <span className={`h-2 w-2 rounded-full ${status === 'online' ? 'bg-[#d1ff52]' : status === 'unavailable' ? 'bg-[#f4a99d]' : 'bg-[#aab9af]'}`} aria-hidden="true" />
+            {t(`footer.status.${status}`)}
+          </span>
         </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }

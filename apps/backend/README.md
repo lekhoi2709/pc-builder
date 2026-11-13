@@ -203,6 +203,10 @@ go mod download
 go run main.go
 ```
 
+### Upgrading component specifications
+
+For an existing database, stop backend instances running the old version and back up the database before starting the new version. Startup copies `component_specs` into `components.specs_jsonb` in one transaction. After migration, the backend reads and writes specs in the JSONB column. The old table stays in place as a snapshot, with its foreign keys to `components` removed so that component deletes can succeed. Reverting to the old backend after new writes requires reconciling those changes first.
+
 ---
 
 ## API Documentation

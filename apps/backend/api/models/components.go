@@ -40,14 +40,14 @@ type Component struct {
 	Models     string          `json:"models" gorm:"size:255"`
 	Price      json.RawMessage `json:"price" gorm:"type:jsonb;default:'[]'"`
 	ImageURL   json.RawMessage `json:"image_url" gorm:"type:jsonb;default:'[]'"`
+	Specs      json.RawMessage `json:"-" gorm:"column:specs_jsonb;type:jsonb;not null;default:'[]'"`
 	IsActive   bool            `json:"is_active" gorm:"default:true"`
 	InStock    bool            `json:"in_stock" gorm:"default:true"`
 	CreatedAt  time.Time       `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt  time.Time       `json:"updated_at" gorm:"autoUpdateTime"`
 
-	Category *Category       `json:"category,omitempty" gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
-	Brands   []Brand         `json:"brands,omitempty" gorm:"many2many:component_brands;"`
-	Specs    []ComponentSpec `json:"specs,omitempty" gorm:"foreignKey:ComponentID"`
+	Category *Category `json:"category,omitempty" gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Brands   []Brand   `json:"brands,omitempty" gorm:"many2many:component_brands;"`
 }
 
 type ComponentBrands struct {
@@ -61,15 +61,9 @@ type ComponentBrands struct {
 }
 
 type ComponentSpec struct {
-	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`
-	ComponentID  string    `json:"component_id" gorm:"size:255;not null;index"`
-	SpecKey      string    `json:"spec_key" gorm:"size:100;not null;index"`
-	SpecValue    string    `json:"spec_value" gorm:"type:text;not null"`
-	SpecType     string    `json:"spec_type" gorm:"size:50;not null;default:'string'"`
-	IsFilterable bool      `json:"is_filterable" gorm:"default:false;index"`
-	CreatedAt    time.Time `json:"created_at" gorm:"autoCreateTime"`
-
-	Component *Component `json:"component,omitempty" gorm:"foreignKey:ComponentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Key          string `json:"key"`
+	Value        string `json:"value"`
+	IsFilterable bool   `json:"is_filterable"`
 }
 
 type ComponentWithRelations struct {
