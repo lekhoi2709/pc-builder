@@ -11,7 +11,7 @@ import (
 func (r *ComponentRepository) GetAvailableFilters(lang string) (*AvailableFilters, error) {
 	var categories []models.Category
 	var brands []models.Brand
-	var specs []models.ComponentSpec
+	var specs []FilterOption
 
 	err := r.db.
 		Select("categories.*, COUNT(components.id) as component_count").
@@ -41,13 +41,12 @@ func (r *ComponentRepository) GetAvailableFilters(lang string) (*AvailableFilter
 	}
 
 	err = r.db.
-		Select("spec_key, spec_value, COUNT(*) as spec_count").
-		Table("component_specs").
-		Joins("JOIN components ON component_specs.component_id = components.id").
-		Where("component_specs.is_filterable = true AND components.is_active = true").
-		Group("spec_key, spec_value").
-		Having("COUNT(*) > 0").
-		Order("spec_key, spec_count DESC").
+		Select("spec->>'key' AS key, spec->>'value' AS value").
+		Table("components").
+		Joins("CROSS JOIN LATERAL jsonb_array_elements(components.specs_jsonb) AS spec").
+		Where("components.is_active = true AND spec->>'is_filterable' = 'true'").
+		Group("spec->>'key', spec->>'value'").
+		Order("key, COUNT(*) DESC").
 		Find(&specs).Error
 	if err != nil {
 		return nil, err
@@ -71,10 +70,15 @@ func (r *ComponentRepository) GetAvailableFilters(lang string) (*AvailableFilter
 	}
 	priceRange.Currency = currency
 
+	specsByKey := make(map[string][]FilterOption)
+	for _, spec := range specs {
+		specsByKey[spec.Key] = append(specsByKey[spec.Key], spec)
+	}
+
 	return &AvailableFilters{
 		Categories: categories,
 		Brands:     brands,
-		Specs:      groupSpecsByKey(specs),
+		Specs:      specsByKey,
 		PriceRange: priceRange,
 	}, nil
 }
@@ -127,20 +131,21 @@ func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilt
 		)
 	}
 
-	// Spec filters
-	for key, value := range filters.Specs {
+	return applySpecFilters(query, filters.Specs)
+}
+
+func applySpecFilters(query *gorm.DB, specs map[string]string) *gorm.DB {
+	for key, value := range specs {
 		if value != "" {
 			query = query.Where(`
 				EXISTS (
-					SELECT 1 FROM component_specs cs
-					WHERE cs.component_id = components.id
-					AND cs.spec_key = ?
-					AND LOWER(cs.spec_value) LIKE LOWER(?)
+					SELECT 1 FROM jsonb_array_elements(components.specs_jsonb) AS spec
+					WHERE spec->>'key' = ?
+					AND LOWER(spec->>'value') LIKE LOWER(?)
 				)
 			`, key, "%"+value+"%")
 		}
 	}
-
 	return query
 }
 
@@ -188,19 +193,5 @@ func (r *ComponentRepository) applyFiltersForSummary(query *gorm.DB, filters Com
 		query = query.Where(`LOWER(components.name) LIKE ?`, searchTerm)
 	}
 
-	// Apply spec filters if any
-	for key, value := range filters.Specs {
-		if value != "" {
-			query = query.Where(`
-				EXISTS (
-					SELECT 1 FROM component_specs cs
-					WHERE cs.component_id = components.id
-					AND cs.spec_key = ?
-					AND LOWER(cs.spec_value) LIKE LOWER(?)
-				)
-			`, key, "%"+value+"%")
-		}
-	}
-
-	return query
+	return applySpecFilters(query, filters.Specs)
 }

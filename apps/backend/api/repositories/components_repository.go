@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"encoding/json"
 	"fmt"
 	"pc-builder/backend/api/models"
 	"strings"
@@ -86,22 +87,6 @@ type BrandAssociation struct {
 	IsPrimary bool   `json:"is_primary"`
 }
 
-func groupSpecsByKey(specResults []models.ComponentSpec) map[string][]FilterOption {
-	specsMap := make(map[string][]FilterOption)
-	for _, spec := range specResults {
-		if _, exists := specsMap[spec.SpecKey]; !exists {
-			specsMap[spec.SpecKey] = []FilterOption{}
-		}
-
-		option := FilterOption{
-			Key:   spec.SpecKey,
-			Value: spec.SpecValue,
-		}
-		specsMap[spec.SpecKey] = append(specsMap[spec.SpecKey], option)
-	}
-	return specsMap
-}
-
 func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, pagination PaginationParams) (*ComponentResponse, error) {
 	query := r.db.Model(&models.Component{}).
 		Select(`
@@ -111,6 +96,7 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 			components.models,
 			components.price,
 			components.image_url,
+			components.specs_jsonb,
 			components.is_active,
 			components.in_stock,
 			components.created_at,
@@ -168,7 +154,7 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 			return nil, err
 		}
 
-		err = r.loadComponentSpecs(&comp)
+		err = populateSpecsMap(&comp)
 		if err != nil {
 			return nil, err
 		}
@@ -203,6 +189,7 @@ func (r *ComponentRepository) GetComponentByID(id string) (*models.ComponentWith
 			components.models,
 			components.price,
 			components.image_url,
+			components.specs_jsonb,
 			components.is_active,
 			components.in_stock,
 			components.created_at,
@@ -225,8 +212,7 @@ func (r *ComponentRepository) GetComponentByID(id string) (*models.ComponentWith
 		return nil, err
 	}
 
-	// Load specs
-	err = r.loadComponentSpecs(&component)
+	err = populateSpecsMap(&component)
 	if err != nil {
 		return nil, err
 	}
@@ -311,22 +297,20 @@ func (r *ComponentRepository) loadComponentBrands(component *models.ComponentWit
 	return nil
 }
 
-func (r *ComponentRepository) loadComponentSpecs(component *models.ComponentWithRelations) error {
+func populateSpecsMap(component *models.ComponentWithRelations) error {
 	var specs []models.ComponentSpec
-	err := r.db.Where("component_id = ?", component.ID).Find(&specs).Error
-	if err != nil {
+	if err := json.Unmarshal(component.Specs, &specs); err != nil {
 		return err
 	}
 
-	component.SpecsMap = make(map[string]string)
+	component.SpecsMap = make(map[string]string, len(specs))
 	for _, spec := range specs {
-		component.SpecsMap[spec.SpecKey] = spec.SpecValue
+		component.SpecsMap[spec.Key] = spec.Value
 	}
-
 	return nil
 }
 
-func (r *ComponentRepository) CreateComponent(component *models.Component, brandAssociations []BrandAssociation, specs map[string]string) error {
+func (r *ComponentRepository) CreateComponent(component *models.Component, brandAssociations []BrandAssociation) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(component).Error
 		if err != nil {
@@ -340,20 +324,6 @@ func (r *ComponentRepository) CreateComponent(component *models.Component, brand
 				IsPrimary:   brandAssoc.IsPrimary,
 			}
 			err := tx.Create(&componentBrand).Error
-			if err != nil {
-				return err
-			}
-		}
-
-		for key, value := range specs {
-			spec := models.ComponentSpec{
-				ComponentID:  component.ID,
-				SpecKey:      key,
-				SpecValue:    value,
-				SpecType:     "string",
-				IsFilterable: isFilterableSpec(key),
-			}
-			err := tx.Create(&spec).Error
 			if err != nil {
 				return err
 			}
@@ -456,21 +426,6 @@ func getCurrencyForLang(lang string) string {
 	return "VND"
 }
 
-func isFilterableSpec(key string) bool {
-	filterableSpecs := []string{
-		"socket", "form_factor", "memory_type", "storage_type",
-		"interface", "generation", "process_size", "tdp_range",
-		"wattage", "efficiency", "certification",
-	}
-
-	for _, filterable := range filterableSpecs {
-		if key == filterable {
-			return true
-		}
-	}
-	return false
-}
-
 func (r *ComponentRepository) applyFiltersForPriceRange(query *gorm.DB, filters ComponentFilter) *gorm.DB {
 	if len(filters.CategoryIDs) > 0 {
 		query = query.Where("components.category_id IN ?", filters.CategoryIDs)
@@ -501,19 +456,5 @@ func (r *ComponentRepository) applyFiltersForPriceRange(query *gorm.DB, filters 
 		`, searchTerm, searchTerm, searchTerm, searchTerm)
 	}
 
-	// Apply spec filters if any
-	for key, value := range filters.Specs {
-		if value != "" {
-			query = query.Where(`
-				EXISTS (
-					SELECT 1 FROM component_specs cs
-					WHERE cs.component_id = components.id
-					AND cs.spec_key = ?
-					AND LOWER(cs.spec_value) LIKE LOWER(?)
-				)
-			`, key, "%"+value+"%")
-		}
-	}
-
-	return query
+	return applySpecFilters(query, filters.Specs)
 }

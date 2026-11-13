@@ -10,6 +10,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -151,17 +152,13 @@ func (ctrl *ComponentController) CreateComponent(c *gin.Context) {
 		IsActive:   true,
 	}
 
-	// Convert specs to string map
-	specsMap := make(map[string]string)
-	for key, value := range request.Specs {
-		if str, ok := value.(string); ok {
-			specsMap[key] = str
-		} else {
-			specsMap[key] = fmt.Sprintf("%v", value)
-		}
+	component.Specs, err = encodeSpecs(request.Specs)
+	if err != nil {
+		utils.BadRequestError(c, "Invalid specs", err)
+		return
 	}
 
-	err = ctrl.repo.CreateComponent(component, request.BrandIDs, specsMap)
+	err = ctrl.repo.CreateComponent(component, request.BrandIDs)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
 			utils.ConflictError(c, "Component with this ID already exists")
@@ -207,6 +204,16 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 		return
 	}
 
+	var specsJSON json.RawMessage
+	if len(request.Specs) > 0 {
+		var err error
+		specsJSON, err = encodeSpecs(request.Specs)
+		if err != nil {
+			utils.BadRequestError(c, "Invalid specs", err)
+			return
+		}
+	}
+
 	// Check if component exists
 	var existingComponent models.Component
 	err := ctrl.db.Where("id = ?", id).First(&existingComponent).Error
@@ -250,6 +257,10 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 			updates["image_url"] = imageJSON
 		}
 
+		if specsJSON != nil {
+			updates["specs_jsonb"] = specsJSON
+		}
+
 		if len(updates) > 0 {
 			err := tx.Model(&existingComponent).Updates(updates).Error
 			if err != nil {
@@ -279,30 +290,6 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 			}
 		}
 
-		// Update specs if provided
-		if len(request.Specs) > 0 {
-			// Delete existing specs
-			err = tx.Where("component_id = ?", id).Delete(&models.ComponentSpec{}).Error
-			if err != nil {
-				return err
-			}
-
-			// Create new specs
-			for key, value := range request.Specs {
-				spec := models.ComponentSpec{
-					ComponentID:  id,
-					SpecKey:      key,
-					SpecValue:    fmt.Sprintf("%v", value),
-					SpecType:     "string",
-					IsFilterable: isFilterableSpec(key),
-				}
-				err = tx.Create(&spec).Error
-				if err != nil {
-					return err
-				}
-			}
-		}
-
 		return nil
 	})
 
@@ -314,18 +301,10 @@ func (ctrl *ComponentController) UpdateComponent(c *gin.Context) {
 	utils.SuccessResponse(c, "Component updated successfully", nil)
 }
 
-// DeleteComponent soft deletes a component
 func (ctrl *ComponentController) DeleteComponent(c *gin.Context) {
 	id := c.Param("id")
 
-	// Soft delete by setting is_active to false
-	err := ctrl.db.Delete(models.ComponentSpec{}, "component_id = ?", id).Error
-	if err != nil {
-		utils.InternalServerError(c, "Failed to delete component specs", err)
-		return
-	}
-
-	err = ctrl.db.Delete(models.Component{}, "id = ?", id).Error
+	err := ctrl.db.Delete(models.Component{}, "id = ?", id).Error
 	if err != nil {
 		utils.InternalServerError(c, "Failed to delete component", err)
 		return
@@ -404,14 +383,16 @@ func (ctrl *ComponentController) BulkCreateComponents(c *gin.Context) {
 			IsActive:   true,
 		}
 
-		// Convert specs
-		specsMap := make(map[string]string)
-		for key, value := range compReq.Specs {
-			specsMap[key] = fmt.Sprintf("%v", value)
+		component.Specs, err = encodeSpecs(compReq.Specs)
+		if err != nil {
+			result.Error = err.Error()
+			result.Message = "Invalid specs"
+			results = append(results, result)
+			totalFailed++
+			continue
 		}
 
-		// Create component
-		err = ctrl.repo.CreateComponent(component, compReq.BrandIDs, specsMap)
+		err = ctrl.repo.CreateComponent(component, compReq.BrandIDs)
 		if err != nil {
 			if strings.Contains(err.Error(), "duplicate key") {
 				result.Error = "Component with this ID already exists"
@@ -474,4 +455,22 @@ func isFilterableSpec(key string) bool {
 	}
 
 	return slices.Contains(filterableSpecs, key)
+}
+
+func encodeSpecs(input map[string]interface{}) (json.RawMessage, error) {
+	specs := make([]models.ComponentSpec, 0, len(input))
+	for key, value := range input {
+		if utf8.RuneCountInString(key) > 100 {
+			return nil, fmt.Errorf("spec key exceeds 100 characters: %q", key)
+		}
+		specs = append(specs, models.ComponentSpec{
+			Key:          key,
+			Value:        fmt.Sprint(value),
+			IsFilterable: isFilterableSpec(key),
+		})
+	}
+	slices.SortFunc(specs, func(a, b models.ComponentSpec) int {
+		return strings.Compare(a.Key, b.Key)
+	})
+	return json.Marshal(specs)
 }
