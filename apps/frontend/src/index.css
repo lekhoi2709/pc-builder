@@ -118,6 +118,18 @@ svg.lucide {
   --font-mono: 'IBM Plex Mono', monospace;
 }
 
+@media (width >= 80rem) {
+  [data-catalog-filter-open] .catalog-content {
+    padding-left: max(4rem, calc(max(19vw, 15rem) - max(0px, (100vw - 1600px) / 2) + 2rem));
+  }
+}
+
+@media (width >= 80rem) and (prefers-reduced-motion: no-preference) {
+  .catalog-content {
+    transition: padding-left 300ms ease-out;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

@@ -12,7 +12,7 @@
     <a href="https://www.docker.com"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker" /></a>
   </p>
 
-<p>A full-stack application for browsing and filtering PC components with an intuitive, modern interface.</p>
+<p>A PC parts catalog for people researching components or preparing to buy them.</p>
 
 <p align="center">
 <a href="https://pc-builder-frontend-orcin.vercel.app">Live Demo</a>
@@ -30,7 +30,7 @@
 
 ## Overview
 
-PC Builder is a comprehensive component browsing platform that allows users to search, filter, and select computer components efficiently. Built with modern technologies for performance, scalability, and excellent user experience.
+PC Builder helps you find and evaluate PC components before buying. Search by name, narrow the catalog by category, brand, price, or supported specifications, and open a component page to see its listed price, images, and specifications. The interface is available in Vietnamese and English.
 
 ---
 
@@ -172,17 +172,13 @@ VITE_API_URL=http://localhost:8080/api/
 
 ---
 
-## Development Roadmap
+## Product roadmap
 
-- [x] Basic CRUD operations
-- [x] Advanced filtering system
-- [x] User authentication & authorization
-- [ ] Component comparison tool
-- [ ] User reviews & ratings system
-- [ ] Price tracking & notifications
-- [ ] Mobile application
-- [ ] Real-time inventory updates
-- [ ] AI-powered recommendations
+The next product direction is to grow the catalog into a PC build planner. The goal is to help people choose parts for their use and budget, check compatibility, and share a configuration before buying.
+
+Planned capabilities include pricing with clear sources, a build planner with compatibility checks, component comparison, and saving or sharing builds. Live pricing, 3D views of selected parts, AI guidance, and estimated FPS for selected games are longer-term ideas.
+
+See the [product backlog](tickets/README.md) for priorities and dependencies.
 
 ---
 

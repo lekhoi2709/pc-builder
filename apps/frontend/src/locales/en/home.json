@@ -1,4 +1,21 @@
 {
+  "banner": {
+    "label": "Brands in the catalog",
+    "pause": "Pause brand banner",
+    "resume": "Resume brand banner"
+  },
+  "explorer": {
+    "title": "Explore the parts inside a PC",
+    "mainboard": "Motherboards",
+    "gpu": "Graphics cards",
+    "browse": "Browse this category",
+    "points": {
+      "socket": { "title": "CPU socket", "description": "The processor sits here. Match the motherboard socket to your CPU, then check the board’s CPU support list." },
+      "memory": { "title": "Memory slots", "description": "These slots hold the RAM. Check which DDR generation the board supports and which slots to use for a pair of modules." },
+      "cooling": { "title": "Cooling fans", "description": "The fans move air across the heatsink. Check the card’s length and thickness against the available space in your case." },
+      "connector": { "title": "PCIe connector", "description": "This edge connector plugs into the motherboard. Check that the board has a suitable slot and room for the card." }
+    }
+  },
   "page": {
     "meta_title": "PC parts catalog for your next build | PC Builder",
     "meta_description": "Browse PC components and narrow the catalog by category, brand, price, and available specifications.",

@@ -1,0 +1,74 @@
+.home-banner-track[data-paused='true'] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-banner-track {
+    animation: home-banner-scroll 28s linear infinite;
+  }
+
+  .home-hero-copy {
+    animation: home-hero-enter 680ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+}
+
+.home-brand-logo {
+  filter: drop-shadow(0 0 1px rgb(17 28 26 / .5));
+}
+
+.dark .home-brand-logo {
+  filter: drop-shadow(0 0 1px #edf3e7) drop-shadow(0 0 2px rgb(237 243 231 / .65));
+}
+
+.parts-inspection {
+  --inspection-radius: clamp(2.25rem, 5vw, 4.5rem);
+}
+
+.parts-inspection-detail {
+  clip-path: circle(var(--inspection-radius) at var(--point-x) var(--point-y));
+}
+
+.parts-inspection-ring {
+  left: var(--point-x);
+  top: var(--point-y);
+  width: calc(2 * var(--inspection-radius));
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgb(17 28 26 / .65);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .parts-inspection-detail {
+    transition: clip-path 240ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .parts-inspection-ring {
+    transition: left 240ms cubic-bezier(.22, 1, .36, 1), top 240ms cubic-bezier(.22, 1, .36, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-banner-track {
+    width: 100%;
+  }
+
+  .home-banner-row {
+    min-width: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: .75rem 1.5rem;
+  }
+
+  .home-banner-row[aria-hidden='true'] {
+    display: none;
+  }
+}
+
+@keyframes home-banner-scroll {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes home-hero-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

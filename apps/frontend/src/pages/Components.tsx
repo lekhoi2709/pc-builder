@@ -237,10 +237,7 @@ const ComponentPageLayout = memo(
           isSideBarOpen={isDesktop ? isSideBarOpen : isFilterOpen}
         />
         <div
-          className={twMerge(
-            'z-0 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-7 px-5 pb-16 pt-28 sm:px-8 xl:pt-16 xl:transition-[padding] xl:duration-300 xl:ease-out motion-reduce:transition-none',
-            isDesktop && isSideBarOpen && 'xl:pl-[22.5%]'
-          )}
+          className="catalog-content z-0 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-7 px-5 pb-16 pt-28 sm:px-8 xl:pt-16"
         >
           <header className="flex flex-col gap-6 border-b border-[#aab6a6] pb-9 dark:border-[#506353] sm:flex-row sm:items-end sm:justify-between">
             <div>
