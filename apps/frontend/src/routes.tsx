@@ -34,7 +34,7 @@ const router = createBrowserRouter([
   {
     path: '*',
     Component: Layout,
-    children: [{ path: '*', Component: NotFound }],
+    children: [{ id: 'not-found-global', path: '*', Component: NotFound }],
   },
   // Root redirect to localized home
   {
@@ -65,6 +65,7 @@ const router = createBrowserRouter([
       { path: 'components', Component: Components },
       { path: 'components/:componentId', Component: ComponentDetails },
       { path: 'about', Component: About },
+      { id: 'not-found-local', path: '*', Component: NotFound },
     ],
   },
 ]);

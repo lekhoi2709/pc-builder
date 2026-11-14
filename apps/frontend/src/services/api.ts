@@ -163,7 +163,7 @@ export async function GetComponents(
     throw new Error(json.message || 'No data received');
   }
 
-  return json.response as ComponentResponse;
+  return { ...json.response, components: json.response.components ?? [] };
 }
 
 export async function GetComponentById(
