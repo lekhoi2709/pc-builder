@@ -1,12 +1,12 @@
 # PC Builder — product backlog
 
-Product tickets written from a business-analysis review on 2026-11-11. All tickets start in **Backlog**; none have been implemented or estimated.
+Product tickets written from the 2026-11-11 business analysis review. **PC-001 is Done.** The remaining tickets are in **Backlog**.
 
-## Product direction to validate
+## Product direction
 
-> Help people in Vietnam choose a PC configuration that fits their use and budget, understand whether the parts work together, and share the configuration before buying.
+Today, PC Builder is a bilingual catalog for people researching PC parts or preparing to buy them. Visitors can search, filter, and open component pages to review listed prices, images, and specifications.
 
-This is a recommendation based on the current product and local alternatives, not a confirmed business decision. The implemented product is mainly a component catalog. Its homepage currently markets custom workstation design, assembly, support, warranties, and compatibility tools that are not implemented. Resolve that promise gap before adding more marketing claims.
+The planned direction is to grow the catalog into a build planner that helps people choose parts for their use and budget, check compatibility, and share a configuration before buying.
 
 ## Priority guide
 
@@ -16,13 +16,12 @@ This is a recommendation based on the current product and local alternatives, no
 
 ## Suggested order
 
-1. PC-001 product positioning and truthful claims.
-2. PC-002 working home calls to action and search.
-3. PC-006 trustworthy price and stock information; confirm the data source first.
-4. PC-004 anonymous PC build planner and PC-005 compatibility rules.
-5. PC-003 guided recommendations by use and budget, backed by validated builds.
-6. PC-007 save/share, then PC-008 localization and accessibility improvements.
-7. PC-009 comparison and PC-010 organic discovery.
+1. PC-002 working home calls to action and search.
+2. PC-006 trustworthy price and stock information, starting with confirmation of the data source.
+3. PC-004 anonymous PC build planner and PC-005 compatibility rules.
+4. PC-003 guided recommendations by use and budget, backed by validated builds.
+5. PC-007 save/share, then PC-008 localization and accessibility improvements.
+6. PC-009 comparison and PC-010 organic discovery.
 
 Do not promise assembly, delivery, support response times, warranty coverage, live availability, AI advice, or live compatibility unless the data and operation actually provide them.
 
@@ -43,4 +42,4 @@ Do not promise assembly, delivery, support response times, warranty coverage, li
 
 ## Evidence and limits
 
-See [the product review](00-product-review.md) for current-state evidence, market comparison, assumptions, and limitations. This is a source-code and public competitor review, not customer research. Validate the target buyer and business model with real users before committing to vendor integrations or commerce features.
+See [the product review](00-product-review.md) for the original snapshot, market comparison, assumptions, and limitations. Validate the target buyer and business model with real users before committing to vendor integrations or commerce features.
