@@ -168,9 +168,16 @@ func (r *ComponentRepository) CreateBrand(brand *models.Brand) error {
 	})
 }
 
-func (r *ComponentRepository) GetAllBrands() ([]models.Brand, error) {
+func (r *ComponentRepository) GetAllBrands(limit int, withLogo bool) ([]models.Brand, error) {
 	var brands []models.Brand
-	err := r.db.Order("display_name").Find(&brands).Error
+	query := r.db.Order("display_name").Order("id")
+	if withLogo {
+		query = query.Where("is_active = ? AND TRIM(logo_url) <> ''", true)
+	}
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	err := query.Find(&brands).Error
 	return brands, err
 }
 

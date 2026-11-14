@@ -5,6 +5,7 @@ import {
   ScrollRestoration,
   useLocation,
   useMatches,
+  useMatch,
   useParams,
 } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
@@ -17,7 +18,10 @@ import { useUIStore } from '../stores/uiStore';
 
 export default function Layout() {
   const location = useLocation();
-  const isNotFound = useMatches().at(-1)?.id.startsWith('not-found');
+  const isCatalog = Boolean(useMatch('/:lang/components'));
+  const isDesktopFilterOpen = useUIStore(state => state.isSideBarOpen);
+  const matches = useMatches();
+  const isNotFound = matches[matches.length - 1]?.id.startsWith('not-found');
   const locationPath = location.pathname.split('/')[2];
   const { lang = 'en' } = useParams();
   const { t: aboutT } = useTranslation('about');
@@ -100,7 +104,7 @@ export default function Layout() {
   }, [aboutT, commonT, componentT, homeT, isNotFound, lang, locationPath]);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]" style={{ '--navbar-height': navbarVisible ? '77px' : '0px' } as CSSProperties}>
+    <div className="relative min-h-screen w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]" data-catalog-filter-open={isCatalog && isDesktopFilterOpen ? '' : undefined} style={{ '--navbar-height': navbarVisible ? '77px' : '0px' } as CSSProperties}>
       <a className="absolute left-[-9999px] top-2 z-[100] rounded bg-white px-4 py-3 text-slate-900 focus-visible:left-4" href="#top">
         {commonT('accessibility.skip')}
       </a>

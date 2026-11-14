@@ -16,8 +16,8 @@ export default function Footer() {
   const status = health.isPending ? 'checking' : health.isError ? 'unavailable' : 'online';
 
   return (
-    <footer className="bg-[#111c1a] px-5 pb-7 pt-16 text-[#f1f4e9] md:px-10 lg:px-16">
-      <div className="mx-auto max-w-[1600px]">
+    <footer className="bg-[#111c1a] pb-7 pt-16 text-[#f1f4e9]">
+      <div className="catalog-content mx-auto max-w-[1600px] px-5 md:px-10 lg:px-16">
         <div className="grid gap-16 border-b border-[#3c4c44] pb-20 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#d1ff52]">PC BUILDER / {t('footer.label')}</p>

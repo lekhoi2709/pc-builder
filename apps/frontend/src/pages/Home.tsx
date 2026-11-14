@@ -2,6 +2,7 @@ import { ArrowUpRight, SearchIcon, SlidersHorizontalIcon, ScanSearchIcon } from 
 import { NavLink, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import HeroSection from '../components/Home/HeroSection';
+import PartsExplorer from '../components/Home/PartsExplorer';
 
 const steps = [SearchIcon, SlidersHorizontalIcon, ScanSearchIcon];
 
@@ -44,6 +45,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <PartsExplorer />
 
       <section className="flex min-h-[65svh] items-center bg-[#d1ff52] px-5 py-24 text-[#111c1a] md:px-10 lg:px-16">
         <div className="mx-auto flex w-full max-w-[1600px] flex-col items-start justify-between gap-10 md:flex-row md:items-end">

@@ -105,8 +105,12 @@ export async function GetCategories(): Promise<Category[]> {
   return json.response as Category[];
 }
 
-export async function GetBrands(): Promise<Brand[]> {
-  const response = await fetch(API_BASE + '/brands', {
+export async function GetBrands({ limit, withLogo }: { limit?: number; withLogo?: boolean } = {}): Promise<Brand[]> {
+  const params = new URLSearchParams();
+  if (limit !== undefined) params.set('limit', String(limit));
+  if (withLogo) params.set('with_logo', 'true');
+  const query = params.toString();
+  const response = await fetch(`${API_BASE}/brands${query ? `?${query}` : ''}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

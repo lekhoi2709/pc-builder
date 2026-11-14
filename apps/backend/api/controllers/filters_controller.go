@@ -3,6 +3,7 @@ package controllers
 import (
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/utils"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -112,8 +113,17 @@ func (ctrl *ComponentController) CreateBrand(c *gin.Context) {
 }
 
 func (ctrl *ComponentController) GetAllBrands(c *gin.Context) {
+	limit := 0
+	if value, provided := c.GetQuery("limit"); provided {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed < 1 || parsed > 100 {
+			utils.BadRequestError(c, "limit must be an integer between 1 and 100", err)
+			return
+		}
+		limit = parsed
+	}
 
-	brands, err := ctrl.repo.GetAllBrands()
+	brands, err := ctrl.repo.GetAllBrands(limit, c.Query("with_logo") == "true")
 	if err != nil {
 		utils.InternalServerError(c, "Failed to fetch brands", err)
 		return

@@ -1,4 +1,21 @@
 {
+  "banner": {
+    "label": "Thương hiệu trong danh mục",
+    "pause": "Tạm dừng banner thương hiệu",
+    "resume": "Tiếp tục banner thương hiệu"
+  },
+  "explorer": {
+    "title": "Khám phá linh kiện bên trong PC",
+    "mainboard": "Bo mạch chủ",
+    "gpu": "Card đồ họa",
+    "browse": "Xem danh mục này",
+    "points": {
+      "socket": { "title": "Đế cắm CPU", "description": "Đây là vị trí lắp bộ xử lý. Hãy đối chiếu loại socket và danh sách CPU được bo mạch chủ hỗ trợ." },
+      "memory": { "title": "Khe cắm RAM", "description": "Các khe này giữ thanh RAM. Hãy kiểm tra thế hệ DDR được hỗ trợ và vị trí lắp khi dùng hai thanh." },
+      "cooling": { "title": "Quạt tản nhiệt", "description": "Quạt đưa không khí qua khối tản nhiệt. Hãy đối chiếu chiều dài và độ dày của card với khoảng trống trong thùng máy." },
+      "connector": { "title": "Chân cắm PCIe", "description": "Dãy chân này kết nối card với bo mạch chủ. Hãy kiểm tra khe PCIe phù hợp và khoảng trống để lắp card." }
+    }
+  },
   "page": {
     "meta_title": "Danh mục linh kiện PC cho bộ máy tiếp theo | PC Builder",
     "meta_description": "Tìm linh kiện PC và thu hẹp danh mục theo loại, thương hiệu, giá và thông số hiện có.",
