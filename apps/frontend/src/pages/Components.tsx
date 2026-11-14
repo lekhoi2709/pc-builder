@@ -1,12 +1,16 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { GetComponents } from '../services/api';
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
+import { GetCatalogStats, GetComponents } from '../services/api';
 import { ComponentCard } from '../components/ComponentCard';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import React from 'react';
 import ActiveFilters from '../components/ActiveFilters';
 import { useParams } from 'react-router';
 import ComponentFilter from '../components/ComponentFilter';
-import type { ComponentResponse, PaginationMeta } from '../types/components';
+import type {
+  ComponentFilter as CatalogFilters,
+  ComponentResponse,
+  PaginationMeta,
+} from '../types/components';
 import { twMerge } from 'tailwind-merge';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import SideBarButton from '../components/SideBarButton';
@@ -17,6 +21,19 @@ import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 import { useUIStore } from '../stores/uiStore';
 import SearchComponentBar from '../components/SearchComponentBar';
 
+const componentPageQuery = (
+  filters: CatalogFilters,
+  pagination: PaginationMeta,
+  lang?: string,
+  after?: string
+) =>
+  queryOptions({
+    // Prefetch fills the numbered page cache so navigation can reuse it.
+    queryKey: ['components', filters, pagination, lang],
+    queryFn: () => GetComponents(filters, pagination, lang, after),
+    staleTime: 5 * 60 * 1000,
+  });
+
 export default function Components() {
   const { lang } = useParams();
   const { t } = useTranslation('component');
@@ -24,42 +41,36 @@ export default function Components() {
   const queryClient = useQueryClient();
   const { pageSize } = useResponsivePagination();
 
+  const statsFilters = { ...filters, sort_by: undefined, sort_order: undefined };
+  const statsQuery = useQuery({
+    queryKey: ['component-stats', statsFilters, lang],
+    queryFn: ({ signal }) => GetCatalogStats(statsFilters, lang, signal),
+  });
+
   const componentQuery = useQuery({
-    queryKey: [
-      'components',
-      filters,
-      { ...pagination, page_size: pageSize },
-      lang,
-    ],
-    queryFn: () =>
-      GetComponents(filters, { ...pagination, page_size: pageSize }, lang),
+    ...componentPageQuery(filters, { ...pagination, page_size: pageSize }, lang),
     refetchOnWindowFocus: false,
     placeholderData: previousData => previousData,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   useEffect(() => {
-    if (componentQuery.data?.pagination) {
-      const { current_page, total_pages } = componentQuery.data.pagination;
-
-      if (current_page < total_pages!) {
-        queryClient.prefetchQuery({
-          queryKey: [
-            'components',
-            filters,
-            { ...pagination, current_page: current_page + 1 },
-            lang,
-          ],
-          queryFn: () =>
-            GetComponents(
-              filters,
-              { ...pagination, current_page: current_page + 1 },
-              lang
-            ),
-        });
-      }
+    const current = componentQuery.data?.pagination;
+    if (
+      componentQuery.isPlaceholderData ||
+      !current?.has_next
+    ) {
+      return;
     }
-  }, [componentQuery.data, filters, pagination, lang, queryClient]);
+
+    void queryClient.prefetchQuery(
+      componentPageQuery(
+        filters,
+        { current_page: current.current_page + 1, page_size: pageSize },
+        lang,
+        current.next_cursor
+      )
+    );
+  }, [componentQuery.data, componentQuery.isPlaceholderData, filters, pageSize, lang, queryClient]);
 
   if (componentQuery.isLoading && !componentQuery.data) {
     return (
@@ -75,7 +86,7 @@ export default function Components() {
     );
   }
 
-  if (componentQuery.isError) {
+  if (componentQuery.isError || statsQuery.isError) {
     return (
       <ComponentPageLayout
         props={{
@@ -84,13 +95,28 @@ export default function Components() {
       >
         <div className="z-0 col-span-full flex min-h-80 w-full flex-col items-center justify-center gap-4 border border-[#cfaaa4] bg-[#fff9f5] p-8 text-center text-[#94483f] dark:bg-[#302722] dark:text-[#f2bdb4]">
           <p className="text-lg font-medium">{t('page.load_error')}</p>
-          <button type="button" onClick={() => componentQuery.refetch()} className="mt-2 min-h-11 bg-[#111c1a] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a] dark:hover:bg-[#e1ff91]">{t('page.retry')}</button>
+          <button type="button" onClick={() => {
+            if (componentQuery.isError) void componentQuery.refetch();
+            if (statsQuery.isError) void statsQuery.refetch();
+          }} className="mt-2 min-h-11 bg-[#111c1a] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a] dark:hover:bg-[#e1ff91]">{t('page.retry')}</button>
         </div>
       </ComponentPageLayout>
     );
   }
 
-  const data = componentQuery.data;
+  const page = componentQuery.data;
+  const stats = statsQuery.data;
+  const data: ComponentResponse | undefined = page && stats
+    ? {
+        ...page,
+        summary: stats.summary,
+        pagination: {
+          ...page.pagination,
+          total_records: stats.total_records,
+          total_pages: Math.ceil(stats.total_records / pageSize),
+        },
+      }
+    : undefined;
   const hasFilters = Boolean(filters.search || filters.category_id?.length || filters.brand_id?.length || filters.min_price || filters.max_price);
 
   return (
@@ -99,8 +125,8 @@ export default function Components() {
         data: data,
       }}
     >
-      {data && data.components?.length
-        ? data.components.map(component => (
+      {page && page.components.length
+        ? page.components.map(component => (
             <ComponentCard key={component.id} component={component} />
           ))
         : <div className="col-span-full flex min-h-80 flex-col items-start justify-center border border-[#aab6a6] bg-[#e8ebdf] px-8 py-12 dark:border-[#506353] dark:bg-[#243229] sm:px-12">
@@ -114,29 +140,11 @@ export default function Components() {
 }
 
 const useResponsivePagination = () => {
-  const [delta, setDelta] = useState(3);
-  const [pageSize, setPageSize] = useState(12);
-
-  useEffect(() => {
-    const update = () => {
-      if (window.innerWidth < 768) {
-        setDelta(0);
-        setPageSize(4);
-      } else if (window.innerWidth < 1024) {
-        setDelta(1);
-        setPageSize(6);
-      } else {
-        setDelta(3);
-        setPageSize(12);
-      }
-    };
-
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
-
-  return { delta, pageSize };
+  const isTablet = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  if (isDesktop) return { delta: 3, pageSize: 12 };
+  if (isTablet) return { delta: 1, pageSize: 6 };
+  return { delta: 0, pageSize: 4 };
 };
 
 type PaginationProps = {

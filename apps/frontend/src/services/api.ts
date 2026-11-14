@@ -3,9 +3,10 @@ import type {
   AvailableFilters,
   Brand,
   Category,
+  CatalogStats,
   Component,
   ComponentFilter,
-  ComponentResponse,
+  ComponentPageResponse,
   ComponentWithRelations,
   PaginationMeta,
 } from '../types/components';
@@ -20,7 +21,9 @@ const langToCurrency: Record<string, string> = {
   ja: 'JPY',
 };
 
-function buildQueryParams(filters: ComponentFilter & PaginationMeta): string {
+function buildQueryParams(
+  filters: ComponentFilter & Partial<Pick<PaginationMeta, 'current_page' | 'page_size'>>
+): string {
   const params = new URLSearchParams();
 
   // Add pagination params
@@ -137,14 +140,19 @@ export async function GetAllComponents(): Promise<Component[]> {
 export async function GetComponents(
   filters: ComponentFilter = {},
   pagination: PaginationMeta,
-  lang: string = 'vn'
-): Promise<ComponentResponse> {
-  if (lang && !filters.currency) {
-    filters.currency = langToCurrency[lang];
-  }
-
-  const queryParams = buildQueryParams({ ...filters, ...pagination });
-  const url = `${API_BASE}/components${queryParams ? `?${queryParams}` : ''}`;
+  lang: string = 'vn',
+  after?: string
+): Promise<ComponentPageResponse> {
+  const queryParams = buildQueryParams({
+    ...filters,
+    current_page: pagination.current_page,
+    page_size: pagination.page_size,
+    currency: filters.currency || langToCurrency[lang],
+  });
+  const params = new URLSearchParams(queryParams);
+  params.set('view', 'page');
+  if (after) params.set('after', after);
+  const url = `${API_BASE}/components${params.size ? `?${params}` : ''}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -157,13 +165,29 @@ export async function GetComponents(
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const json: ApiResponse<ComponentResponse> = await response.json();
+  const json: ApiResponse<ComponentPageResponse> = await response.json();
 
   if (!json.response) {
     throw new Error(json.message || 'No data received');
   }
 
   return { ...json.response, components: json.response.components ?? [] };
+}
+
+export async function GetCatalogStats(
+  filters: ComponentFilter,
+  lang: string = 'vn',
+  signal?: AbortSignal
+): Promise<CatalogStats> {
+  const params = buildQueryParams({
+    ...filters,
+    currency: filters.currency || langToCurrency[lang],
+  });
+  const response = await fetch(`${API_BASE}/components?view=stats&${params}`, { signal });
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  const json: ApiResponse<CatalogStats> = await response.json();
+  if (!json.response) throw new Error(json.message || 'No data received');
+  return json.response;
 }
 
 export async function GetComponentById(

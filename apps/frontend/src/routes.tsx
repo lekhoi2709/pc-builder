@@ -1,12 +1,7 @@
 import { createBrowserRouter, redirect } from 'react-router';
-import Home from './pages/Home';
-import Components from './pages/Components';
 import getUserLocationFromIP from './utils/getUserLocale';
-import About from './pages/About';
 import Layout from './layouts/Layout';
 import i18n from './locales/i18n/config';
-import { ComponentDetails } from './pages/ComponentDetails';
-import NotFound from './pages/NotFound';
 
 async function redirectToLocale() {
   try {
@@ -34,7 +29,15 @@ const router = createBrowserRouter([
   {
     path: '*',
     Component: Layout,
-    children: [{ id: 'not-found-global', path: '*', Component: NotFound }],
+    children: [
+      {
+        id: 'not-found-global',
+        path: '*',
+        lazy: async () => ({
+          Component: (await import('./pages/NotFound')).default,
+        }),
+      },
+    ],
   },
   // Root redirect to localized home
   {
@@ -61,11 +64,38 @@ const router = createBrowserRouter([
       return null;
     },
     children: [
-      { index: true, Component: Home },
-      { path: 'components', Component: Components },
-      { path: 'components/:componentId', Component: ComponentDetails },
-      { path: 'about', Component: About },
-      { id: 'not-found-local', path: '*', Component: NotFound },
+      {
+        index: true,
+        lazy: async () => ({
+          Component: (await import('./pages/Home')).default,
+        }),
+      },
+      {
+        path: 'components',
+        lazy: async () => ({
+          Component: (await import('./pages/Components')).default,
+        }),
+      },
+      {
+        path: 'components/:componentId',
+        lazy: async () => ({
+          Component: (await import('./pages/ComponentDetails'))
+            .ComponentDetails,
+        }),
+      },
+      {
+        path: 'about',
+        lazy: async () => ({
+          Component: (await import('./pages/About')).default,
+        }),
+      },
+      {
+        id: 'not-found-local',
+        path: '*',
+        lazy: async () => ({
+          Component: (await import('./pages/NotFound')).default,
+        }),
+      },
     ],
   },
 ]);

@@ -207,6 +207,8 @@ go run main.go
 
 For an existing database, stop backend instances running the old version and back up the database before starting the new version. Startup copies `component_specs` into `components.specs_jsonb` in one transaction. After migration, the backend reads and writes specs in the JSONB column. The old table stays in place as a snapshot, with its foreign keys to `components` removed so that component deletes can succeed. Reverting to the old backend after new writes requires reconciling those changes first.
 
+Once the migration has succeeded, verify specs through the component detail and filter endpoints. Keep a backup of the legacy table if you need the original rows. Then run [the cleanup SQL](db/drop_legacy_component_specs.sql) on the migrated database. It requires the migrated JSONB column and uses `RESTRICT` so external dependencies block the drop. The startup migration remains available for databases that still need the initial copy.
+
 ---
 
 ## API Documentation
@@ -281,6 +283,12 @@ Response:
   }
 }
 ```
+
+The default response includes the page, total records, and summary. Use `view=page` to fetch just the rows and pagination metadata, with `pagination.has_next` indicating whether another page exists. Use `view=stats` with the same filters to fetch `{total_records, summary}` once per set of filters and compute the numbered page count from the selected page size.
+
+When another page is available, sorting by name or by VND/USD price also returns `pagination.next_cursor`. Send it as `after` with the next `page` number and the same sort, filters, currency, and page size. Requests without `after` support direct page jumps.
+
+Deploy the backend before the catalog frontend. On an existing database, startup adds stored generated VND and USD price columns from the first matching entry in `price`, then creates their indexes. Adding those columns rewrites `components` and requires an exclusive table lock. Schedule the first run during a maintenance window for a large catalog. The generated columns update automatically when prices change.
 
 #### Get Available Filters
 

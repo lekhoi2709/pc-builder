@@ -21,6 +21,8 @@ func (ctrl *ComponentController) GetAvailableFilters(c *gin.Context) {
 		return
 	}
 
+	c.Writer.Header().Add("Vary", "Accept-Language")
+	c.Header("Cache-Control", "public, max-age=30")
 	utils.SuccessResponse(c, "Available filters fetched successfully", filters)
 }
 

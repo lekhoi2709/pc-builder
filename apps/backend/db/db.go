@@ -1,6 +1,7 @@
 package db
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"pc-builder/backend/api/models"
@@ -12,6 +13,9 @@ import (
 )
 
 var DB *gorm.DB
+
+//go:embed component_prices.sql
+var componentPricesSQL string
 
 func InitPostgres(cfg *config.Config) *gorm.DB {
 	sslMode := cfg.DB.SslMode
@@ -55,6 +59,10 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	); err != nil {
 
 		log.Fatalf("❌ AutoMigrate failed: %v", err)
+	}
+
+	if err := DB.Exec(componentPricesSQL).Error; err != nil {
+		log.Fatalf("❌ Component price migration failed: %v", err)
 	}
 
 	log.Println("✅ Connected to PostgreSQL")
@@ -135,11 +143,12 @@ func createIndexes(db *gorm.DB) error {
 	indexes := []string{
 		// Component indexes
 		"CREATE INDEX IF NOT EXISTS idx_components_category_id ON components(category_id)",
-		"CREATE INDEX IF NOT EXISTS idx_components_brand_id ON components(brand_id)",
 		"CREATE INDEX IF NOT EXISTS idx_components_created_at ON components(created_at)",
 		"CREATE INDEX IF NOT EXISTS idx_components_is_active ON components(is_active)",
-		"CREATE INDEX IF NOT EXISTS idx_components_category_brand ON components(category_id, brand_id)",
 		"CREATE INDEX IF NOT EXISTS idx_components_active_category ON components(is_active, category_id) WHERE is_active = true",
+		"CREATE INDEX IF NOT EXISTS idx_components_active_name_id ON components(name, id) WHERE is_active = true",
+		"CREATE INDEX IF NOT EXISTS idx_components_active_vnd_id ON components (COALESCE(price_vnd, 'Infinity'::numeric), id) WHERE is_active = true",
+		"CREATE INDEX IF NOT EXISTS idx_components_active_usd_id ON components (COALESCE(price_usd, 'Infinity'::numeric), id) WHERE is_active = true",
 
 		// JSONB indexes for price filtering
 		"CREATE INDEX IF NOT EXISTS idx_components_price_gin ON components USING gin(price)",
