@@ -50,9 +50,7 @@ export default function CommunitySection() {
                 <h4 className="font-medium">
                   What is the turnaround time for a custom loop build?
                 </h4>
-                <span className="material-symbols-outlined transition duration-300 group-open:-rotate-180">
-                  <ChevronDown />
-                </span>
+                <ChevronDown className="h-5 w-5 transition-transform group-open:-rotate-180" />
               </summary>
               <div className="px-4 pb-4 text-sm leading-relaxed text-gray-400">
                 Standard air-cooled builds ship within 5-7 business days. Custom
@@ -66,9 +64,7 @@ export default function CommunitySection() {
                 <h4 className="font-medium">
                   Do you offer international shipping?
                 </h4>
-                <span className="material-symbols-outlined transition duration-300 group-open:-rotate-180">
-                  <ChevronDown />
-                </span>
+                <ChevronDown className="h-5 w-5 transition-transform group-open:-rotate-180" />
               </summary>
               <div className="px-4 pb-4 text-sm leading-relaxed text-gray-400">
                 Yes, we ship globally using reinforced wooden crates for maximum
@@ -81,9 +77,7 @@ export default function CommunitySection() {
                 <h4 className="font-medium">
                   Can I send in my own components?
                 </h4>
-                <span className="material-symbols-outlined transition duration-300 group-open:-rotate-180">
-                  <ChevronDown />
-                </span>
+                <ChevronDown className="h-5 w-5 transition-transform group-open:-rotate-180" />
               </summary>
               <div className="px-4 pb-4 text-sm leading-relaxed text-gray-400">
                 Currently, we only build with components sourced directly

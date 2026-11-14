@@ -1,6 +1,6 @@
 <p align="center">
   <picture>
-    <img src="/apps/frontend/public/logo/pc-builder-logo-transparent-2.png" width="500" alt="PC Builder">
+    <img src="public/logo/pc-builder-logo.svg" width="500" alt="PC Builder">
   </picture>
 </p>
 <div align="center">

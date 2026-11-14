@@ -65,9 +65,7 @@ export default function WorkflowSection() {
           className="relative z-10 flex flex-col items-center text-center will-change-transform"
         >
           <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
-            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
-              <CpuIcon className="dark:text-accent-100 text-accent-400" />
-            </span>
+            <CpuIcon className="dark:text-accent-100 text-accent-400" />
           </div>
           <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
             Specification
@@ -82,9 +80,7 @@ export default function WorkflowSection() {
           className="relative z-10 flex flex-col items-center text-center will-change-transform"
         >
           <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
-            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
-              <PuzzleIcon className="dark:text-accent-100 text-accent-400" />
-            </span>
+            <PuzzleIcon className="dark:text-accent-100 text-accent-400" />
           </div>
           <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
             Assembly
@@ -99,9 +95,7 @@ export default function WorkflowSection() {
           className="relative z-10 flex flex-col items-center text-center will-change-transform"
         >
           <div className="dark:hover:border-primary-500 hover:border-primary-200 bg-light-elevated group mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-gray-300 shadow-lg transition-colors duration-300 md:mb-6 md:h-24 md:w-24 dark:border-[#232f48] dark:bg-[#151c2a]">
-            <span className="material-symbols-outlined group-hover:text-primary text-3xl text-gray-300 transition-colors md:text-4xl">
-              <BadgeCheckIcon className="dark:text-accent-100 text-accent-400" />
-            </span>
+            <BadgeCheckIcon className="dark:text-accent-100 text-accent-400" />
           </div>
           <h3 className="text-dark dark:text-light mb-2 text-xl font-bold md:mb-3">
             Stress Testing

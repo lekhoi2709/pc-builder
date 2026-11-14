@@ -29,5 +29,14 @@
   },
   "accessibility": {
     "skip": "Skip to content"
+  },
+  "not_found": {
+    "meta_title": "Page not found | PC Builder",
+    "meta_description": "This page does not exist. Head home or browse the PC component catalog.",
+    "eyebrow": "Path / 404",
+    "title": "This page isn't here.",
+    "description": "The address may have changed. Head home or keep exploring the component catalog.",
+    "home": "Go home",
+    "components": "Browse components"
   }
 }

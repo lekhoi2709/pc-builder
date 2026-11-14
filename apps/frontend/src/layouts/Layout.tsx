@@ -4,6 +4,7 @@ import {
   Link,
   ScrollRestoration,
   useLocation,
+  useMatches,
   useParams,
 } from 'react-router';
 import StickyNavbar from '../components/StickyNavbar';
@@ -16,6 +17,7 @@ import { useUIStore } from '../stores/uiStore';
 
 export default function Layout() {
   const location = useLocation();
+  const isNotFound = useMatches().at(-1)?.id.startsWith('not-found');
   const locationPath = location.pathname.split('/')[2];
   const { lang = 'en' } = useParams();
   const { t: aboutT } = useTranslation('about');
@@ -70,12 +72,16 @@ export default function Layout() {
   )?.name;
 
   useEffect(() => {
-    const title = locationPath === 'about'
+    const title = isNotFound
+      ? commonT('not_found.meta_title')
+      : locationPath === 'about'
       ? aboutT('page.meta.title')
       : locationPath === 'components'
         ? componentT('page.meta_title')
         : homeT('page.meta_title');
-    const description = locationPath === 'about'
+    const description = isNotFound
+      ? commonT('not_found.meta_description')
+      : locationPath === 'about'
       ? aboutT('page.meta.description')
       : locationPath === 'components'
         ? componentT('page.meta_description')
@@ -91,7 +97,7 @@ export default function Layout() {
     document.documentElement.dataset.radius = 'soft';
     document.documentElement.dataset.buttons = 'solid';
     document.documentElement.dataset.motion = '';
-  }, [aboutT, componentT, homeT, lang, locationPath]);
+  }, [aboutT, commonT, componentT, homeT, isNotFound, lang, locationPath]);
 
   return (
     <div className="relative min-h-screen w-full bg-[#f2f3eb] text-[#111c1a] dark:bg-[#18251e] dark:text-[#edf3e7]" style={{ '--navbar-height': navbarVisible ? '77px' : '0px' } as CSSProperties}>

@@ -20,7 +20,7 @@ import SearchComponentBar from '../components/SearchComponentBar';
 export default function Components() {
   const { lang } = useParams();
   const { t } = useTranslation('component');
-  const { filters, pagination } = useFiltersFromURL();
+  const { filters, pagination, clearFilters } = useFiltersFromURL();
   const queryClient = useQueryClient();
   const { pageSize } = useResponsivePagination();
 
@@ -91,6 +91,7 @@ export default function Components() {
   }
 
   const data = componentQuery.data;
+  const hasFilters = Boolean(filters.search || filters.category_id?.length || filters.brand_id?.length || filters.min_price || filters.max_price);
 
   return (
     <ComponentPageLayout
@@ -98,11 +99,16 @@ export default function Components() {
         data: data,
       }}
     >
-      {data && data.components.length
+      {data && data.components?.length
         ? data.components.map(component => (
             <ComponentCard key={component.id} component={component} />
           ))
-        : <p className="col-span-full border border-dashed border-[#aab6a6] bg-white p-10 text-center text-sm text-[#536056] dark:border-[#506353] dark:bg-[#243229] dark:text-[#b5c5b6]">{t('page.empty')}</p>}
+        : <div className="col-span-full flex min-h-80 flex-col items-start justify-center border border-[#aab6a6] bg-[#e8ebdf] px-8 py-12 dark:border-[#506353] dark:bg-[#243229] sm:px-12">
+            <span className="font-mono text-xs uppercase tracking-[.2em] text-[#658338] dark:text-[#d1ff52]">00 / {t('page.results_title')}</span>
+            <h3 className="mt-7 max-w-xl font-display text-3xl font-semibold tracking-[-.05em] sm:text-4xl">{t(hasFilters ? 'page.empty_title' : 'page.empty_catalog_title')}</h3>
+            <p className="mt-4 max-w-lg text-sm leading-7 text-[#536056] dark:text-[#b5c5b6]">{t(hasFilters ? 'page.empty' : 'page.empty_catalog')}</p>
+            {hasFilters && <button type="button" onClick={clearFilters} className="mt-8 min-h-11 bg-[#111c1a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#34483c] dark:bg-[#d1ff52] dark:text-[#111c1a] dark:hover:bg-[#e1ff91]">{t('filter.action.clear')}</button>}
+          </div>}
     </ComponentPageLayout>
   );
 }
@@ -277,7 +283,7 @@ const ComponentPageLayout = memo(
             </div>
           </section>
           <section className="mt-auto w-full self-center">
-            {props.data && props.data.pagination && (
+            {props.data && (props.data.pagination?.total_pages ?? 0) > 1 && (
               <div className="w-full">
                 <p className="text-sm text-[#536056] dark:text-[#b5c5b6]">
                   {t('action.pagination.page')} {props.data.pagination.current_page} {t('action.pagination.of')} {props.data.pagination.total_pages}

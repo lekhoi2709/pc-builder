@@ -141,7 +141,7 @@ func (r *ComponentRepository) GetComponentsWithFilters(filters ComponentFilter, 
 		return nil, err
 	}
 
-	var components []models.ComponentWithRelations
+	components := make([]models.ComponentWithRelations, 0, len(componentResults))
 	for _, result := range componentResults {
 		comp := models.ComponentWithRelations{
 			Component:       result.Component,

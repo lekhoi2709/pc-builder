@@ -38,7 +38,7 @@ export default function HeroSection() {
               <div className="flex min-h-16 items-center border border-[#667566] bg-[#26352d] transition-colors focus-within:border-[#d1ff52]">
                 <Search className="ml-5 h-5 w-5 shrink-0 text-[#d1ff52]" strokeWidth={1.8} />
                 <input id="home-search" type="search" value={term} onChange={event => setTerm(event.target.value)} placeholder={t('page.search_placeholder')} className="min-w-0 flex-1 bg-transparent px-4 py-4 text-sm text-white outline-none placeholder:text-[#9eafa2]" />
-                <button type="submit" aria-label={t('page.search_action')} className="mr-2 grid h-12 w-12 shrink-0 place-items-center bg-[#d1ff52] text-[#111c1a] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"><ArrowUpRight className="h-5 w-5" /></button>
+                <button type="submit" aria-label={t('page.search_action')} className="mr-2 grid h-12 w-12 shrink-0 cursor-pointer place-items-center bg-[#d1ff52] text-[#111c1a] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"><ArrowUpRight className="h-5 w-5" /></button>
               </div>
             </form>
             <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">

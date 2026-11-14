@@ -3,12 +3,12 @@ import {
   ArrowDownAZIcon,
   ArrowUp01Icon,
   ArrowDown01Icon,
+  X,
 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { XIcon } from './Icons/XIcon';
 import { useFiltersFromURL } from '../hooks/useFiltersFromURL';
 import { useComponentStore } from '../stores/componentStore';
 import { useMemo } from 'react';
@@ -109,26 +109,6 @@ export default function ActiveFilters({
       )
     );
 
-  const activeFilterStringFormatted = ({
-    isSortingFilter = false,
-    str,
-  }: {
-    isSortingFilter?: boolean;
-    str: string;
-  }): string => {
-    const strArr = str.split('_');
-    if (strArr[1] === 'id' || !strArr[1]) {
-      return strArr[0];
-    } else if (strArr[0] === 'storage') {
-      return strArr[1];
-    } else if (strArr[0] === 'min' || strArr[0] === 'max') {
-      if (!isSortingFilter) {
-        return strArr[0];
-      } else return 'default';
-    }
-    return strArr[0] + ' ' + strArr[1];
-  };
-
   return (
     <div className="mb-2 flex flex-wrap content-end items-center justify-between gap-6 xl:mb-0">
       <div className="flex flex-wrap items-center gap-2">
@@ -149,7 +129,7 @@ export default function ActiveFilters({
                     'currency'
                   )}
                 </p>
-                <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key)}><XIcon className="m-0 h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
+                <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key)}><X className="h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
               </span>
             );
           }
@@ -163,7 +143,7 @@ export default function ActiveFilters({
                 {t(`filter.active.active_${filter.key.replace('_id', '')}`)}
                 {filter.display || filter.value}
               </p>
-              <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key, String(filter.value))}><XIcon className="m-0 h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
+              <button type="button" aria-label={t('filter.action.remove')} className="grid h-11 w-11 shrink-0 place-items-center hover:bg-white dark:hover:bg-[#425942]" onClick={() => removeFilter(filter.key, String(filter.value))}><X className="h-3 w-3 text-[#3d5b10] dark:text-[#d1ff52]" /></button>
             </span>
           );
         })}
@@ -176,13 +156,7 @@ export default function ActiveFilters({
       </div>
       {isHavingSort && (
         <div className="ml-auto flex items-center gap-2">
-          <SortingIndicator
-            t={t}
-            content={activeFilterStringFormatted({
-              str: String(activeFilters[0].key),
-              isSortingFilter: true,
-            })}
-          />
+          <SortingIndicator t={t} content="default" />
       <div className="h-5 w-fit border-l border-[#aab6a6] dark:border-[#506353]" />
           <SortingIndicator
             t={t}

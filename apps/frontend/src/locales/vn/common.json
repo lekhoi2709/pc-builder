@@ -29,5 +29,14 @@
   },
   "accessibility": {
     "skip": "Bỏ qua đến nội dung"
+  },
+  "not_found": {
+    "meta_title": "Không tìm thấy trang | PC Builder",
+    "meta_description": "Đường dẫn này không tồn tại. Về trang chủ hoặc tiếp tục xem danh mục linh kiện PC.",
+    "eyebrow": "Đường dẫn / 404",
+    "title": "Trang này không có ở đây.",
+    "description": "Đường dẫn có thể đã thay đổi. Bạn có thể về trang chủ hoặc tiếp tục tìm linh kiện trong danh mục.",
+    "home": "Về trang chủ",
+    "components": "Xem linh kiện"
   }
 }
