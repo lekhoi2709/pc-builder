@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"pc-builder/backend/api/models"
 	"pc-builder/backend/api/repositories"
@@ -32,6 +33,7 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 	var pagination repositories.PaginationParams
 	pagination.Page = 1
 	pagination.PageSize = 12
+	pagination.PageOnly = c.Query("view") == "page"
 
 	if page, err := strconv.Atoi(c.Query("page")); err == nil && page > 0 {
 		pagination.Page = page
@@ -43,11 +45,11 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 
 	var filters repositories.ComponentFilter
 
-	if minPrice, err := strconv.ParseFloat(c.Query("min_price"), 64); err == nil && minPrice >= 0 {
+	if minPrice, err := strconv.ParseFloat(c.Query("min_price"), 64); err == nil && minPrice >= 0 && !math.IsInf(minPrice, 0) {
 		filters.MinPrice = minPrice
 	}
 
-	if maxPrice, err := strconv.ParseFloat(c.Query("max_price"), 64); err == nil && maxPrice >= 0 {
+	if maxPrice, err := strconv.ParseFloat(c.Query("max_price"), 64); err == nil && maxPrice >= 0 && !math.IsInf(maxPrice, 0) {
 		filters.MaxPrice = maxPrice
 	}
 
@@ -88,7 +90,38 @@ func (ctrl *ComponentController) GetComponentsWithPagination(c *gin.Context) {
 		filters.SortOrder = "desc"
 	}
 
-	response, err := ctrl.repo.GetComponentsWithFilters(filters, pagination)
+	repo := ctrl.repo.WithContext(c.Request.Context())
+	if c.Query("view") == "stats" {
+		stats, err := repo.GetCatalogStats(filters)
+		if err != nil {
+			utils.InternalServerError(c, "Failed to fetch component statistics", err)
+			return
+		}
+		utils.SuccessResponse(c, "Component statistics fetched successfully", stats)
+		return
+	}
+
+	switch filters.SortBy {
+	case "name", "price", "brand", "category", "created_at", "updated_at", "id":
+	default:
+		utils.BadRequestError(c, "Invalid sort field", nil)
+		return
+	}
+	if filters.SortOrder != "asc" && filters.SortOrder != "desc" {
+		utils.BadRequestError(c, "Invalid sort order", nil)
+		return
+	}
+
+	if token, provided := c.GetQuery("after"); provided {
+		after, err := repositories.ParseComponentCursor(token, filters)
+		if err != nil {
+			utils.BadRequestError(c, "Invalid pagination cursor", err)
+			return
+		}
+		pagination.After = after
+	}
+
+	response, err := repo.GetComponentsWithFilters(filters, pagination)
 	if err != nil {
 		utils.InternalServerError(c, "Failed to fetch components", err)
 		return

@@ -113,12 +113,22 @@ export interface PaginationMeta {
   page_size?: number;
   total_pages?: number;
   total_records?: number;
+  next_cursor?: string;
+  has_next?: boolean;
 }
 
-export interface ComponentResponse {
+export interface ComponentPageResponse {
   components: ComponentWithRelations[];
   pagination: PaginationMeta;
   filters: ComponentFilter;
+}
+
+export interface ComponentResponse extends ComponentPageResponse {
+  summary: ComponentStats;
+}
+
+export interface CatalogStats {
+  total_records: number;
   summary: ComponentStats;
 }
 

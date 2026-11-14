@@ -7,6 +7,7 @@
     "desc": "Duyệt danh mục linh kiện, xem giá đang được liệt kê và mở thông tin sản phẩm trước khi quyết định mua.",
     "search_placeholder": "Tìm linh kiện theo tên…",
     "search_label": "Bạn đang tìm linh kiện nào?",
+    "search_clear": "Xóa từ khóa tìm kiếm",
     "search_action": "Tìm trong danh mục",
     "primary_btn": "Duyệt linh kiện",
     "fact": "Lọc theo loại, thương hiệu, giá và thông số.",

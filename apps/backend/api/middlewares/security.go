@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -36,31 +37,40 @@ func SetupSecurityMiddleware(router *gin.Engine, allowedOrigins []string) {
 }
 
 func RateLimitMiddleware() gin.HandlerFunc {
+	return rateLimit(100, "Too many requests, please try again later.")
+}
+
+func AuthRateLimitMiddleware() gin.HandlerFunc {
+	return rateLimit(5, "Too many authentication attempts, please try again later.")
+}
+
+func rateLimit(limit int, message string) gin.HandlerFunc {
+	var mu sync.Mutex
 	clientRequests := make(map[string][]time.Time)
 
 	return func(c *gin.Context) {
 		clientIP := c.ClientIP()
+
+		mu.Lock()
 		now := time.Now()
-
-		if requests, exists := clientRequests[clientIP]; exists {
-			validRequests := []time.Time{}
-			for _, requestTime := range requests {
-				if now.Sub(requestTime) < time.Minute {
-					validRequests = append(validRequests, requestTime)
-				}
+		requests := clientRequests[clientIP]
+		validRequests := requests[:0]
+		for _, requestTime := range requests {
+			if now.Sub(requestTime) < time.Minute {
+				validRequests = append(validRequests, requestTime)
 			}
-			clientRequests[clientIP] = validRequests
 		}
+		allowed := len(validRequests) < limit
+		if allowed {
+			validRequests = append(validRequests, now)
+		}
+		clientRequests[clientIP] = validRequests
+		mu.Unlock()
 
-		if len(clientRequests[clientIP]) >= 100 {
-			c.JSON(429, gin.H{
-				"error": "Too many requests, please try again later.",
-			})
-			c.Abort()
+		if !allowed {
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": message})
 			return
 		}
-
-		clientRequests[clientIP] = append(clientRequests[clientIP], now)
 		c.Next()
 	}
 }
@@ -108,34 +118,4 @@ func SetupTrustedProxies(router *gin.Engine) {
 	}
 
 	router.SetTrustedProxies(trustedProxies)
-}
-
-func AuthRateLimitMiddleware() gin.HandlerFunc {
-	clientRequests := make(map[string][]time.Time)
-
-	return func(c *gin.Context) {
-		clientIP := c.ClientIP()
-		now := time.Now()
-
-		if requests, exists := clientRequests[clientIP]; exists {
-			validRequests := []time.Time{}
-			for _, requestTime := range requests {
-				if now.Sub(requestTime) < time.Minute {
-					validRequests = append(validRequests, requestTime)
-				}
-			}
-			clientRequests[clientIP] = validRequests
-		}
-
-		if len(clientRequests[clientIP]) >= 5 {
-			c.JSON(429, gin.H{
-				"error": "Too many authentication attempts, please try again later.",
-			})
-			c.Abort()
-			return
-		}
-
-		clientRequests[clientIP] = append(clientRequests[clientIP], now)
-		c.Next()
-	}
 }

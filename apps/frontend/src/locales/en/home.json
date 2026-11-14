@@ -7,6 +7,7 @@
     "desc": "Browse the component catalog, compare listed prices, and open product details before you decide what to buy.",
     "search_placeholder": "Search components by name…",
     "search_label": "Which component are you looking for?",
+    "search_clear": "Clear search",
     "search_action": "Search the catalog",
     "primary_btn": "Browse components",
     "fact": "Filter by category, brand, price, and specifications.",

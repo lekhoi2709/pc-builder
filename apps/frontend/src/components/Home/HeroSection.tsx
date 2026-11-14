@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowDownRight, ArrowUpRight, Search } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Search, X } from 'lucide-react';
 import { NavLink, useNavigate, useParams, useSearchParams } from 'react-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GetComponents } from '../../services/api';
 import getLocalizedPrice from '../../utils/getLocalizedPrice';
@@ -11,6 +11,7 @@ export default function HeroSection() {
   const { t } = useTranslation('home');
   const [searchParams] = useSearchParams();
   const [term, setTerm] = useState(searchParams.get('search') ?? '');
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['home-catalog-preview', lang],
@@ -37,7 +38,8 @@ export default function HeroSection() {
               <label htmlFor="home-search" className="mb-3 block font-mono text-[11px] uppercase tracking-[.18em] text-[#d1ff52]">{t('page.search_label')}</label>
               <div className="flex min-h-16 items-center border border-[#667566] bg-[#26352d] transition-colors focus-within:border-[#d1ff52]">
                 <Search className="ml-5 h-5 w-5 shrink-0 text-[#d1ff52]" strokeWidth={1.8} />
-                <input id="home-search" type="search" value={term} onChange={event => setTerm(event.target.value)} placeholder={t('page.search_placeholder')} className="min-w-0 flex-1 bg-transparent px-4 py-4 text-sm text-white outline-none placeholder:text-[#9eafa2]" />
+                <input ref={inputRef} id="home-search" type="text" inputMode="search" value={term} onChange={event => setTerm(event.target.value)} placeholder={t('page.search_placeholder')} className="min-w-0 flex-1 bg-transparent px-4 py-4 text-sm text-white outline-none placeholder:text-[#9eafa2]" />
+                {term && <button type="button" onClick={() => { setTerm(''); inputRef.current?.focus(); }} aria-label={t('page.search_clear')} className="mr-1 grid h-12 w-12 shrink-0 cursor-pointer place-items-center text-[#becbbf] transition-colors hover:bg-[#425942] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d1ff52]"><X className="h-4 w-4" /></button>}
                 <button type="submit" aria-label={t('page.search_action')} className="mr-2 grid h-12 w-12 shrink-0 cursor-pointer place-items-center bg-[#d1ff52] text-[#111c1a] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"><ArrowUpRight className="h-5 w-5" /></button>
               </div>
             </form>

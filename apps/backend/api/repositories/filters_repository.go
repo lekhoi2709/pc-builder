@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"pc-builder/backend/api/models"
 	"strings"
 
@@ -101,7 +100,7 @@ func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilt
 	if filters.Search != "" {
 		searchTerm := "%" + strings.ToLower(filters.Search) + "%"
 		query = query.Where(`
-			LOWER(components.name) LIKE ? OR
+			(LOWER(components.name) LIKE ? OR
 			LOWER(categories.display_name) LIKE ? OR
 			LOWER(components.models) LIKE ? OR
 			EXISTS (
@@ -109,7 +108,7 @@ func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilt
 				JOIN brands ON component_brands.brand_id = brands.id
 				WHERE component_brands.component_id = components.id
 				AND LOWER(brands.display_name) LIKE ?
-			)
+			))
 		`, searchTerm, searchTerm, searchTerm, searchTerm)
 	}
 
@@ -121,13 +120,15 @@ func (r *ComponentRepository) applyFilters(query *gorm.DB, filters ComponentFilt
 
 	if filters.MinPrice > 0 {
 		query = query.Where(
-			fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "%s" && @.amount >= %v)'`, currency, filters.MinPrice),
+			`jsonb_path_exists(price, ?::jsonpath, jsonb_build_object('currency', ?::text, 'amount', ?::numeric), true)`,
+			`lax $[*] ? (@.currency == $currency && @.amount >= $amount)`, currency, filters.MinPrice,
 		)
 	}
 
 	if filters.MaxPrice > 0 {
 		query = query.Where(
-			fmt.Sprintf(`price @? 'lax $[*] ? (@.currency == "%s" && @.amount <= %v)'`, currency, filters.MaxPrice),
+			`jsonb_path_exists(price, ?::jsonpath, jsonb_build_object('currency', ?::text, 'amount', ?::numeric), true)`,
+			`lax $[*] ? (@.currency == $currency && @.amount <= $amount)`, currency, filters.MaxPrice,
 		)
 	}
 
