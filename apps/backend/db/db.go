@@ -31,8 +31,11 @@ func InitPostgres(cfg *config.Config) *gorm.DB {
 	)
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		PrepareStmt:            true,
+	// Schema changes can invalidate prepared SELECT * statements on reused connections.
+	DB, err = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{
 		SkipDefaultTransaction: true,
 	})
 	if err != nil {
